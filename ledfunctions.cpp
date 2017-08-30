@@ -41,21 +41,18 @@ LEDFunctionsClass LED = LEDFunctionsClass();
 #if 1 // code folding minutes template
 const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
 {
-	{0,  0,  4, {107, 108, 109}},                                  // UHR
-	{0,  5,  9, {7, 8, 9, 10, 40, 41, 42, 43}},                    // F�NF NACH
-	{0, 10, 14, {11, 12, 13, 14, 40, 41, 42, 43}},                 // ZEHN NACH
-	{1, 15, 19, {26, 27, 28, 29, 30, 31, 32}},                     // VIERTEL
-	{1, 20, 24, {11, 12, 13, 14, 18, 19, 20, 33, 34, 35, 36}},     // ZEHN VOR HALB
-	{1, 25, 29, {7, 8, 9, 10, 18, 19, 20, 33, 34, 35, 36}},        // F�NF VOR HALB
-	{1, 30, 34, {33, 34, 35, 36}},                                 // HALB
-	{1, 35, 39, {7, 8, 9, 10, 40, 41, 42, 43, 33, 34, 35, 36}},    // F�NF NACH HALB
-	{1, 35, 39, {7, 8, 9, 10, 40, 41, 42, 43, 33, 34, 35, 36}},    // F�NF NACH HALB
-/*	{1, 35, 39, {11, 12, 13, 14, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }}, // ZEHN VOR DREIVIERTEL */
-	{1, 40, 44, {11, 12, 13, 14, 40, 41, 42, 43, 33, 34, 35, 36}}, // ZEHN NACH HALB
-/*	{1, 40, 44, {7, 8, 9, 10, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }}, // F�NF VOR DREIVIERTEL */
-	{1, 45, 49, {22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }},    // DREIVIERTEL
-	{1, 50, 54, {11, 12, 13, 14, 18, 19, 20}},                     // ZEHN VOR
-	{1, 55, 59, {7, 8, 9, 10, 18, 19, 20}}                         // F�NF VOR
+	{ 0,  0,  4,{ 106, 107, 108 } },                                  // UHR
+	{ 0,  5,  9,{ 7, 8, 9, 10, 34, 35, 36, 37 } },                    // F�NF NACH
+	{ 0, 10, 14,{ 11, 12, 13, 14, 34, 35, 36, 37 } },                 // ZEHN NACH
+	{ 0, 15, 19,{ 15, 16, 17, 18, 19, 20, 21, 34, 35, 36, 37 } },     // VIERTEL NACH
+	{ 0, 20, 24,{ 22, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37 } },     // ZWANZIG NACH
+	{ 1, 25, 29,{ 7, 8, 9, 10, 30, 31, 32, 34, 35, 36, 37 } },        // F�NF VOR HALB
+	{ 1, 30, 34,{ 39, 40, 41, 42 } },                                 // HALB
+	{ 1, 35, 39,{ 7, 8, 9, 10, 34, 35, 36, 37, 39, 40, 41, 42 } },    // F�NF NACH HALB
+	{ 1, 40, 44,{ 22, 23, 24, 25, 26, 27, 28, 30, 31, 32 } },         // ZWANZIG VOR
+	{ 1, 45, 49,{ 15, 16, 17, 18, 19, 20, 21, 30, 31, 32 } },         // VIERTEL VOR
+	{ 1, 50, 54,{ 11, 12, 13, 14, 30, 31, 32 } },                     // ZEHN VOR
+	{ 1, 55, 59,{ 7, 8, 9, 10, 30, 31, 32 } }                         // F�NF VOR
 };
 #endif
 
@@ -69,19 +66,19 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
 #if 1 // code folding hours template
 const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
 {
-	{0,  0, 12, {99, 100, 101, 102, 103}}, // ZW�LF
-	{1,  1, 13, {44, 45, 46}},             // EIN
-	{2,  1, 13, {44, 45, 46, 47}},         // EINS
-	{0,  2, 14, {51, 52, 53, 54}},         // ZWEI
-	{0,  3, 15, {55, 56, 57, 58}},         // DREI
-	{0,  4, 16, {62, 63, 64, 65}},         // VIER
-	{0,  5, 17, {66, 67, 68, 69}},         // F�NF
-	{0,  6, 18, {72, 73, 74, 75, 76}},     // SECHS
-	{0,  7, 19, {77, 78, 79, 80, 81, 82}}, // SIEBEN
-	{0,  8, 20, {84, 85, 86, 87}},         // ACHT
-	{0,  9, 21, {88, 89, 90, 91}},         // NEUN
-	{0, 10, 22, {92, 93, 94, 95}},         // ZEHN
-	{0, 11, 23, {96, 97, 98}},             // ELF
+	{ 0,  0, 12,{ 100, 101, 102, 103, 104 } }, // ZWÖLF
+	{ 1,  1, 13,{ 44, 45, 46 } },             // EIN
+	{ 2,  1, 13,{ 44, 45, 46, 47 } },         // EINS
+	{ 0,  2, 14,{ 49, 50, 51, 52 } },         // ZWEI
+	{ 0,  3, 15,{ 56, 57, 58, 59 } },         // DREI
+	{ 0,  4, 16,{ 61, 62, 63, 64 } },         // VIER
+	{ 0,  5, 17,{ 66, 67, 68, 69 } },         // FÜNF
+	{ 0,  6, 18,{ 71, 72, 73, 74, 75 } },     // SECHS
+	{ 0,  7, 19,{ 78, 79, 80, 81, 82, 83 } }, // SIEBEN
+	{ 0,  8, 20,{ 84, 85, 86, 87 } },         // ACHT
+	{ 0,  9, 21,{ 88, 89, 90, 91 } },         // NEUN
+	{ 0, 10, 22,{ 92, 93, 94, 95 } },         // ZEHN
+	{ 0, 11, 23,{ 96, 97, 98 } },             // ELF
 };
 #endif
 
@@ -89,167 +86,167 @@ const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
 // this mapping table maps the linear memory buffer structure used throughout the
 // project to the physical layout of the LEDs
 const uint32_t PROGMEM LEDFunctionsClass::mapping[NUM_PIXELS] = {
-	10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,
-	11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
-	32,  31,  30,  29,  28,  27,  26,  25,  24,  23,  22,
-	33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
-	54,  53,  52,  51,  50,  49,  48,  47,  46,  45,  44,
-	55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  65,
-	76,  75,  74,  73,  72,  71,  70,  69,  68,  67,  66,
-	77,  78,  79,  80,  81,  82,  83,  84,  85,  86,  87,
-	98,  97,  96,  95,  94,  93,  92,  91,  90,  89,  88,
-	99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-	112, 111, 110, 113
+	0  , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  ,
+	21  , 20  , 19  , 18  , 17  , 16  , 15  , 14  , 13  , 12  , 11  ,
+	22  , 23  , 24  , 25  , 26  , 27  , 28  , 29  , 30  , 31  , 32  ,
+	43  , 42  , 41  , 40  , 39  , 38  , 37  , 36  , 35  , 34  , 33  ,
+	44  , 45  , 46  , 47  , 48  , 49  , 50  , 51  , 52  , 53  , 54  ,
+	65  , 64  , 63  , 62  , 61  , 60  , 59  , 58  , 57  , 56  , 55  ,
+	66  , 67  , 68  , 69  , 70  , 71  , 72  , 73  , 74  , 75  , 76  ,
+	87  , 86  , 85  , 84  , 83  , 82  , 81  , 80  , 79  , 78  , 77  ,
+	88  , 89  , 90  , 91  , 92  , 93  , 94  , 95  , 96  , 97  , 98  ,
+	109 , 108 , 107 , 106 , 105 , 104 , 103 , 102 , 101 , 100 , 99 ,
+	110, 111, 112, 113
 };
 #endif
 
 #if 1 // code folding brightness adjust tables
 const uint32_t PROGMEM LEDFunctionsClass::brightnessCurveSelect[NUM_PIXELS] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0
-/*		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
-		0, 1, 0, 1*/
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0
+	/*		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+	0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
+	0, 1, 0, 1*/
 };
 
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesR[256*NUM_BRIGHTNESS_CURVES] = {
-		// LED type 1, 1:1 mapping (neutral)
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-		20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-		37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-		54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
-		71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
-		88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
-		104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
-		117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
-		130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
-		143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
-		156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
-		169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
-		182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
-		195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
-		208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
-		221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
-		234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
-		247, 248, 249, 250, 251, 252, 253, 254, 255,
+const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES] = {
+	// LED type 1, 1:1 mapping (neutral)
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+	37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+	54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+	71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
+	88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+	104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+	117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+	130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+	143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
+	156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
+	169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+	182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
+	195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+	208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
+	221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
+	234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
+	247, 248, 249, 250, 251, 252, 253, 254, 255,
 
-		// LED type 2
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
-		7, 7, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 15, 15, 15, 15,
-		17, 17, 17, 17, 19, 19, 21, 21, 23, 23, 25, 25, 27, 27, 29, 29, 31,
-		31, 33, 33, 35, 35, 37, 37, 39, 39, 41, 41, 43, 43, 45, 45, 47, 47,
-		49, 49, 50, 50, 53, 53, 53, 53, 55, 55, 57, 57, 59, 59, 61, 61, 63,
-		63, 65, 65, 67, 67, 69, 69, 71, 71, 73, 73, 75, 75, 77, 77, 79, 79,
-		81, 81, 83, 83, 83, 83, 85, 85, 87, 87, 89, 89, 91, 91, 93, 93, 95,
-		95, 97, 97, 99, 99, 101, 101, 103, 103, 105, 105, 107, 107, 109, 109,
-		111, 111, 113, 113, 115, 115, 115, 115, 117, 117, 119, 119, 121, 121,
-		123, 123, 125, 125, 127, 127, 130, 130, 132, 132, 134, 134, 136, 136,
-		138, 138, 140, 140, 142, 142, 144, 144, 144, 144, 146, 146, 148, 148,
-		150, 150, 152, 152, 153, 153, 155, 155, 156, 156, 158, 158, 160, 160,
-		162, 162, 164, 164, 166, 166, 168, 168, 170, 170, 172, 172, 174, 174,
-		176, 176, 178, 178, 180, 180, 182, 182, 184, 184, 184, 184, 186, 186,
-		188, 188, 190, 190, 192, 192, 194, 194, 196, 196, 198, 198, 200, 200,
-		202, 202, 204, 204, 206, 206, 208, 208, 210, 210, 212, 212, 214, 214,
-		216, 216, 218, 218
+	// LED type 2
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
+	7, 7, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 15, 15, 15, 15,
+	17, 17, 17, 17, 19, 19, 21, 21, 23, 23, 25, 25, 27, 27, 29, 29, 31,
+	31, 33, 33, 35, 35, 37, 37, 39, 39, 41, 41, 43, 43, 45, 45, 47, 47,
+	49, 49, 50, 50, 53, 53, 53, 53, 55, 55, 57, 57, 59, 59, 61, 61, 63,
+	63, 65, 65, 67, 67, 69, 69, 71, 71, 73, 73, 75, 75, 77, 77, 79, 79,
+	81, 81, 83, 83, 83, 83, 85, 85, 87, 87, 89, 89, 91, 91, 93, 93, 95,
+	95, 97, 97, 99, 99, 101, 101, 103, 103, 105, 105, 107, 107, 109, 109,
+	111, 111, 113, 113, 115, 115, 115, 115, 117, 117, 119, 119, 121, 121,
+	123, 123, 125, 125, 127, 127, 130, 130, 132, 132, 134, 134, 136, 136,
+	138, 138, 140, 140, 142, 142, 144, 144, 144, 144, 146, 146, 148, 148,
+	150, 150, 152, 152, 153, 153, 155, 155, 156, 156, 158, 158, 160, 160,
+	162, 162, 164, 164, 166, 166, 168, 168, 170, 170, 172, 172, 174, 174,
+	176, 176, 178, 178, 180, 180, 182, 182, 184, 184, 184, 184, 186, 186,
+	188, 188, 190, 190, 192, 192, 194, 194, 196, 196, 198, 198, 200, 200,
+	202, 202, 204, 204, 206, 206, 208, 208, 210, 210, 212, 212, 214, 214,
+	216, 216, 218, 218
 };
 
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesG[256*NUM_BRIGHTNESS_CURVES] = {
-		// LED type 1, 1:1 mapping (neutral)
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-		20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-		37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-		54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
-		71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
-		88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
-		104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
-		117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
-		130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
-		143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
-		156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
-		169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
-		182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
-		195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
-		208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
-		221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
-		234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
-		247, 248, 249, 250, 251, 252, 253, 254, 255,
+const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES] = {
+	// LED type 1, 1:1 mapping (neutral)
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+	37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+	54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+	71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
+	88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+	104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+	117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+	130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+	143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
+	156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
+	169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+	182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
+	195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+	208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
+	221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
+	234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
+	247, 248, 249, 250, 251, 252, 253, 254, 255,
 
-		// LED type 2
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7,
-		7, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 15, 15, 15, 15, 17,
-		17, 17, 17, 19, 19, 21, 21, 23, 23, 25, 25, 27, 27, 29, 29, 31, 31,
-		33, 33, 35, 35, 37, 37, 39, 39, 41, 41, 43, 43, 45, 45, 47, 47, 49,
-		49, 51, 51, 53, 53, 54, 54, 56, 56, 57, 57, 59, 59, 61, 61, 63, 63,
-		66, 66, 68, 68, 70, 70, 72, 72, 74, 74, 76, 76, 78, 78, 80, 80, 80,
-		80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
-		80, 80, 80, 80, 80, 80, 80, 80, 108, 108, 110, 110, 112, 112, 113,
-		113, 116, 116, 117, 117, 119, 119, 122, 122, 124, 124, 126, 126, 127,
-		127, 131, 131, 132, 132, 135, 135, 137, 137, 139, 139, 141, 141, 143,
-		143, 145, 145, 147, 147, 149, 149, 151, 151, 153, 153, 155, 155, 157,
-		157, 159, 159, 160, 160, 163, 163, 165, 165, 167, 167, 169, 169, 171,
-		171, 173, 173, 175, 175, 177, 177, 179, 179, 181, 181, 183, 183, 185,
-		185, 187, 187, 189, 189, 191, 191, 194, 194, 197, 197, 198, 198, 201,
-		201, 203, 203, 205, 205, 208, 208, 210, 210, 212, 212, 215, 215, 218,
-		218, 220, 220, 222, 222, 224, 224, 226, 226, 228, 228, 230, 230, 232,
-		232, 234, 234
+	// LED type 2
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7,
+	7, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 15, 15, 15, 15, 17,
+	17, 17, 17, 19, 19, 21, 21, 23, 23, 25, 25, 27, 27, 29, 29, 31, 31,
+	33, 33, 35, 35, 37, 37, 39, 39, 41, 41, 43, 43, 45, 45, 47, 47, 49,
+	49, 51, 51, 53, 53, 54, 54, 56, 56, 57, 57, 59, 59, 61, 61, 63, 63,
+	66, 66, 68, 68, 70, 70, 72, 72, 74, 74, 76, 76, 78, 78, 80, 80, 80,
+	80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+	80, 80, 80, 80, 80, 80, 80, 80, 108, 108, 110, 110, 112, 112, 113,
+	113, 116, 116, 117, 117, 119, 119, 122, 122, 124, 124, 126, 126, 127,
+	127, 131, 131, 132, 132, 135, 135, 137, 137, 139, 139, 141, 141, 143,
+	143, 145, 145, 147, 147, 149, 149, 151, 151, 153, 153, 155, 155, 157,
+	157, 159, 159, 160, 160, 163, 163, 165, 165, 167, 167, 169, 169, 171,
+	171, 173, 173, 175, 175, 177, 177, 179, 179, 181, 181, 183, 183, 185,
+	185, 187, 187, 189, 189, 191, 191, 194, 194, 197, 197, 198, 198, 201,
+	201, 203, 203, 205, 205, 208, 208, 210, 210, 212, 212, 215, 215, 218,
+	218, 220, 220, 222, 222, 224, 224, 226, 226, 228, 228, 230, 230, 232,
+	232, 234, 234
 };
 
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesB[256*NUM_BRIGHTNESS_CURVES] = {
-		// LED type 1, 1:1 mapping (neutral)
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-		20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-		37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-		54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
-		71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
-		88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
-		104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
-		117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
-		130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
-		143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
-		156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
-		169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
-		182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
-		195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
-		208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
-		221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
-		234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
-		247, 248, 249, 250, 251, 252, 253, 254, 255,
+const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesB[256 * NUM_BRIGHTNESS_CURVES] = {
+	// LED type 1, 1:1 mapping (neutral)
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+	37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+	54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+	71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
+	88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+	104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+	117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+	130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+	143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
+	156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
+	169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+	182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
+	195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+	208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
+	221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
+	234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
+	247, 248, 249, 250, 251, 252, 253, 254, 255,
 
-		// LED type 2
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 9,
-		9, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 15, 15, 15, 15, 17,
-		17, 19, 19, 20, 20, 21, 21, 23, 23, 25, 25, 27, 27, 29, 29, 31, 31,
-		33, 33, 35, 35, 37, 37, 39, 39, 41, 41, 42, 42, 43, 43, 45, 45, 47,
-		47, 49, 49, 51, 51, 53, 53, 55, 55, 57, 57, 59, 59, 61, 61, 63, 63,
-		64, 64, 66, 66, 68, 68, 72, 72, 72, 72, 74, 74, 76, 76, 78, 78, 80,
-		80, 82, 82, 84, 84, 86, 86, 88, 88, 90, 90, 91, 91, 93, 93, 94, 94,
-		96, 96, 98, 98, 100, 100, 102, 102, 104, 104, 106, 106, 108, 108,
-		110, 110, 112, 112, 114, 114, 116, 116, 118, 118, 119, 119, 121, 121,
-		123, 123, 124, 124, 127, 127, 129, 129, 131, 131, 133, 133, 135, 137,
-		137, 139, 139, 141, 141, 143, 143, 145, 145, 147, 147, 149, 149, 151,
-		151, 153, 153, 155, 155, 157, 157, 160, 160, 161, 161, 163, 163, 166,
-		166, 168, 168, 170, 170, 171, 171, 174, 174, 176, 176, 178, 178, 180,
-		180, 183, 183, 184, 184, 187, 187, 188, 188, 191, 191, 194, 194, 196,
-		196, 198, 198, 200, 200, 202, 202, 204, 204, 206, 206, 209, 209, 210,
-		210, 212, 212, 215, 215, 217, 217, 219, 219, 222, 222, 224, 224, 226,
-		226, 228, 228, 230
+	// LED type 2
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 9,
+	9, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 15, 15, 15, 15, 17,
+	17, 19, 19, 20, 20, 21, 21, 23, 23, 25, 25, 27, 27, 29, 29, 31, 31,
+	33, 33, 35, 35, 37, 37, 39, 39, 41, 41, 42, 42, 43, 43, 45, 45, 47,
+	47, 49, 49, 51, 51, 53, 53, 55, 55, 57, 57, 59, 59, 61, 61, 63, 63,
+	64, 64, 66, 66, 68, 68, 72, 72, 72, 72, 74, 74, 76, 76, 78, 78, 80,
+	80, 82, 82, 84, 84, 86, 86, 88, 88, 90, 90, 91, 91, 93, 93, 94, 94,
+	96, 96, 98, 98, 100, 100, 102, 102, 104, 104, 106, 106, 108, 108,
+	110, 110, 112, 112, 114, 114, 116, 116, 118, 118, 119, 119, 121, 121,
+	123, 123, 124, 124, 127, 127, 129, 129, 131, 131, 133, 133, 135, 137,
+	137, 139, 139, 141, 141, 143, 143, 145, 145, 147, 147, 149, 149, 151,
+	151, 153, 153, 155, 155, 157, 157, 160, 160, 161, 161, 163, 163, 166,
+	166, 168, 168, 170, 170, 171, 171, 174, 174, 176, 176, 178, 178, 180,
+	180, 183, 183, 184, 184, 187, 187, 188, 188, 191, 191, 194, 194, 196,
+	196, 198, 198, 200, 200, 202, 202, 204, 204, 206, 206, 209, 209, 210,
+	210, 212, 212, 215, 215, 217, 217, 219, 219, 222, 222, 224, 224, 226,
+	226, 228, 228, 230
 };
 
 #endif
@@ -270,7 +267,7 @@ const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesB[256*NUM_BRIGHTNESS_C
 //---------------------------------------------------------------------------------------
 LEDFunctionsClass::~LEDFunctionsClass()
 {
-//	for(MatrixObject* m : this->matrix_objects) delete m;
+	//	for(MatrixObject* m : this->matrix_objects) delete m;
 }
 
 //---------------------------------------------------------------------------------------
@@ -320,22 +317,23 @@ void LEDFunctionsClass::begin(int pin)
 //---------------------------------------------------------------------------------------
 void LEDFunctionsClass::process()
 {
-	if(Config.debugMode) return;
+	if (Config.debugMode) return;
 
 	// check time values against boundaries
-	if(this->h > 23 || this->h < 0) this->h = 0;
-	if(this->m > 59 || this->m < 0) this->m = 0;
-	if(this->s > 59 || this->s < 0) this->s = 0;
-	if(this->ms > 999 || this->ms < 0) this->ms = 0;
+	if (this->h > 23 || this->h < 0) this->h = 0;
+	if (this->m > 59 || this->m < 0) this->m = 0;
+	if (this->s > 59 || this->s < 0) this->s = 0;
+	if (this->ms > 999 || this->ms < 0) this->ms = 0;
 
 	// load palette colors from configuration
 	palette_entry palette[] = {
-		{Config.bg.r, Config.bg.g, Config.bg.b},
-		{Config.fg.r, Config.fg.g, Config.fg.b},
-		{Config.s.r,  Config.s.g,  Config.s.b}};
+		{ Config.bg.r, Config.bg.g, Config.bg.b },
+		{ Config.fg.r, Config.fg.g, Config.fg.b },
+		{ Config.s.r,  Config.s.g,  Config.s.b }
+	};
 	uint8_t buf[NUM_PIXELS];
 
-	switch(this->mode)
+	switch (this->mode)
 	{
 	case DisplayMode::wifiManager:
 		this->renderWifiManager();
@@ -446,8 +444,8 @@ void LEDFunctionsClass::setMode(DisplayMode newMode)
 
 	// if we changed to an animated letters mode, then start animation
 	// even if the current time did not yet change
-	if(newMode != previousMode &&
-			(newMode == DisplayMode::flyingLettersVerticalUp ||
+	if (newMode != previousMode &&
+		(newMode == DisplayMode::flyingLettersVerticalUp ||
 			newMode == DisplayMode::flyingLettersVerticalDown))
 	{
 		this->renderTime(buf, this->h, this->m, this->s, this->ms);
@@ -456,7 +454,7 @@ void LEDFunctionsClass::setMode(DisplayMode newMode)
 
 	// if we changed to exploding letters mode, then start animation
 	// even if the current time did not yet change
-	if(newMode != previousMode && newMode == DisplayMode::explode)
+	if (newMode != previousMode && newMode == DisplayMode::explode)
 	{
 		this->renderTime(buf, this->h, this->m, this->s, this->ms);
 		this->prepareExplosion(buf);
@@ -498,7 +496,7 @@ void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[])
 // <- --
 //---------------------------------------------------------------------------------------
 void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[],
-		bool immediately)
+	bool immediately)
 {
 	this->setBuffer(this->targetValues, buf, palette);
 
@@ -521,16 +519,16 @@ void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[],
 // <- --
 //---------------------------------------------------------------------------------------
 void LEDFunctionsClass::setBuffer(uint8_t *target, const uint8_t *source,
-		palette_entry palette[])
+	palette_entry palette[])
 {
 	uint32_t mapping, palette_index, curveOffset;
 
 	// cast source to 32 bit pointer to ensure 32 bit aligned access
-	uint32_t *buf = (uint32_t*) source;
+	uint32_t *buf = (uint32_t*)source;
 	// this holds the current 4 bytes
 	uint32_t currentDWord;
 	// this is a pointer to the current 4 bytes for access as single bytes
-	uint8_t *currentBytes = (uint8_t*) &currentDWord;
+	uint8_t *currentBytes = (uint8_t*)&currentDWord;
 	// this counts bytes from 0...3
 	uint32_t byteCounter = 0;
 	for (int i = 0; i < NUM_PIXELS; i++)
@@ -554,7 +552,7 @@ void LEDFunctionsClass::setBuffer(uint8_t *target, const uint8_t *source,
 //---------------------------------------------------------------------------------------
 // fade
 //
-// Fade one step of the color values from this->currentValues[i] to 
+// Fade one step of the color values from this->currentValues[i] to
 // this->targetValues[i]. Uses non-linear fade speed depending on distance to target
 // value.
 //
@@ -564,7 +562,7 @@ void LEDFunctionsClass::setBuffer(uint8_t *target, const uint8_t *source,
 void LEDFunctionsClass::fade()
 {
 	static int prescaler = 0;
-	if(++prescaler<2) return;
+	if (++prescaler < 2) return;
 	prescaler = 0;
 
 	int delta;
@@ -597,9 +595,9 @@ void LEDFunctionsClass::show()
 	for (int i = 0; i < NUM_PIXELS; i++)
 	{
 		this->pixels->setPixelColor(i,
-				pixels->Color(((int) data[ofs + 0] * this->brightness) >> 8,
-						      ((int) data[ofs + 1] * this->brightness) >> 8,
-						      ((int) data[ofs + 2] * this->brightness) >> 8));
+			pixels->Color(((int)data[ofs + 0] * this->brightness) >> 8,
+			((int)data[ofs + 1] * this->brightness) >> 8,
+				((int)data[ofs + 2] * this->brightness) >> 8));
 		ofs += 3;
 	}
 	this->pixels->show();
@@ -617,9 +615,9 @@ void LEDFunctionsClass::show()
 //---------------------------------------------------------------------------------------
 int LEDFunctionsClass::getOffset(int x, int y)
 {
-	if (x>=0 && y>=0 && x<LEDFunctionsClass::width && y<LEDFunctionsClass::height)
+	if (x >= 0 && y >= 0 && x < LEDFunctionsClass::width && y < LEDFunctionsClass::height)
 	{
-		return LEDFunctionsClass::mapping[x + y*LEDFunctionsClass::width] * 3;
+		return LEDFunctionsClass::mapping[x + y * LEDFunctionsClass::width] * 3;
 	}
 	else
 	{
@@ -672,18 +670,18 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 	target[4] = 1; // S
 	target[5] = 1; // T
 
-	// minutes 1...4 for the corners
-	for(int i=0; i<=((m%5)-1); i++) target[10 * 11 + i] = 1;
+				   // minutes 1...4 for the corners
+	for (int i = 0; i <= ((m % 5) - 1); i++) target[10 * 11 + i] = 1;
 
 	// iterate over minutes_template
 	int adjust_hour = 0;
-	for(leds_template_t t : LEDFunctionsClass::minutesTemplate)
+	for (leds_template_t t : LEDFunctionsClass::minutesTemplate)
 	{
 		// test if this template matches the current minute
-		if(m >= t.param1 && m <= t.param2)
+		if (m >= t.param1 && m <= t.param2)
 		{
 			// set all LEDs defined in this template
-			for(int i : t.LEDs) target[i] = 1;
+			for (int i : t.LEDs) target[i] = 1;
 			adjust_hour = t.param0;
 			break;
 		}
@@ -691,34 +689,34 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 
 	// adjust hour display if necessary (e. g. 09:45 = quarter to *TEN* instead of NINE)
 	h += adjust_hour;
-	if(h > 23)	h -= 24;
+	if (h > 23)	h -= 24;
 
 	// iterate over hours template
-	for(leds_template_t t : LEDFunctionsClass::hoursTemplate)
+	for (leds_template_t t : LEDFunctionsClass::hoursTemplate)
 	{
 		// test if this template matches the current hour
-		if((t.param1 == h || t.param2 == h) &&
-		   ((t.param0 == 1 && m < 5)  || // special case full hour
+		if ((t.param1 == h || t.param2 == h) &&
+			((t.param0 == 1 && m < 5) || // special case full hour
 			(t.param0 == 2 && m >= 5) || // special case hour + minutes
-			(t.param0 == 0)))            // normal case
+				(t.param0 == 0)))            // normal case
 		{
 			// set all LEDs defined in this template
-			for(int i : t.LEDs) target[i] = 1;
+			for (int i : t.LEDs) target[i] = 1;
 			break;
 		}
 	}
 
 	// DEBUG
 	static int last_minutes = -1;
-	if(last_minutes != this->m)
+	if (last_minutes != this->m)
 	{
 		last_minutes = this->m;
 		Serial.printf("h=%i, m=%i, s=%i\r\n", this->h, this->m, this->s);
-		for(int y=0; y<10; y++)
+		for (int y = 0; y < 10; y++)
 		{
-			for(int x=0; x<11; x++)
+			for (int x = 0; x < 11; x++)
 			{
-				Serial.print(target[y*11+x]);
+				Serial.print(target[y * 11 + x]);
 				Serial.print(' ');
 			}
 			Serial.println(' ');
@@ -741,10 +739,10 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 void LEDFunctionsClass::renderHourglass(uint8_t animationStep, bool green)
 {
 	// colors in palette: black, white, yellow
-	palette_entry p[] = {{0, 0, 0}, {255, 255, 255}, {255, 255, 0}, {255, 255, 0}};
+	palette_entry p[] = { { 0, 0, 0 },{ 255, 255, 255 },{ 255, 255, 0 },{ 255, 255, 0 } };
 
 	// delete red component in palette entry 3 to make this color green
-	if(green) p[3].r = 0;
+	if (green) p[3].r = 0;
 
 	if (animationStep >= HOURGLASS_ANIMATION_FRAMES) animationStep = 0;
 	this->set(hourglass_animation[animationStep], p, true);
@@ -783,7 +781,7 @@ void LEDFunctionsClass::renderStars()
 	// clear buffer
 	memset(this->currentValues, 0, sizeof(this->currentValues));
 
-	for(StarObject &s : this->stars) s.render(this->currentValues, this->stars);
+	for (StarObject &s : this->stars) s.render(this->currentValues, this->stars);
 }
 
 //---------------------------------------------------------------------------------------
@@ -810,8 +808,8 @@ void LEDFunctionsClass::renderHeart()
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		1, 1, 1, 1
 	};
-	palette[0] = {0, 0, 0};
-	palette[1] = {(uint8_t)this->heartBrightness, 0, 0};
+	palette[0] = { 0, 0, 0 };
+	palette[1] = { (uint8_t)this->heartBrightness, 0, 0 };
 	this->set(heart, palette, true);
 
 	switch (this->heartState)
@@ -865,12 +863,12 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 	float angle_increment = 2.0f * 3.141592654f / (float)(PARTICLE_COUNT);
 
 	// iterate over every position in the screen buffer
-	for(int y=0; y<LEDFunctionsClass::height; y++)
+	for (int y = 0; y < LEDFunctionsClass::height; y++)
 	{
-		for(int x=0; x<LEDFunctionsClass::width; x++)
+		for (int x = 0; x < LEDFunctionsClass::width; x++)
 		{
 			// create entry in particles vector if current pixel is foreground
-			if(source[ofs++] == 1)
+			if (source[ofs++] == 1)
 			{
 				// add a random delay of zero to approx. 3 seconds to each
 				// explosion
@@ -879,7 +877,7 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 				// start with angle of zero radians, assign velocity vector
 				// placed on a circle to each particle
 				angle = 0;
-				for(int i=0; i<PARTICLE_COUNT; i++)
+				for (int i = 0; i < PARTICLE_COUNT; i++)
 				{
 					// calculate particle speed vector based on angle and
 					// absolute speed value
@@ -911,12 +909,13 @@ void LEDFunctionsClass::renderExplosion()
 
 	// load palette colors from configuration
 	palette_entry palette[] = {
-		{Config.bg.r, Config.bg.g, Config.bg.b},
-		{Config.fg.r, Config.fg.g, Config.fg.b},
-		{Config.s.r,  Config.s.g,  Config.s.b}};
+		{ Config.bg.r, Config.bg.g, Config.bg.b },
+		{ Config.fg.r, Config.fg.g, Config.fg.b },
+		{ Config.s.r,  Config.s.g,  Config.s.b }
+	};
 
 	// check if the displayed time has changed
-	if((this->m/5 != this->lastM/5) || (this->h != this->lastH))
+	if ((this->m / 5 != this->lastM / 5) || (this->h != this->lastH))
 	{
 		// prepare new animation with old time
 		this->renderTime(buf, this->lastH, this->lastM, 0, 0);
@@ -930,22 +929,22 @@ void LEDFunctionsClass::renderExplosion()
 	this->fillBackground(this->s, this->ms, buf);
 
 	// minutes 1...4 for the corners
-	for(int i=0; i<=((this->m%5)-1); i++) buf[10 * 11 + i] = 1;
+	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[10 * 11 + i] = 1;
 
 	// Do we have something to explode?
-	if(this->particles.size() > 0)
+	if (this->particles.size() > 0)
 	{
 		// transfer background created by fillBackground to target buffer
 		this->set(buf, palette, true);
 
 		// iterate over all particles
-		for(Particle *p : this->particles)
+		for (Particle *p : this->particles)
 		{
 			// move and render current particle
 			p->render(this->currentValues, palette);
 
 			// if particle is still active, keep it; kill it otherwise
-			if(p->alive) particlesToKeep.push_back(p); else delete p;
+			if (p->alive) particlesToKeep.push_back(p); else delete p;
 		}
 
 		// only keep active particles, discard the rest
@@ -975,11 +974,11 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 	// transfer the previous flying letters in the leaving letters vector to prepare for
 	// outgoing animation
 	this->leavingLetters.clear();
-	for(xy_t &p : this->arrivingLetters)
+	for (xy_t &p : this->arrivingLetters)
 	{
 		// delay every letter depending on its position
 		// and set new target coordinate
-		if(this->mode == DisplayMode::flyingLettersVerticalUp)
+		if (this->mode == DisplayMode::flyingLettersVerticalUp)
 		{
 			p.delay = p.y * 2 + p.x + 1 + random(5);
 			p.yTarget = -1;
@@ -997,24 +996,26 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 	int ofs = 0;
 
 	// iterate over every position in the screen buffer
-	for(int y=0; y<LEDFunctionsClass::height; y++)
+	for (int y = 0; y < LEDFunctionsClass::height; y++)
 	{
-		for(int x=0; x<LEDFunctionsClass::width; x++)
+		for (int x = 0; x < LEDFunctionsClass::width; x++)
 		{
 			// create entry in arrivingLetters vector if current pixel is foreground
-			if(source[ofs++] == 1)
+			if (source[ofs++] == 1)
 			{
-				if(this->mode == DisplayMode::flyingLettersVerticalUp)
+				if (this->mode == DisplayMode::flyingLettersVerticalUp)
 				{
-					xy_t p = {x, y, x, LEDFunctionsClass::height,
-							y * 2 + x + 1 + random(5), 200, 0};
+					xy_t p = { x, y, x, LEDFunctionsClass::height,
+						y * 2 + x + 1 + random(5), 200, 0
+					};
 					this->arrivingLetters.push_back(p);
 				}
 				else
 				{
-					xy_t p = {x, y, x, -1,
-							(LEDFunctionsClass::height - y - 1) * 2 + x + 1 + random(5),
-							200, 0};
+					xy_t p = { x, y, x, -1,
+						(LEDFunctionsClass::height - y - 1) * 2 + x + 1 + random(5),
+						200, 0
+					};
 					this->arrivingLetters.push_back(p);
 				}
 			}
@@ -1024,16 +1025,16 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 	// DEBUG
 	Serial.printf("h=%i, m=%i, s=%i, lastH=%i, lastM=%i\r\n", this->h, this->m, this->s, this->lastH, this->lastM);
 	Serial.println("leavingLetters:");
-	for(xy_t &p : this->leavingLetters)
+	for (xy_t &p : this->leavingLetters)
 	{
 		Serial.printf("  counter=%i, delay=%i, speed=%i, x=%i, y=%i, xTarget=%i, yTarget=%i\r\n",
-				p.counter, p.delay, p.speed, p.x, p.y, p.xTarget, p.yTarget);
+			p.counter, p.delay, p.speed, p.x, p.y, p.xTarget, p.yTarget);
 	}
 	Serial.println("arrivingLetters:");
-	for(xy_t &p : this->arrivingLetters)
+	for (xy_t &p : this->arrivingLetters)
 	{
 		Serial.printf("  counter=%i, delay=%i, speed=%i, x=%i, y=%i, xTarget=%i, yTarget=%i\r\n",
-				p.counter, p.delay, p.speed, p.x, p.y, p.xTarget, p.yTarget);
+			p.counter, p.delay, p.speed, p.x, p.y, p.xTarget, p.yTarget);
 	}
 }
 
@@ -1052,12 +1053,13 @@ void LEDFunctionsClass::renderFlyingLetters()
 
 	// load palette colors from configuration
 	palette_entry palette[] = {
-		{Config.bg.r, Config.bg.g, Config.bg.b},
-		{Config.fg.r, Config.fg.g, Config.fg.b},
-		{Config.s.r,  Config.s.g,  Config.s.b}};
+		{ Config.bg.r, Config.bg.g, Config.bg.b },
+		{ Config.fg.r, Config.fg.g, Config.fg.b },
+		{ Config.s.r,  Config.s.g,  Config.s.b }
+	};
 
 	// check if the displayed time has changed
-	if((this->m/5 != this->lastM/5) || (this->h != this->lastH))
+	if ((this->m / 5 != this->lastM / 5) || (this->h != this->lastH))
 	{
 		// prepare new animation
 		this->renderTime(buf, this->h, this->m, this->s, this->ms);
@@ -1072,68 +1074,68 @@ void LEDFunctionsClass::renderFlyingLetters()
 	this->fillBackground(this->s, this->ms, buf);
 
 	// minutes 1...4 for the corners
-	for(int i=0; i<=((this->m%5)-1); i++) buf[10 * 11 + i] = 1;
+	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[10 * 11 + i] = 1;
 
 	// leaving letters animation has priority
-	if(this->leavingLetters.size() > 0)
+	if (this->leavingLetters.size() > 0)
 	{
 		// count actually moved letters to detect end of animation
 		int movedLetters = 0;
 
 		// iterate over all leavingLetters
-		for(xy_t &p : this->leavingLetters)
+		for (xy_t &p : this->leavingLetters)
 		{
 			// draw letter only if inside visible area
-			if(p.x>=0 && p.y>=0 && p.x<LEDFunctionsClass::width
-					&& p.y<LEDFunctionsClass::height)
+			if (p.x >= 0 && p.y >= 0 && p.x < LEDFunctionsClass::width
+				&& p.y < LEDFunctionsClass::height)
 				buf[p.x + p.y * LEDFunctionsClass::width] = 1;
 
 			// continue with next letter if the current letter already
 			// reached its target position
-			if(p.y == p.yTarget && p.x == p.xTarget) continue;
+			if (p.y == p.yTarget && p.x == p.xTarget) continue;
 			p.counter += p.speed;
 			movedLetters++;
-			if(p.counter >= 1000)
+			if (p.counter >= 1000)
 			{
 				p.counter -= 1000;
-				if(p.delay>0)
+				if (p.delay > 0)
 				{
 					// do not move if animation of current letter is delayed
 					p.delay--;
 				}
 				else
 				{
-					if(p.y > p.yTarget) p.y--; else p.y++;
+					if (p.y > p.yTarget) p.y--; else p.y++;
 				}
 			}
 		}
-		if(movedLetters == 0) this->leavingLetters.clear();
+		if (movedLetters == 0) this->leavingLetters.clear();
 	}
 	else
 	{
 		// iterate over all arrivingLetters
-		for(xy_t &p : this->arrivingLetters)
+		for (xy_t &p : this->arrivingLetters)
 		{
 			// draw letter only if inside visible area
-			if(p.x>=0 && p.y>=0 && p.x<LEDFunctionsClass::width
-					&& p.y<LEDFunctionsClass::height)
+			if (p.x >= 0 && p.y >= 0 && p.x < LEDFunctionsClass::width
+				&& p.y < LEDFunctionsClass::height)
 				buf[p.x + p.y * LEDFunctionsClass::width] = 1;
 
 			// continue with next letter if the current letter already
 			// reached its target position
-			if(p.y == p.yTarget && p.x == p.xTarget) continue;
+			if (p.y == p.yTarget && p.x == p.xTarget) continue;
 			p.counter += p.speed;
-			if(p.counter >= 1000)
+			if (p.counter >= 1000)
 			{
 				p.counter -= 1000;
-				if(p.delay>0)
+				if (p.delay > 0)
 				{
 					// do not move if animation of current letter is delayed
 					p.delay--;
 				}
 				else
 				{
-					if(p.y > p.yTarget) p.y--; else p.y++;
+					if (p.y > p.yTarget) p.y--; else p.y++;
 				}
 			}
 		}
@@ -1167,8 +1169,8 @@ void LEDFunctionsClass::renderRed()
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1
 	};
-	palette[0] = {0, 0, 0};
-	palette[1] = {32, 0, 0};
+	palette[0] = { 0, 0, 0 };
+	palette[1] = { 32, 0, 0 };
 	this->set(heart, palette, true);
 }
 
@@ -1196,8 +1198,8 @@ void LEDFunctionsClass::renderGreen()
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1
 	};
-	palette[0] = {0, 0, 0};
-	palette[1] = {0, 32, 0};
+	palette[0] = { 0, 0, 0 };
+	palette[1] = { 0, 32, 0 };
 	this->set(heart, palette, true);
 }
 
@@ -1225,8 +1227,8 @@ void LEDFunctionsClass::renderBlue()
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1
 	};
-	palette[0] = {0, 0, 0};
-	palette[1] = {0, 0, 32};
+	palette[0] = { 0, 0, 0 };
+	palette[1] = { 0, 0, 32 };
 	this->set(heart, palette, true);
 }
 
@@ -1254,12 +1256,12 @@ void LEDFunctionsClass::renderUpdate()
 		0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
 		1, 1, 1, 1
 	};
-	palette_entry p[] = {{0, 0, 0}, {255, 0, 0}, {42, 21, 0}, {255, 85, 0}};
-	for(int i=0; i<110; i++)
+	palette_entry p[] = { { 0, 0, 0 },{ 255, 0, 0 },{ 42, 21, 0 },{ 255, 85, 0 } };
+	for (int i = 0; i < 110; i++)
 	{
-		if(i<Config.updateProgress)
+		if (i < Config.updateProgress)
 		{
-			if(update[i] == 0) update[i] = 2;
+			if (update[i] == 0) update[i] = 2;
 			else update[i] = 3;
 		}
 	}
@@ -1289,7 +1291,7 @@ void LEDFunctionsClass::renderUpdateComplete()
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		1, 1, 1, 1
 	};
-	palette_entry p[] = {{0, 21, 0}, {0, 255, 0}};
+	palette_entry p[] = { { 0, 21, 0 },{ 0, 255, 0 } };
 	this->set(update_ok, p, true);
 }
 
@@ -1316,7 +1318,7 @@ void LEDFunctionsClass::renderUpdateError()
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		1, 1, 1, 1
 	};
-	palette_entry p[] = {{0, 0, 0}, {255, 0, 0}};
+	palette_entry p[] = { { 0, 0, 0 },{ 255, 0, 0 } };
 	this->set(update_err, p, true);
 }
 
@@ -1343,7 +1345,7 @@ void LEDFunctionsClass::renderWifiManager()
 		0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,
 		1, 1, 1, 1
 	};
-	palette_entry p[] = {{0, 0, 0}, {255, 255, 0}};
+	palette_entry p[] = { { 0, 0, 0 },{ 255, 255, 0 } };
 	this->set(wifimanager, p, true);
 }
 
