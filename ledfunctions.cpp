@@ -19,7 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ledfunctions.h"
-
+//hallo
 //---------------------------------------------------------------------------------------
 #if 1 // variables
 //---------------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
 	{ 0, 10, 14,{ 11, 12, 13, 14, 34, 35, 36, 37 } },                 // ZEHN NACH
 	{ 0, 15, 19,{ 15, 16, 17, 18, 19, 20, 21, 34, 35, 36, 37 } },     // VIERTEL NACH
 	{ 0, 20, 24,{ 22, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37 } },     // ZWANZIG NACH
-	{ 1, 25, 29,{ 7, 8, 9, 10, 30, 31, 32, 34, 35, 36, 37 } },        // FüNF VOR HALB
+	{ 1, 25, 29,{ 7, 8, 9, 10, 30, 31, 32, 39, 40, 41, 42 } },        // FüNF VOR HALB
 	{ 1, 30, 34,{ 39, 40, 41, 42 } },                                 // HALB
 	{ 1, 35, 39,{ 7, 8, 9, 10, 34, 35, 36, 37, 39, 40, 41, 42 } },    // FüNF NACH HALB
 	{ 1, 40, 44,{ 22, 23, 24, 25, 26, 27, 28, 30, 31, 32 } },         // ZWANZIG VOR
