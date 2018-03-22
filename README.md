@@ -1,3 +1,10 @@
+# Links
+http://www.leuchtbildshop.net/                                              - Material (Diffusionsfolie)
+http://diskussion.christians-bastel-laden.de/index.php                      - Forum (Anleitungen, Folienlieferanten etc=
+https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - alternative Version (mehr Funktionen)
+
+
+
 # esp8266wordclock
 Wordclock with WS2812B RGB LED modules driven by an ESP8266 module
 
