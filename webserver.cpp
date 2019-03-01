@@ -548,7 +548,7 @@ void WebServerClass::extractColor(String argName, palette_entry& result)
 //---------------------------------------------------------------------------------------
 // handleSetColor
 //
-// Handles the "/setcolor" request, expects arguments:
+// Handles the "/setcolor" request, expects arguments:  // fg = foreground, bg = background, s = ? evtl seconds
 //	/setcolor?fg=xxxxxx&bg=yyyyyy&s=zzzzzz
 //	with xxxxxx, yyyyyy and zzzzzz being hexadecimal HTML colors (without leading '#')
 //
