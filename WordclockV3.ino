@@ -1,4 +1,3 @@
-// ESP8266 Wordclock
 // Copyright (C) 2016 Thoralt Franz, https://github.com/thoralt
 //
 //  This project is the firmware for a Wordclock consisting of 114 WS2812B LEDs.
@@ -174,8 +173,7 @@ void setLED(unsigned char r, unsigned char g, unsigned char b)
 // <- --
 //---------------------------------------------------------------------------------------
 void setup()
-{
-	// ESP8266 LED
+{	// ESP8266 LED
 	pinMode(LED_BUILTIN, OUTPUT);
 	pinMode(LED_RED, OUTPUT);
 	pinMode(LED_GREEN, OUTPUT);
@@ -203,6 +201,7 @@ void setup()
 	LED.setMode(DisplayMode::yellowHourglass);
 
 	// WiFi
+  wifi_station_set_hostname("WordClock");
 	Serial.println("Initializing WiFi");
 	WiFiManager wifiManager;
 	wifiManager.setAPCallback(configModeCallback);
