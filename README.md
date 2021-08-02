@@ -5,8 +5,12 @@ http://diskussion.christians-bastel-laden.de/index.php                      - Fo
 
 https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - alternative Version (mehr Funktionen)
 
+# changes / extension
 
-
+- added some alternative mapping tables for other word positions (for now only compile time switches)
+- added random mode for transitions
+- added rainbow color mode.
+- added alternative way of spelling minutes (dreiviertel vs. viertel vor)
 # esp8266wordclock
 Wordclock with WS2812B RGB LED modules driven by an ESP8266 module
 
