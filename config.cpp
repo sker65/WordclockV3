@@ -99,13 +99,13 @@ void ConfigClass::save()
 	this->config->s = this->s;
 	this->config->timeZone = this->timeZone;
 	this->config->heartbeat = this->heartbeat;
-	this->config->showItIs = this->showItIs;
-	this->config->minuteType = this->minuteType;
-	this->config->fgRainbow = this->fgRainbow;
 	this->config->mode = (uint32_t) this->defaultMode;
 	for (int i = 0; i < 4; i++)
 		this->config->ntpserver[i] = this->ntpserver[i];
 
+	this->config->showItIs = this->showItIs;
+	this->config->minuteType = this->minuteType;
+	this->config->fgRainbow = this->fgRainbow;
 	for (int i = 0; i < EEPROM_SIZE; i++)
 		EEPROM.write(i, this->eeprom_data[i]);
 	EEPROM.commit();
