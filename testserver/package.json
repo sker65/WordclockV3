@@ -1,0 +1,15 @@
+{
+  "name": "testserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node-dev index.js"
+  },
+  "author": "stefan rinke",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-dev": "^7.0.0"
+  }
+}

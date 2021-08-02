@@ -53,6 +53,10 @@
         <option>Plasma</option>
         <option>Sterne</option>
 	</select>
+	<select name="minutemode" id="minutemode" onchange="minutemodeChanged()">
+		<option>Viertel vor</option>
+		<option>Dreiviertel</option>
+	</select>
 </div>
 
 <div class="outer_frame">
@@ -88,9 +92,13 @@
 	</select>
 </div>
 
-<div class="outer_frame">
+<div class="outer_frame" >
     <p>Optionen</p>
-	<label><input type="checkbox" name="heartbeat" id="heartbeat" onchange="heartbeatEnableChanged()">Heartbeat</label>
+    <div style="text-align: left;" >
+        <label><input type="checkbox" name="heartbeat" id="heartbeat" onchange="heartbeatEnableChanged()">Heartbeat</label><br/>
+        <label><input type="checkbox" name="itIs" id="itIs" onchange="changeCheckbox('itIs', 'itIs')">"Es ist" anzeigen</label><br/>
+        <label><input type="checkbox" name="rainbow" id="rainbow" onchange="changeCheckbox('rainbow', 'rainbow')">Rainbow</label><br/>
+    </div>
 </div>
 
 <div class="outer_frame">
@@ -111,116 +119,42 @@
 
     var timer = setTimeout(sendColorTimer, 250);
 
+    let myhost = "http://" + location.hostname + (location.port ? ':'+location.port : '');
+
+    function changeCheckbox( id, varname) {
+		var enabled = 0;
+		var checkbox = document.getElementById(id);
+		if(checkbox.checked == true) enabled = 1;
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", myhost + "/setvar?name="+varname+"&value=" + enabled, true);
+        xhttp.send();
+    }
+
 	function heartbeatEnableChanged()
 	{
 		var enabled = 0;
 		var heartbeatCheckbox = document.getElementById("heartbeat");
 		if(heartbeatCheckbox.checked == true) enabled = 1;
-		
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "http://" + location.hostname + "/setheartbeat?value=" + enabled, true);
+        xhttp.open("GET", myhost + "/setheartbeat?value=" + enabled, true);
         xhttp.send();
 	}
 	
 	function displayModeChanged()
-	{
-		var newMode;
-		var displayModeCombo = document.getElementById("displaymode");
-		switch(displayModeCombo.selectedIndex)
-		{
-			case 0: // plain
-				newMode = 0;
-				break;
-			case 1: // fade
-				newMode = 1;
-				break;
-			case 2: // flying letters vertical up
-				newMode = 2;
-				break;
-			case 3: // flying letters vertical down
-				newMode = 3;
-				break;
-			case 4: // exploding letters
-				newMode = 4;
-				break;
-			case 5: // random
-				newMode = 5;
-				break;
-			default:
-				newMode = 0;
-				break;
-		}
+	{		
+		let idx = document.getElementById("displaymode").selectedIndex;
+        // max is 10
+        let newMode = idx >= 0 && idx <= 10 ? idx : 0;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "http://" + location.hostname + "/setmode?value=" + newMode, true);
+        xhttp.open("GET", myhost + "/setmode?value=" + newMode, true);
         xhttp.send();
 	}
 	
-	function timeZoneChanged()
-	{
-		var newTimeZone;
-		var timeZoneCombo = document.getElementById("timezone");
-		switch(timeZoneCombo.selectedIndex)
-		{
-			case 0:
-				newTimeZone = -12; break;
-			case 1:
-				newTimeZone = -11; break;
-			case 2:
-				newTimeZone = -10; break;
-			case 3:
-				newTimeZone = -9; break;
-			case 4:
-				newTimeZone = -8; break;
-			case 5:
-				newTimeZone = -7; break;
-			case 6:
-				newTimeZone = -6; break;
-			case 7:
-				newTimeZone = -5; break;
-			case 8:
-				newTimeZone = -4; break;
-			case 9:
-				newTimeZone = -3; break;
-			case 10:
-				newTimeZone = -2; break;
-			case 11:
-				newTimeZone = -1; break;
-			case 12:
-				newTimeZone = 0; break;
-			case 13:
-				newTimeZone = 1; break;
-			case 14:
-				newTimeZone = 2; break;
-			case 15:
-				newTimeZone = 3; break;
-			case 16:
-				newTimeZone = 4; break;
-			case 17:
-				newTimeZone = 5; break;
-			case 18:
-				newTimeZone = 6; break;
-			case 19:
-				newTimeZone = 7; break;
-			case 20:
-				newTimeZone = 8; break;
-			case 21:
-				newTimeZone = 9; break;
-			case 22:
-				newTimeZone = 10; break;
-			case 23:
-				newTimeZone = 11; break;
-			case 24:
-				newTimeZone = 12; break;
-			case 25:
-				newTimeZone = 13; break;
-			case 26:
-				newTimeZone = 14; break;
-			default:
-				newTimeZone = 0;
-				break;
-		}
+	function timeZoneChanged() {
+		let idx = document.getElementById("timezone").selectedIndex;
+        let newTimeZone = idx >= 0 && idx <= 26 ? ( idx - 12 ) : 0;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "http://" + location.hostname + "/settimezone?value=" + newTimeZone, true);
+        xhttp.open("GET", myhost + "/settimezone?value=" + newTimeZone, true);
         xhttp.send();
 	}
 	
@@ -232,37 +166,35 @@
         return button.jscolor.toString();
     }
     
-    function loadColors()
-    {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function()
-        {
-            if(xhttp.readyState == 4 && xhttp.status == 200)
-            {
-                console.log("received " + xhttp.responseText);
-                var c = xhttp.responseText.split(",");
-                newBackground = updateButton('backgroundColorButton', 'Hintergrund', c[0], c[1], c[2]);
-                newForeground = updateButton('foregroundColorButton', 'Vordergrund', c[3], c[4], c[5]);
-                newSeconds = updateButton('secondsColorButton', 'Sekunden', c[6], c[7], c[8]);
+    function httpget(path, readycb) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if(xhttp.readyState == 4 ) {
+                if( xhttp.status == 200 ) {
+                    console.log("GET "+path+" -> "+xhttp.responseText);
+                    readycb(xhttp.responseText);
+                } else {
+                    console.error("http get to '"+path+"' resulted in "+xhttp.status);
+                }
             }
         };
-        xhttp.open("GET", "http://" + location.hostname + "/getcolors", true);
+        xhttp.open("GET", myhost + path, true);
         xhttp.send();
     }
 
-    function loadNtpServer()
-    {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function()
-        {
-            if(xhttp.readyState == 4 && xhttp.status == 200)
-            {
-                console.log("received " + xhttp.responseText);
-                document.getElementById('ntpserver').value = xhttp.responseText;
-            }
-        };
-        xhttp.open("GET", "http://" + location.hostname + "/getntpserver", true);
-        xhttp.send();
+    function loadColors() {
+        httpget( "/getcolors", (res) => {
+            let c = res.split(',');
+            newBackground = updateButton('backgroundColorButton', 'Hintergrund', c[0], c[1], c[2]);
+            newForeground = updateButton('foregroundColorButton', 'Vordergrund', c[3], c[4], c[5]);
+            newSeconds = updateButton('secondsColorButton', 'Sekunden', c[6], c[7], c[8]);
+        });
+    }
+
+    function loadNtpServer() {
+        httpget( "/getntpserver", (res) => {
+            document.getElementById('ntpserver').value = res;
+        });
     }
 
     function sendColorTimer()
@@ -292,7 +224,7 @@
 
         if(update == true)
         {
-            var request = "http://" + location.hostname + "/setcolor?" 
+            var request = myhost + "/setcolor?" 
                 + "bg=" + newBackground 
                 + "&fg=" + newForeground 
                 + "&s=" + newSeconds;
@@ -318,8 +250,7 @@
         return true;
     }
 
-    function saveNtpServer()
-    {
+    function saveNtpServer() {
         var server = document.getElementById('ntpserver').value;
         if(!isValidIP(server))
         {
@@ -328,62 +259,37 @@
         }
 
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "http://" + location.hostname + "/setntpserver?ip=" + server, true);
+        xhttp.open("GET", myhost + "/setntpserver?ip=" + server, true);
         xhttp.send();
     }
+	
+	function loadTimeZone() {
+        httpget( "/gettimezone", (res) => {
+            document.getElementById('timezone').selectedIndex = parseInt(res) + 12;
+        });
+	}
+	
+	function loadMode() {
+        httpget( "/getmode", (res) => {
+            document.getElementById('displaymode').selectedIndex = res;
+        });
+	}
 
-	function loadTimeZone()
-	{
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function()
-        {
-            if(xhttp.readyState == 4 && xhttp.status == 200)
-            {
-                console.log("received " + xhttp.responseText);
-                document.getElementById('timezone').selectedIndex = parseInt(xhttp.responseText) + 12;
-            }
-        };
-        xhttp.open("GET", "http://" + location.hostname + "/gettimezone", true);
-        xhttp.send();
+	function loadHeartbeat() {
+        httpget( "/getheartbeat", (res) => {
+            document.getElementById('heartbeat').checked = res == "1";
+        });
 	}
-	
-	function loadMode()
-	{
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function()
-        {
-            if(xhttp.readyState == 4 && xhttp.status == 200)
-            {
-                console.log("received " + xhttp.responseText);
-                document.getElementById('displaymode').selectedIndex = xhttp.responseText;
-            }
-        };
-        xhttp.open("GET", "http://" + location.hostname + "/getmode", true);
-        xhttp.send();
-	}
-	
-	function loadHeartbeat()
-	{
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function()
-        {
-            if(xhttp.readyState == 4 && xhttp.status == 200)
-            {
-                console.log("received " + xhttp.responseText);
-				if(xhttp.responseText == "1")
-				{
-					document.getElementById('heartbeat').checked = true;
-				}
-				else
-				{
-					document.getElementById('heartbeat').checked = false;
-				}
-                
-            }
-        };
-        xhttp.open("GET", "http://" + location.hostname + "/getheartbeat", true);
-        xhttp.send();
-	}
+
+    function loadVars() {
+        httpget( "/getvar?name=itIs", (res) => {
+            document.getElementById('itIs').checked = res == "1";
+        });
+        httpget( "/getvar?name=rainbow", (res) => {
+            document.getElementById('rainbow').checked = res == "1";
+        });
+
+    }
 	
     function loadSettings()
     {
@@ -392,6 +298,7 @@
 		loadMode();
 		loadHeartbeat();
 		loadTimeZone();
+        loadVars();
     }
     
 </script>
