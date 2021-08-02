@@ -28,7 +28,8 @@
 // global instance
 //---------------------------------------------------------------------------------------
 LEDFunctionsClass LED = LEDFunctionsClass();
-
+uint8_t fireBuf[NUM_PIXELS];
+uint8_t plasmaBuf[NUM_PIXELS];
 //---------------------------------------------------------------------------------------
 // variables in PROGMEM (mapping table, images)
 //---------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ LEDFunctionsClass LED = LEDFunctionsClass();
 // param0 controls whether the hour has to be incremented for the given minutes
 // param1 is the matching minimum minute count (inclusive)
 // param2 is the matching maximum minute count (inclusive)
-#if 1 // code folding minutes template
+#if 0 // code folding minutes template
 const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
 {
 	{ 0,  0,  4,{ 106, 107, 108 } },                                  // UHR
@@ -56,6 +57,60 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
 };
 #endif
 
+#if 0 // ALTERNATIVE code folding minutes template
+const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
+{
+  { 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+  { 0,  5,  9,{ 7,8,9,10, 40,41,42,43 } },                     // FüNF NACH
+  { 0, 10, 14,{ 11, 12, 13, 14, 40,41,42,43 } },               // ZEHN NACH
+  { 0, 15, 19,{ 26,27,28,29,30,31,32, 40,41,42,43 } },         // VIERTEL NACH
+  { 0, 20, 24,{ 15,16,17,18,19,20,21, 40,41,42,43 } },         // ZWANZIG NACH
+  { 1, 25, 29,{ 7,8,9,10, 33,34,35, 44,45,46,47 } },           // FüNF VOR HALB
+  { 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+  { 1, 35, 39,{ 7,8,9,10, 40,41,42,43, 44,45,46,47 } },        // FüNF NACH HALB
+  { 1, 40, 44,{ 15,16,17,18,19,20,21, 33,34,35 } },            // ZWANZIG VOR
+  { 1, 45, 49,{ 26,27,28,29,30,31,32, 33,34,35 } },            // VIERTEL VOR
+  { 1, 50, 54,{ 11,12,13,14, 33,34,35 } },                     // ZEHN VOR
+  { 1, 55, 59,{ 7,8,9,10, 33,34,35 } }                         // FüNF VOR
+};
+#endif
+
+#if 1 // ALTERNATIVE 2 code folding minutes template
+const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[] =
+{
+	{
+		{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+		{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
+		{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
+		{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
+		{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
+		{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
+		{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+		{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
+		{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
+		{ 1, 45, 49,{ 26,27,28,29,30,31,32, 39,40,41 } },            // VIERTEL VOR
+		// { 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
+		{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
+		{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+	},
+	{
+		{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+		{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
+		{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
+		{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
+		{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
+		{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
+		{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+		{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
+		{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
+		//{ 1, 45, 49,{ 26,27,28,29,30,31,32, 39,40,41 } },            // VIERTEL VOR
+	  { 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
+		{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
+		{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+	}
+};
+#endif
+
 // This defines the LED output for different hours
 // param0 deals with special cases:
 //     = 0: matches hour in param1 and param2
@@ -63,7 +118,7 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
 //     = 2: matches hour in param1 and param2 whenever minute is >= 5
 // param1: hour to match
 // param2: alternative hour to match
-#if 1 // code folding hours template
+#if 0 // code folding hours template
 const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
 {
 	{ 0,  0, 12,{ 100, 101, 102, 103, 104 } }, // ZWÖLF
@@ -79,6 +134,43 @@ const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
 	{ 0,  9, 21,{ 88, 89, 90, 91 } },         // NEUN
 	{ 0, 10, 22,{ 92, 93, 94, 95 } },         // ZEHN
 	{ 0, 11, 23,{ 96, 97, 98 } },             // ELF
+};
+#endif
+
+#if 0 //  ALTERNATIVE template code folding hours template
+const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
+{
+  { 0,  0, 12,{ 94,95,96,97,98 } },      // ZWÖLF
+  { 1,  1, 13,{ 55,56,57 } },            // EIN
+  { 2,  1, 13,{ 55,56,57,58 } },         // EINS
+  { 0,  2, 14,{ 62,63,64,65 } },         // ZWEI
+  { 0,  3, 15,{ 66,67,68,69 } },         // DREI
+  { 0,  4, 16,{ 73,74,75,76 } },         // VIER
+  { 0,  5, 17,{ 51,52,53,54 } },         // FÜNF
+  { 0,  6, 18,{ 77,78,79,80 } },         // SECHS
+  { 0,  7, 19,{ 88,89,90,91,92,93 } },   // SIEBEN
+  { 0,  8, 20,{ 84, 85, 86, 87 } },      // ACHT
+  { 0,  9, 21,{ 102,103,104,105 } },     // NEUN
+  { 0, 10, 22,{ 99,100,101,102 } },      // ZEHN
+  { 0, 11, 23,{ 49,50,51 } },            // ELF
+};
+#endif
+#if 1 //  ALTERNATIVE 2 template code folding hours template
+const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
+{
+  { 0,  0, 12,{ 49,50,51,52,53 } },      // ZWÖLF
+  { 1,  1, 13,{ 57,58,59 } },            // EIN
+  { 2,  1, 13,{ 57,58,59,60 } },         // EINS
+  { 0,  2, 14,{ 55,56,57,58 } },         // ZWEI
+  { 0,  3, 15,{ 67,68,69,70 } },         // DREI
+  { 0,  4, 16,{ 84,85,86,87 } },         // VIER
+  { 0,  5, 17,{ 73,74,75,76 } },         // FÜNF
+  { 0,  6, 18,{ 100,101,102,103,104 } }, // SECHS
+  { 0,  7, 19,{ 60,61,62,63,64,65 } },   // SIEBEN
+  { 0,  8, 20,{ 89,90,91,92 } },         // ACHT
+  { 0,  9, 21,{ 80,81,82,83 } },         // NEUN
+  { 0, 10, 22,{ 93,94,95,96 } },         // ZEHN
+  { 0, 11, 23,{ 77,78,79 } },            // ELF
 };
 #endif
 
@@ -303,9 +395,14 @@ LEDFunctionsClass::LEDFunctionsClass()
 //---------------------------------------------------------------------------------------
 void LEDFunctionsClass::begin(int pin)
 {
-	this->pixels = new Adafruit_NeoPixel(NUM_PIXELS, pin, NEO_GRB + NEO_KHZ800);
-	this->pixels->begin();
+	//this->pixels = new Adafruit_NeoPixel(NUM_PIXELS, pin, NEO_GRB + NEO_KHZ800);
+  this->strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod>(NUM_PIXELS);
+	this->strip->Begin();
 }
+const DisplayMode LEDFunctionsClass::randomModes[] = {
+	DisplayMode::plain, DisplayMode::fade, DisplayMode::flyingLettersVerticalUp, DisplayMode::flyingLettersVerticalDown, DisplayMode::explode,
+	DisplayMode::matrix, DisplayMode::heart, DisplayMode::fire, DisplayMode::plasma, DisplayMode::stars
+};
 
 //---------------------------------------------------------------------------------------
 // process
@@ -331,6 +428,30 @@ void LEDFunctionsClass::process()
 		{ Config.fg.r, Config.fg.g, Config.fg.b },
 		{ Config.s.r,  Config.s.g,  Config.s.b }
 	};
+
+	// deal with random handling
+	if( this->randomTicker > 0 ) {
+		this->randomTicker--;
+	}
+	if( this->randomMode && this->randomTicker == 0) {
+		this->randomTicker = 100 * 60;
+		int idx = random(10);
+		this->setMode(randomModes[idx]);
+	}
+
+	if( this->rainbowTicker > 0 ) {
+		this->rainbowTicker--;
+	}
+	if( Config.fgRainbow && this->rainbowTicker == 0) {
+		this->rainbowTicker = 800;
+		if( this->rainbowIndex++ > 64 ) this->rainbowIndex = 0;
+		HsbColor hsb((float) this->rainbowIndex / 64.0, 1.0, 1.0 );
+		RgbColor col(hsb);
+		palette[1].r = col.R;
+		palette[1].g = col.G;
+		palette[1].b = col.B;
+	}
+
 	uint8_t buf[NUM_PIXELS];
 
 	switch (this->mode)
@@ -362,6 +483,12 @@ void LEDFunctionsClass::process()
 	case DisplayMode::blue:
 		this->renderBlue();
 		break;
+	case DisplayMode::fire:
+		this->renderFire();
+		break;
+	case DisplayMode::plasma:
+		this->renderPlasma();
+		break;
 	case DisplayMode::flyingLettersVerticalUp:
 	case DisplayMode::flyingLettersVerticalDown:
 		this->renderFlyingLetters();
@@ -384,7 +511,7 @@ void LEDFunctionsClass::process()
 		this->fade();
 		break;
 
-	case DisplayMode::random: // TODO: Implement random display mode
+	case DisplayMode::random:
 	case DisplayMode::plain:
 	default:
 		this->renderTime(buf, this->h, this->m, this->s, this->ms);
@@ -440,7 +567,14 @@ void LEDFunctionsClass::setMode(DisplayMode newMode)
 {
 	uint8_t buf[NUM_PIXELS];
 	DisplayMode previousMode = this->mode;
-	this->mode = newMode;
+	if( newMode == DisplayMode::random) {
+		int i = random(10);
+		this->randomMode = true;
+		this->randomTicker = 100 * 60;
+		newMode = randomModes[i];
+	} else {
+		this->mode = newMode;
+	}
 
 	// if we changed to an animated letters mode, then start animation
 	// even if the current time did not yet change
@@ -594,13 +728,13 @@ void LEDFunctionsClass::show()
 	// copy current color values to LED object and display it
 	for (int i = 0; i < NUM_PIXELS; i++)
 	{
-		this->pixels->setPixelColor(i,
-			pixels->Color(((int)data[ofs + 0] * this->brightness) >> 8,
+		this->strip->SetPixelColor(i,
+			RgbColor(((int)data[ofs + 0] * this->brightness) >> 8,
 			((int)data[ofs + 1] * this->brightness) >> 8,
 				((int)data[ofs + 2] * this->brightness) >> 8));
 		ofs += 3;
 	}
-	this->pixels->show();
+	this->strip->Show();
 }
 
 //---------------------------------------------------------------------------------------
@@ -662,20 +796,24 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 {
 	this->fillBackground(s, ms, target);
 
-	// set static LEDs
-	target[0] = 1; // E
-	target[1] = 1; // S
+	if( Config.showItIs ) {
+		// set static LEDs
+		target[0] = 1; // E
+		target[1] = 1; // S
 
-	target[3] = 1; // I
-	target[4] = 1; // S
-	target[5] = 1; // T
+		target[3] = 1; // I
+		target[4] = 1; // S
+		target[5] = 1; // T
+	}
 
 				   // minutes 1...4 for the corners
 	for (int i = 0; i <= ((m % 5) - 1); i++) target[10 * 11 + i] = 1;
 
 	// iterate over minutes_template
+	int mt = Config.minuteType;
+	if( mt>1 || mt <0 ) mt = 0;
 	int adjust_hour = 0;
-	for (leds_template_t t : LEDFunctionsClass::minutesTemplate)
+	for (leds_template_t t : LEDFunctionsClass::minutesTemplate[mt])
 	{
 		// test if this template matches the current minute
 		if (m >= t.param1 && m <= t.param2)
@@ -766,6 +904,138 @@ void LEDFunctionsClass::renderMatrix()
 
 	// iterate over all matrix objects, move and render them
 	for (MatrixObject &m : this->matrix) m.render(this->currentValues);
+}
+const palette_entry LEDFunctionsClass::firePalette[256] = {
+	{0, 0, 0}, {4, 0, 0}, {8, 0, 0}, {12, 0, 0}, {16, 0, 0}, {20, 0, 0}, {24, 0, 0}, {28, 0, 0},
+	{32, 0, 0}, {36, 0, 0}, {40, 0, 0}, {44, 0, 0}, {48, 0, 0}, {52, 0, 0}, {56, 0, 0}, {60, 0, 0},
+	{64, 0, 0}, {68, 0, 0}, {72, 0, 0}, {76, 0, 0}, {80, 0, 0}, {85, 0, 0}, {89, 0, 0}, {93, 0, 0},
+	{97, 0, 0}, {101, 0, 0}, {105, 0, 0}, {109, 0, 0}, {113, 0, 0}, {117, 0, 0}, {121, 0, 0}, {125, 0, 0},
+	{129, 0, 0}, {133, 0, 0}, {137, 0, 0}, {141, 0, 0}, {145, 0, 0}, {149, 0, 0}, {153, 0, 0}, {157, 0, 0},
+	{161, 0, 0}, {165, 0, 0}, {170, 0, 0}, {174, 0, 0}, {178, 0, 0}, {182, 0, 0}, {186, 0, 0}, {190, 0, 0},
+	{194, 0, 0}, {198, 0, 0}, {202, 0, 0}, {206, 0, 0}, {210, 0, 0}, {214, 0, 0}, {218, 0, 0}, {222, 0, 0},
+	{226, 0, 0}, {230, 0, 0}, {234, 0, 0}, {238, 0, 0}, {242, 0, 0}, {246, 0, 0}, {250, 0, 0}, {255, 0, 0},
+	{255, 0, 0}, {255, 8, 0}, {255, 16, 0}, {255, 24, 0}, {255, 32, 0}, {255, 41, 0}, {255, 49, 0}, {255, 57, 0},
+	{255, 65, 0}, {255, 74, 0}, {255, 82, 0}, {255, 90, 0}, {255, 98, 0}, {255, 106, 0}, {255, 115, 0}, {255, 123, 0},
+	{255, 131, 0}, {255, 139, 0}, {255, 148, 0}, {255, 156, 0}, {255, 164, 0}, {255, 172, 0}, {255, 180, 0}, {255, 189, 0},
+	{255, 197, 0}, {255, 205, 0}, {255, 213, 0}, {255, 222, 0}, {255, 230, 0}, {255, 238, 0}, {255, 246, 0}, {255, 255, 0},
+	{255, 255, 0}, {255, 255, 1}, {255, 255, 3}, {255, 255, 4}, {255, 255, 6}, {255, 255, 8}, {255, 255, 9}, {255, 255, 11},
+	{255, 255, 12}, {255, 255, 14}, {255, 255, 16}, {255, 255, 17}, {255, 255, 19}, {255, 255, 20}, {255, 255, 22}, {255, 255, 24},
+	{255, 255, 25}, {255, 255, 27}, {255, 255, 28}, {255, 255, 30}, {255, 255, 32}, {255, 255, 33}, {255, 255, 35}, {255, 255, 36},
+	{255, 255, 38}, {255, 255, 40}, {255, 255, 41}, {255, 255, 43}, {255, 255, 44}, {255, 255, 46}, {255, 255, 48}, {255, 255, 49},
+	{255, 255, 51}, {255, 255, 52}, {255, 255, 54}, {255, 255, 56}, {255, 255, 57}, {255, 255, 59}, {255, 255, 60}, {255, 255, 62},
+	{255, 255, 64}, {255, 255, 65}, {255, 255, 67}, {255, 255, 68}, {255, 255, 70}, {255, 255, 72}, {255, 255, 73}, {255, 255, 75},
+	{255, 255, 76}, {255, 255, 78}, {255, 255, 80}, {255, 255, 81}, {255, 255, 83}, {255, 255, 85}, {255, 255, 86}, {255, 255, 88},
+	{255, 255, 89}, {255, 255, 91}, {255, 255, 93}, {255, 255, 94}, {255, 255, 96}, {255, 255, 97}, {255, 255, 99}, {255, 255, 101},
+	{255, 255, 102}, {255, 255, 104}, {255, 255, 105}, {255, 255, 107}, {255, 255, 109}, {255, 255, 110}, {255, 255, 112}, {255, 255, 113},
+	{255, 255, 115}, {255, 255, 117}, {255, 255, 118}, {255, 255, 120}, {255, 255, 121}, {255, 255, 123}, {255, 255, 125}, {255, 255, 126},
+	{255, 255, 128}, {255, 255, 129}, {255, 255, 131}, {255, 255, 133}, {255, 255, 134}, {255, 255, 136}, {255, 255, 137}, {255, 255, 139},
+	{255, 255, 141}, {255, 255, 142}, {255, 255, 144}, {255, 255, 145}, {255, 255, 147}, {255, 255, 149}, {255, 255, 150}, {255, 255, 152},
+	{255, 255, 153}, {255, 255, 155}, {255, 255, 157}, {255, 255, 158}, {255, 255, 160}, {255, 255, 161}, {255, 255, 163}, {255, 255, 165},
+	{255, 255, 166}, {255, 255, 168}, {255, 255, 170}, {255, 255, 171}, {255, 255, 173}, {255, 255, 174}, {255, 255, 176}, {255, 255, 178},
+	{255, 255, 179}, {255, 255, 181}, {255, 255, 182}, {255, 255, 184}, {255, 255, 186}, {255, 255, 187}, {255, 255, 189}, {255, 255, 190},
+	{255, 255, 192}, {255, 255, 194}, {255, 255, 195}, {255, 255, 197}, {255, 255, 198}, {255, 255, 200}, {255, 255, 202}, {255, 255, 203},
+	{255, 255, 205}, {255, 255, 206}, {255, 255, 208}, {255, 255, 210}, {255, 255, 211}, {255, 255, 213}, {255, 255, 214}, {255, 255, 216},
+	{255, 255, 218}, {255, 255, 219}, {255, 255, 221}, {255, 255, 222}, {255, 255, 224}, {255, 255, 226}, {255, 255, 227}, {255, 255, 229},
+	{255, 255, 230}, {255, 255, 232}, {255, 255, 234}, {255, 255, 235}, {255, 255, 237}, {255, 255, 238}, {255, 255, 240}, {255, 255, 242},
+	{255, 255, 243}, {255, 255, 245}, {255, 255, 246}, {255, 255, 248}, {255, 255, 250}, {255, 255, 251}, {255, 255, 253}, {255, 255, 255}
+};
+const palette_entry LEDFunctionsClass::plasmaPalette[256] = {
+	{255, 0, 0}, {255, 6, 0}, {255, 12, 0}, {255, 18, 0}, {255, 24, 0}, {255, 30, 0}, {255, 36, 0}, {255, 42, 0},
+	{255, 48, 0}, {255, 54, 0}, {255, 60, 0}, {255, 66, 0}, {255, 72, 0}, {255, 78, 0}, {255, 84, 0}, {255, 90, 0},
+	{255, 96, 0}, {255, 102, 0}, {255, 108, 0}, {255, 114, 0}, {255, 120, 0}, {255, 126, 0}, {255, 131, 0}, {255, 137, 0},
+	{255, 143, 0}, {255, 149, 0}, {255, 155, 0}, {255, 161, 0}, {255, 167, 0}, {255, 173, 0}, {255, 179, 0}, {255, 185, 0},
+	{255, 191, 0}, {255, 197, 0}, {255, 203, 0}, {255, 209, 0}, {255, 215, 0}, {255, 221, 0}, {255, 227, 0}, {255, 233, 0},
+	{255, 239, 0}, {255, 245, 0}, {255, 251, 0}, {253, 255, 0}, {247, 255, 0}, {241, 255, 0}, {235, 255, 0}, {229, 255, 0},
+	{223, 255, 0}, {217, 255, 0}, {211, 255, 0}, {205, 255, 0}, {199, 255, 0}, {193, 255, 0}, {187, 255, 0}, {181, 255, 0},
+	{175, 255, 0}, {169, 255, 0}, {163, 255, 0}, {157, 255, 0}, {151, 255, 0}, {145, 255, 0}, {139, 255, 0}, {133, 255, 0},
+	{128, 255, 0}, {122, 255, 0}, {116, 255, 0}, {110, 255, 0}, {104, 255, 0}, {98, 255, 0}, {92, 255, 0}, {86, 255, 0},
+	{80, 255, 0}, {74, 255, 0}, {68, 255, 0}, {62, 255, 0}, {56, 255, 0}, {50, 255, 0}, {44, 255, 0}, {38, 255, 0},
+	{32, 255, 0}, {26, 255, 0}, {20, 255, 0}, {14, 255, 0}, {8, 255, 0}, {2, 255, 0}, {0, 255, 4}, {0, 255, 10},
+	{0, 255, 16}, {0, 255, 22}, {0, 255, 28}, {0, 255, 34}, {0, 255, 40}, {0, 255, 46}, {0, 255, 52}, {0, 255, 58},
+	{0, 255, 64}, {0, 255, 70}, {0, 255, 76}, {0, 255, 82}, {0, 255, 88}, {0, 255, 94}, {0, 255, 100}, {0, 255, 106},
+	{0, 255, 112}, {0, 255, 118}, {0, 255, 124}, {0, 255, 129}, {0, 255, 135}, {0, 255, 141}, {0, 255, 147}, {0, 255, 153},
+	{0, 255, 159}, {0, 255, 165}, {0, 255, 171}, {0, 255, 177}, {0, 255, 183}, {0, 255, 189}, {0, 255, 195}, {0, 255, 201},
+	{0, 255, 207}, {0, 255, 213}, {0, 255, 219}, {0, 255, 225}, {0, 255, 231}, {0, 255, 237}, {0, 255, 243}, {0, 255, 249},
+	{0, 255, 255}, {0, 249, 255}, {0, 243, 255}, {0, 237, 255}, {0, 231, 255}, {0, 225, 255}, {0, 219, 255}, {0, 213, 255},
+	{0, 207, 255}, {0, 201, 255}, {0, 195, 255}, {0, 189, 255}, {0, 183, 255}, {0, 177, 255}, {0, 171, 255}, {0, 165, 255},
+	{0, 159, 255}, {0, 153, 255}, {0, 147, 255}, {0, 141, 255}, {0, 135, 255}, {0, 129, 255}, {0, 124, 255}, {0, 118, 255},
+	{0, 112, 255}, {0, 106, 255}, {0, 100, 255}, {0, 94, 255}, {0, 88, 255}, {0, 82, 255}, {0, 76, 255}, {0, 70, 255},
+	{0, 64, 255}, {0, 58, 255}, {0, 52, 255}, {0, 46, 255}, {0, 40, 255}, {0, 34, 255}, {0, 28, 255}, {0, 22, 255},
+	{0, 16, 255}, {0, 10, 255}, {0, 4, 255}, {2, 0, 255}, {8, 0, 255}, {14, 0, 255}, {20, 0, 255}, {26, 0, 255},
+	{32, 0, 255}, {38, 0, 255}, {44, 0, 255}, {50, 0, 255}, {56, 0, 255}, {62, 0, 255}, {68, 0, 255}, {74, 0, 255},
+	{80, 0, 255}, {86, 0, 255}, {92, 0, 255}, {98, 0, 255}, {104, 0, 255}, {110, 0, 255}, {116, 0, 255}, {122, 0, 255},
+	{128, 0, 255}, {133, 0, 255}, {139, 0, 255}, {145, 0, 255}, {151, 0, 255}, {157, 0, 255}, {163, 0, 255}, {169, 0, 255},
+	{175, 0, 255}, {181, 0, 255}, {187, 0, 255}, {193, 0, 255}, {199, 0, 255}, {205, 0, 255}, {211, 0, 255}, {217, 0, 255},
+	{223, 0, 255}, {229, 0, 255}, {235, 0, 255}, {241, 0, 255}, {247, 0, 255}, {253, 0, 255}, {255, 0, 251}, {255, 0, 245},
+	{255, 0, 239}, {255, 0, 233}, {255, 0, 227}, {255, 0, 221}, {255, 0, 215}, {255, 0, 209}, {255, 0, 203}, {255, 0, 197},
+	{255, 0, 191}, {255, 0, 185}, {255, 0, 179}, {255, 0, 173}, {255, 0, 167}, {255, 0, 161}, {255, 0, 155}, {255, 0, 149},
+	{255, 0, 143}, {255, 0, 137}, {255, 0, 131}, {255, 0, 126}, {255, 0, 120}, {255, 0, 114}, {255, 0, 108}, {255, 0, 102},
+	{255, 0, 96}, {255, 0, 90}, {255, 0, 84}, {255, 0, 78}, {255, 0, 72}, {255, 0, 66}, {255, 0, 60}, {255, 0, 54},
+	{255, 0, 48}, {255, 0, 42}, {255, 0, 36}, {255, 0, 30}, {255, 0, 24}, {255, 0, 18}, {255, 0, 12}, {255, 0, 6}
+};
+
+
+double _time = 0;
+void LEDFunctionsClass::renderPlasma()
+{
+    int color;
+    double cx, cy, xx, yy;
+
+    _time += 0.05;
+
+    for (int y=0; y<LEDFunctionsClass::height; y++)
+    {
+        yy = (double)y / (double)LEDFunctionsClass::height / 3.0;
+        for (int x=0; x<LEDFunctionsClass::width; x++)
+        {
+            xx = (double)x / (double)LEDFunctionsClass::width / 3.0;
+            cx = xx + 0.5 * sin(_time / 5.0);
+            cy = (double)y/(double)LEDFunctionsClass::height / 3.0 + 0.5 * sin(_time / 3.0);
+            color = (
+            	sin(
+                    sqrt(100 * (cx*cx + cy*cy) + 1 + _time) +
+                    6.0 * (xx * sin(_time/2) + yy * cos(_time/3) + _time / 4.0)
+                ) + 1.0
+			) * 128.0;
+            plasmaBuf[x + y * LEDFunctionsClass::width] = color;
+        }
+    }
+    this->set(plasmaBuf, (palette_entry*)plasmaPalette, true);
+}
+
+void LEDFunctionsClass::renderFire()
+{
+    int f;
+
+    // iterate over bottom row, create fire seed
+    for (int i = 0; i < LEDFunctionsClass::width; i++)
+    {
+        // only set hot spot with probability of 1/4
+        f = (random(4) == 0) ? random(256) : 0;
+
+        // update one pixel in bottom row
+        fireBuf[i + (LEDFunctionsClass::height - 1) * LEDFunctionsClass::width] = f;
+    }
+
+    int y1, y2, l, r;
+    for (int y = 0; y < LEDFunctionsClass::height - 1; y++)
+    {
+        y1 = y + 1; if (y1 >= LEDFunctionsClass::height) y1 = LEDFunctionsClass::height - 1;
+        y2 = y + 2; if (y2 >= LEDFunctionsClass::height) y2 = LEDFunctionsClass::height - 1;
+        for (int x = 0; x < LEDFunctionsClass::width; x++)
+        {
+            l = x - 1; if (l < 0) l = 0;
+            r = x + 1; if (r >= LEDFunctionsClass::width) r = LEDFunctionsClass::width - 1;
+            fireBuf[x + y * LEDFunctionsClass::width] =
+                ((fireBuf[y1 * LEDFunctionsClass::width + l]
+                + fireBuf[y1 * LEDFunctionsClass::width + x]
+                + fireBuf[y1 * LEDFunctionsClass::width + r]
+                + fireBuf[y2 * LEDFunctionsClass::width + x])
+                * 32) / 129;
+        }
+    }
+    this->set(fireBuf, (palette_entry*)firePalette, true);
+	delay(100);
 }
 
 //---------------------------------------------------------------------------------------

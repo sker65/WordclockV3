@@ -1,3 +1,5 @@
+
+
 // ESP8266 Wordclock
 // Copyright (C) 2016 Thoralt Franz, https://github.com/thoralt
 //
@@ -18,7 +20,11 @@
 #ifndef _LEDFUNCTIONS_H_
 #define _LEDFUNCTIONS_H_
 
-#include <Adafruit_NeoPixel.h>
+//#include <Adafruit_NeoPixel.h>
+#include <NeoPixelSegmentBus.h>
+#include <NeoPixelBrightnessBus.h>
+#include <NeoPixelBus.h>
+#include <NeoPixelAnimator.h>
 #include <stdint.h>
 #include <vector>
 
@@ -53,6 +59,7 @@ public:
 	void setBrightness(int brightness);
 	void setMode(DisplayMode newMode);
 	void show();
+	void resetRandom() { this->randomMode = false; }
 
 	static int getOffset(int x, int y);
 	static const int width = 11;
@@ -61,9 +68,16 @@ public:
 
 private:
 	static const std::vector<leds_template_t> hoursTemplate;
-	static const std::vector<leds_template_t> minutesTemplate;
+	static const std::vector<leds_template_t> minutesTemplate[2];
+	static const palette_entry firePalette[];
+	static const palette_entry plasmaPalette[];
+	static const DisplayMode randomModes[];
 
 	DisplayMode mode = DisplayMode::plain;
+	bool randomMode = false;
+	int randomTicker = 0;
+	int rainbowTicker = 0;
+	int rainbowIndex = 0;
 
 	std::vector<Particle*> particles;
 	std::vector<xy_t> arrivingLetters;
@@ -71,7 +85,8 @@ private:
 	std::vector<MatrixObject> matrix;
 	std::vector<StarObject> stars;
 	uint8_t targetValues[NUM_PIXELS * 3];
-	Adafruit_NeoPixel *pixels = NULL;
+	//Adafruit_NeoPixel *pixels = NULL;
+  NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> *strip = NULL; //(NUM_PIXELS);
 	int heartBrightness = 0;
 	int heartState = 0;
 	int brightness = 96;
@@ -88,6 +103,8 @@ private:
 	void renderBlue();
 	void renderMatrix();
 	void renderHeart();
+	void renderFire();
+	void renderPlasma();
 	void renderStars();
 	void renderUpdate();
 	void renderUpdateComplete();
@@ -100,6 +117,7 @@ private:
 	void renderExplosion();
 	void prepareExplosion(uint8_t *source);
 	void fade();
+	
 	void set(const uint8_t *buf, palette_entry palette[]);
 	void set(const uint8_t *buf, palette_entry palette[], bool immediately);
 	void setBuffer(uint8_t *target, const uint8_t *source, palette_entry palette[]);

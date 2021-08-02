@@ -5,7 +5,7 @@
 //  and triggers actions, manipulates configuration attributes or serves files
 //  from the internal flash file system.
 //
-// This program is free software: you can redistribute it and/or modify
+// This program is free software: you can redistribute it and/or modify 
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -89,6 +89,8 @@ void WebServerClass::begin()
 	this->server->on("/getadc", std::bind(&WebServerClass::handleGetADC, this));
 	this->server->on("/setmode", std::bind(&WebServerClass::handleSetMode, this));
 	this->server->on("/getmode", std::bind(&WebServerClass::handleGetMode, this));
+	this->server->on("/setvar", std::bind(&WebServerClass::handleSetVar, this));
+	this->server->on("/getvar", std::bind(&WebServerClass::handleGetVar, this));
 	this->server->on("/settimezone", std::bind(&WebServerClass::handleSetTimeZone, this));
 	this->server->on("/gettimezone", std::bind(&WebServerClass::handleGetTimeZone, this));
 	this->server->on("/debug", std::bind(&WebServerClass::handleDebug, this));
@@ -296,22 +298,29 @@ void WebServerClass::handleGetADC()
 //---------------------------------------------------------------------------------------
 void WebServerClass::handleSetTimeZone()
 {
+	int newTimeZone = -999;
 	if(this->server->hasArg("value"))
 	{
-		int newTimeZone = this->server->arg("value").toInt();
-		if(newTimeZone < - 12) newTimeZone = -12;
-		if(newTimeZone > 14) newTimeZone = 14;
-		Config.timeZone = newTimeZone;
-		Config.save();
-		NTP.setTimeZone(Config.timeZone);
+		newTimeZone = this->server->arg("value").toInt();
+		if(newTimeZone < - 12 || newTimeZone > 14)
+		{
+			this->server->send(400, "text/plain", "ERR");
+		}
+		else
+		{
+			Config.timeZone = newTimeZone;
+			Config.save();
+			NTP.setTimeZone(Config.timeZone);
+			this->server->send(200, "text/plain", "OK");
+		}
 	}
-	this->server->send(200, "text/plain", "OK");
+
 }
 
 //---------------------------------------------------------------------------------------
 // handleGetTimeZone
 //
-//
+// Handles the /gettimezone request, delivers offset to UTC in hours.
 //
 // -> --
 // <- --
@@ -319,6 +328,46 @@ void WebServerClass::handleSetTimeZone()
 void WebServerClass::handleGetTimeZone()
 {
 	this->server->send(200, "text/plain", String(Config.timeZone));
+}
+
+void WebServerClass::handleGetVar()
+{
+	if( this->server->hasArg("name") ) {
+		if( this->server->arg("name") == "itIs") {
+			this->server->send(200, "text/plain", String(Config.showItIs));
+		}
+		if(this->server->arg("name") == "rainbow" ) {
+			this->server->send(200, "text/plain", String(Config.fgRainbow));
+		}
+		if(this->server->arg("name") == "minuteType" ) {
+			this->server->send(200, "text/plain", String(Config.minuteType));
+		}
+	}
+}
+
+void WebServerClass::handleSetVar()
+{
+	bool mustSave = false;
+	if(this->server->hasArg("value") && this->server->hasArg("name")) {
+		if(this->server->arg("name") == "itIs" ) {
+			if(this->server->arg("value") == "0") Config.showItIs = false; else Config.showItIs = true;
+			mustSave = true;
+		} 
+		if(this->server->arg("name") == "rainbow" ) {
+			if(this->server->arg("value") == "0") Config.fgRainbow = false; else Config.fgRainbow = true;
+			mustSave = true;
+		}
+		if(this->server->arg("name") == "minuteType" ) {
+			if(this->server->arg("value") == "0") Config.minuteType = 0; else Config.minuteType = 1;
+			mustSave = true;
+		}
+	}
+	if( mustSave ) {
+		Config.save();
+		this->server->send(200, "text/plain", "OK");
+	} else {
+		this->server->send(400, "text/plain", "ERR");
+	}
 }
 
 //---------------------------------------------------------------------------------------
@@ -336,12 +385,18 @@ void WebServerClass::handleSetMode()
 
 	if(this->server->hasArg("value"))
 	{
-		// handle each allowed value for safety
+		// handle each allowed value for safety random, matrix, heart, fire, plasma, stars,
 		if(this->server->arg("value") == "0") mode = DisplayMode::plain;
 		if(this->server->arg("value") == "1") mode = DisplayMode::fade;
 		if(this->server->arg("value") == "2") mode = DisplayMode::flyingLettersVerticalUp;
 		if(this->server->arg("value") == "3") mode = DisplayMode::flyingLettersVerticalDown;
 		if(this->server->arg("value") == "4") mode = DisplayMode::explode;
+		if(this->server->arg("value") == "5") mode = DisplayMode::random;
+		if(this->server->arg("value") == "6") mode = DisplayMode::matrix;
+		if(this->server->arg("value") == "7") mode = DisplayMode::heart;
+		if(this->server->arg("value") == "8") mode = DisplayMode::fire;
+		if(this->server->arg("value") == "9") mode = DisplayMode::plasma;
+		if(this->server->arg("value") == "10") mode = DisplayMode::stars;
 	}
 
 	if(mode == DisplayMode::invalid)
@@ -350,6 +405,9 @@ void WebServerClass::handleSetMode()
 	}
 	else
 	{
+		if( mode != DisplayMode::random ) {
+			LED.resetRandom();
+		}
 		LED.setMode(mode);
 		Config.defaultMode = mode;
 		Config.save();
@@ -367,20 +425,7 @@ void WebServerClass::handleSetMode()
 //---------------------------------------------------------------------------------------
 void WebServerClass::handleGetMode()
 {
-	int mode = 0;
-	switch(Config.defaultMode)
-	{
-	case DisplayMode::plain:
-		mode = 0; break;
-	case DisplayMode::fade:
-		mode = 1; break;
-	case DisplayMode::flyingLettersVerticalUp:
-		mode = 2; break;
-	case DisplayMode::flyingLettersVerticalDown:
-		mode = 3; break;
-	default:
-		mode = 0; break;
-	}
+	int mode = (int)Config.defaultMode;
 	this->server->send(200, "text/plain", String(mode));
 }
 

@@ -46,6 +46,8 @@ private:
 	void handleGetTimeZone();
 	void handleSetMode();
 	void handleGetMode();
+	void handleSetVar();
+	void handleGetVar();
 	void handleSetHeartbeat();
 	void handleGetHeartbeat();
 	void handleInfo();

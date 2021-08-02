@@ -70,6 +70,20 @@ void ConfigClass::begin()
 }
 
 //---------------------------------------------------------------------------------------
+// saveDelayed
+//
+// Copies the current class member values to EEPROM buffer and writes it to the EEPROM
+// after 10 seconds.
+//
+// -> --
+// <- --
+//---------------------------------------------------------------------------------------
+void ConfigClass::saveDelayed()
+{
+	this->delayedWriteTimer = 1000; // 10 seconds using 10 ms timer
+}
+
+//---------------------------------------------------------------------------------------
 // save
 //
 // Copies the current class member values to EEPROM buffer and writes it to the EEPROM.
@@ -79,11 +93,15 @@ void ConfigClass::begin()
 //---------------------------------------------------------------------------------------
 void ConfigClass::save()
 {
+	this->delayedWriteFlag = false;
 	this->config->bg = this->bg;
 	this->config->fg = this->fg;
 	this->config->s = this->s;
 	this->config->timeZone = this->timeZone;
 	this->config->heartbeat = this->heartbeat;
+	this->config->showItIs = this->showItIs;
+	this->config->minuteType = this->minuteType;
+	this->config->fgRainbow = this->fgRainbow;
 	this->config->mode = (uint32_t) this->defaultMode;
 	for (int i = 0; i < 4; i++)
 		this->config->ntpserver[i] = this->ntpserver[i];
@@ -92,6 +110,7 @@ void ConfigClass::save()
 		EEPROM.write(i, this->eeprom_data[i]);
 	EEPROM.commit();
 }
+
 
 //---------------------------------------------------------------------------------------
 // reset
@@ -131,6 +150,10 @@ void ConfigClass::reset()
 	this->ntpserver[1] = this->config->ntpserver[1];
 	this->ntpserver[2] = this->config->ntpserver[2];
 	this->ntpserver[3] = this->config->ntpserver[3];
+
+	this->showItIs = true;
+	this->minuteType = 0;
+	this->fgRainbow = false;
 }
 
 //---------------------------------------------------------------------------------------
@@ -160,6 +183,8 @@ void ConfigClass::load()
 	this->defaultMode = (DisplayMode) this->config->mode;
 	this->heartbeat = this->config->heartbeat;
 	this->timeZone = this->config->timeZone;
+	this->minuteType = this->config->minuteType;
+	this->fgRainbow = this->config->fgRainbow;
 	for (int i = 0; i < 4; i++)
 		this->ntpserver[i] = this->config->ntpserver[i];
 }

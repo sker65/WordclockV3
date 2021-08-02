@@ -100,6 +100,13 @@ void timerCallback()
 		timeVarLock = false;
 	}
 
+	// decrement delayed EEPROM config timer
+	if(Config.delayedWriteTimer)
+	{
+		Config.delayedWriteTimer--;
+		if(Config.delayedWriteTimer == 0) Config.delayedWriteFlag = true;
+	}
+
 	// blink onboard LED if heartbeat is enabled
 	if (ms == 0 && Config.heartbeat) digitalWrite(LED_BUILTIN, LOW);
 	else digitalWrite(LED_BUILTIN, HIGH);
@@ -197,7 +204,7 @@ void setup()
 
 	// LEDs
 	Serial.println("Starting LED module");
-	LED.begin(5);
+	LED.begin(D4);
 	LED.setMode(DisplayMode::yellowHourglass);
 
 	// WiFi
@@ -312,6 +319,14 @@ void loop()
 	// do web server stuff
 	WebServer.process();
 
+	// save configuration to EEPROM if necessary
+	if(Config.delayedWriteFlag)
+	{
+		DEBUG("Config timer expired, writing configuration.\r\n");
+		Config.delayedWriteFlag = false;
+		Config.save();
+	}
+	
 	// output current time if seconds value has changed
 	if (s != lastSecond)
 	{

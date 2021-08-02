@@ -40,6 +40,9 @@ typedef struct _config_struct
 	bool heartbeat;
 	uint32_t mode;
 	uint32_t timeZone;
+	bool showItIs;
+	uint32_t minuteType;
+	bool fgRainbow;
 } config_struct;
 
 #define EEPROM_SIZE 512
@@ -47,7 +50,7 @@ typedef struct _config_struct
 enum class DisplayMode
 {
 	plain, fade, flyingLettersVerticalUp, flyingLettersVerticalDown, explode,
-	random, matrix, heart, stars, red, green, blue,
+	random, matrix, heart, fire, plasma, stars, red, green, blue,
 	yellowHourglass, greenHourglass, update, updateComplete, updateError,
 	wifiManager, invalid
 };
@@ -60,6 +63,7 @@ public:
 	virtual ~ConfigClass();
 	void begin();
 	void save();
+	void saveDelayed();
 	void load();
 	void reset();
 
@@ -69,7 +73,12 @@ public:
 	palette_entry s;
 	IPAddress ntpserver = IPAddress(0, 0, 0, 0);
 	bool heartbeat = true;
+	bool showItIs = true;
+	bool fgRainbow = false;
+	uint32_t minuteType = 1;
 	bool debugMode = false;
+	int delayedWriteTimer = 0;
+	bool delayedWriteFlag = false;
 
 	DisplayMode defaultMode = DisplayMode::flyingLettersVerticalUp;
 
