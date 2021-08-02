@@ -20,6 +20,7 @@
 #include <Arduino.h>
 #include <FS.h>
 #include <ArduinoJson.h>
+#include <stdio.h>
 
 #include "ledfunctions.h"
 #include "brightness.h"
@@ -71,20 +72,17 @@ void WebServerClass::begin()
 
 	this->server = new ESP8266WebServer(80);
 
-	this->server->on("/setcolor", std::bind(&WebServerClass::handleSetColor, this));
 	this->server->on("/info", std::bind(&WebServerClass::handleInfo, this));
 	this->server->on("/saveconfig", std::bind(&WebServerClass::handleSaveConfig, this));
 	this->server->on("/loadconfig", std::bind(&WebServerClass::handleLoadConfig, this));
-	this->server->on("/getcolors", std::bind(&WebServerClass::handleGetColors, this));
+	this->server->on("/config", std::bind(&WebServerClass::handleGetConfig, this));
 	this->server->on("/h", std::bind(&WebServerClass::handleH, this));
 	this->server->on("/m", std::bind(&WebServerClass::handleM, this));
 	this->server->on("/r", std::bind(&WebServerClass::handleR, this));
 	this->server->on("/g", std::bind(&WebServerClass::handleG, this));
 	this->server->on("/b", std::bind(&WebServerClass::handleB, this));
-	this->server->on("/brightness", std::bind(&WebServerClass::handleSetBrightness, this));
 	this->server->on("/getadc", std::bind(&WebServerClass::handleGetADC, this));
 	this->server->on("/setvar", std::bind(&WebServerClass::handleSetVar, this));
-	this->server->on("/getvar", std::bind(&WebServerClass::handleGetVar, this));
 	this->server->on("/debug", std::bind(&WebServerClass::handleDebug, this));
 
 	this->server->onNotFound(std::bind(&WebServerClass::handleNotFound, this));
@@ -225,15 +223,6 @@ void WebServerClass::handleB()
 	this->server->send(200, "text/plain", "OK");
 }
 
-void WebServerClass::handleSetBrightness()
-{
-	if(this->server->hasArg("value"))
-	{
-		Brightness.brightnessOverride = this->server->arg("value").toInt();
-		this->server->send(200, "text/plain", "OK");
-	}
-}
-
 void WebServerClass::handleDebug()
 {
 	if(this->server->hasArg("led") &&
@@ -280,62 +269,83 @@ void WebServerClass::handleGetADC()
 	this->server->send(200, "text/plain", String(Brightness.avg));
 }
 
-void WebServerClass::handleGetVar()
-{
-	if( this->server->hasArg("name") ) {
-		if( this->server->arg("name") == "itIs") {
-			this->server->send(200, "text/plain", String(Config.showItIs));
-		}
-		if(this->server->arg("name") == "rainbow" ) {
-			this->server->send(200, "text/plain", String(Config.fgRainbow));
-		}
-		if(this->server->arg("name") == "minuteType" ) {
-			this->server->send(200, "text/plain", String(Config.minuteType));
-		}
-		if(this->server->arg("name") == "timezone" ) {
-			this->server->send(200, "text/plain", String(Config.timeZone));
-		}
-		if(this->server->arg("name") == "ntpserver" ) {
-			this->server->send(200, "text/plain", String(Config.ntpserver.toString()));
-		}
-		if(this->server->arg("name") == "heartbeat" ) {
-			this->server->send(200, "text/plain", String(Config.heartbeat));
-		}
-		if(this->server->arg("name") == "mode" ) {
-			this->server->send(200, "text/plain", String((int)Config.defaultMode));
-		}
-	}
-}
-
 void WebServerClass::handleSetVar()
 {
 	bool mustSave = false;
+	char* err = NULL;
 	if(this->server->hasArg("value") && this->server->hasArg("name")) {
+		Serial.println("WebServerClass::handleSetVar(): " + this->server->arg("name") + " = " + this->server->arg("value"));
 		if(this->server->arg("name") == "itIs" ) {
-			if(this->server->arg("value") == "0") Config.showItIs = false; else Config.showItIs = true;
+			if(this->server->arg("value") == "0" || this->server->arg("value") == "false") Config.showItIs = false; else Config.showItIs = true;
 			mustSave = true;
 		} 
+		if(this->server->arg("name") == "autoOnOff" ) {
+			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") Config.autoOnOff = false; else Config.fgRainbow = true;
+			mustSave = true;
+		}
+		if(this->server->arg("name") == "autoOn" ) {
+			uint8_t h,m;
+			int res = sscanf(this->server->arg("value").c_str(), "%02d:%02d", &h, &m);
+			if( res == 2 ) {
+				Config.autoOnHour = h;
+				Config.autoOnMin = m;
+				mustSave = true;
+			} else {
+				err = "text/plain", "ERR: bad time format, must be HH:MM";
+			}
+		}		
+		if(this->server->arg("name") == "autoOff" ) {
+			uint8_t h,m;
+			int res = sscanf(this->server->arg("value").c_str(), "%02d:%02d", &h, &m);
+			if( res == 2 ) {
+				Config.autoOnHour = h;
+				Config.autoOnMin = m;
+				mustSave = true;
+			} else {
+				err =  "ERR: bad time format, must be HH:MM";
+			}
+		}		
 		if(this->server->arg("name") == "rainbow" ) {
-			if(this->server->arg("value") == "0") Config.fgRainbow = false; else Config.fgRainbow = true;
+			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") Config.fgRainbow = false; else Config.fgRainbow = true;
 			mustSave = true;
 		}
 		if(this->server->arg("name") == "minuteType" ) {
 			if(this->server->arg("value") == "0") Config.minuteType = 0; else Config.minuteType = 1;
 			mustSave = true;
 		}
+		if(this->server->arg("name") == "brightness" ) {
+			int v = this->server->arg("value").toInt();
+			if(v < 0 || v > 257) {
+				err =  "ERR: brightness not in range 0..256";
+			} else {
+				Brightness.brightnessOverride = v;
+				mustSave = true;
+			}
+		}
+		if(this->server->arg("name") == "rainbowSpeed" ) {
+			int v = this->server->arg("value").toInt();
+			if(v < 0 || v > 2)
+			{
+				err =  "ERR: rainbowSpeed not in range 0..2";
+			}
+			else
+			{
+				Config.rainbowSpeed = v;
+				mustSave = true;
+			}
+		}
 		if(this->server->arg("name") == "timezone" ) {
 			int newTimeZone = this->server->arg("value").toInt();
 			if(newTimeZone < - 12 || newTimeZone > 14)
 			{
-				this->server->send(400, "text/plain", "ERR: timezone not in range -12 ... 14");
+				err = "ERR: timezone not in range -12 ... 14";
 			}
 			else
 			{
 				Config.timeZone = newTimeZone;
 				NTP.setTimeZone(Config.timeZone);
-				this->server->send(200, "text/plain", "OK");
+				mustSave = true;
 			}
-			mustSave = true;
 		}
 		if(this->server->arg("name") == "ntpserver" ) {
 			IPAddress ip;
@@ -346,12 +356,38 @@ void WebServerClass::handleSetVar()
 				NTP.setServer(ip);
 				mustSave = true;
 			}
+		} else {
+			err = "ERR: bad ip adress format, must be x.x.x.x";
 		}
 		if(this->server->arg("name") == "heartbeat" ) {
 			if(this->server->arg("value") == "0") Config.heartbeat = 0; else Config.heartbeat = 1;
 			mustSave = true;
 		}
-		if(this->server->arg("name") == "mode" ) {
+		if(this->server->arg("name") == "tmpl" ) {
+			int v = this->server->arg("value").toInt();
+			if(v < 0 || v > 2)
+			{
+				err =  "ERR: tmpl not in range 0..2";
+			}
+			else
+			{
+				Config.tmpl = v;
+				mustSave = true;
+			}
+		}
+		if( this->server->arg("name") == "fg" ){
+			this->extractColor("fg", Config.fg);
+			mustSave = true;
+		}	
+		if( this->server->arg("name") == "s" ){
+			this->extractColor("s", Config.s);
+			mustSave = true;
+		}
+		if( this->server->arg("name") == "bg" ){
+			this->extractColor("bg", Config.bg);
+			mustSave = true;
+		}
+		if(this->server->arg("name") == "displaymode" ) {
 			int newMode = this->server->arg("value").toInt();
 			if( newMode >= 0 && newMode <= 10 ) {
 				DisplayMode mode = (DisplayMode)newMode;
@@ -361,6 +397,8 @@ void WebServerClass::handleSetVar()
 				LED.setMode(mode);
 				Config.defaultMode = mode;
 				mustSave = true;
+			} else {
+				err =  "ERR: displaymode not in range 0..10";
 			}
 		}
 	}
@@ -368,7 +406,7 @@ void WebServerClass::handleSetVar()
 		Config.save();
 		this->server->send(200, "text/plain", "OK");
 	} else {
-		this->server->send(400, "text/plain", "ERR");
+			this->server->send(400, "text/plain", err ? err:"unknown error");
 	}
 }
 
@@ -402,6 +440,40 @@ void WebServerClass::handleNotFound()
 		}
 		this->server->send(404, "text/plain", message);
 	}
+}
+
+void WebServerClass::handleGetConfig() {
+	StaticJsonBuffer<1024> jsonBuffer;
+	char buf[1024];
+	JsonObject& json = jsonBuffer.createObject();
+	json["ntpserver"] = Config.ntpserver.toString();
+	json["heartbeat"] = Config.heartbeat;
+	json["itIs"] = Config.showItIs;
+	json["rainbow"] = Config.fgRainbow;
+	json["minuteType"] = Config.minuteType;
+	json["rainbowSpeed"] = Config.rainbowSpeed;
+	json["autoOnOff"] = Config.autoOnOff;
+	json["timezone"] = Config.timeZone;
+	json["brightness"] = Brightness.brightnessOverride;
+	char autoOn[9];
+	sprintf(autoOn,"%02d:%02d", Config.autoOnHour, Config.autoOnMin);
+	json["autoOn"] = autoOn;
+	char autoOff[9];
+	sprintf(autoOff,"%02d:%02d", Config.autoOffHour, Config.autoOffMin);
+	json["autoOff"] = autoOff;
+	json["tmpl"] = Config.tmpl;
+	json["mode"] = (int)Config.defaultMode;
+	char fg[9];
+	sprintf(fg,"#%02x%02x%02x", Config.fg.r, Config.fg.g, Config.fg.b);
+	json["fg"] = fg;
+	char bg[9];
+	sprintf(bg,"#%02x%02x%02x", Config.bg.r, Config.bg.g, Config.bg.b);
+	json["bg"] = bg;
+	char s[9];
+	sprintf(s,"#%02x%02x%02x", Config.s.r, Config.s.g, Config.s.b);
+	json["s"] = s;
+	json.printTo(buf, sizeof(buf));
+	this->server->send(200, "application/json", buf);
 }
 
 //---------------------------------------------------------------------------------------
@@ -492,24 +564,6 @@ void WebServerClass::extractColor(String argName, palette_entry& result)
 		color.substring(4, 6).toCharArray(c, sizeof(c));
 		result.b = strtol(c, NULL, 16);
 	}
-}
-
-//---------------------------------------------------------------------------------------
-// handleSetColor
-//
-// Handles the "/setcolor" request, expects arguments:  // fg = foreground, bg = background, s = ? evtl seconds
-//	/setcolor?fg=xxxxxx&bg=yyyyyy&s=zzzzzz
-//	with xxxxxx, yyyyyy and zzzzzz being hexadecimal HTML colors (without leading '#')
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleSetColor()
-{
-	this->extractColor("fg", Config.fg);
-	this->extractColor("bg", Config.bg);
-	this->extractColor("s", Config.s);
-	this->server->send(200, "text/plain", "OK");
 }
 
 //---------------------------------------------------------------------------------------

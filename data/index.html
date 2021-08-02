@@ -15,26 +15,29 @@
     <p>Farben</p>
     <div class="buttondiv">
     <button
-        id = "foregroundColorButton"
-        class="colorbutton jscolor {width:150,onFineChange:'newForeground=this.toString()',valueElement:null,value:'ffffff'}">
-        wird geladen...
+        id="fg"
+        class="colorbutton jscolor {width:150, onFineChange:'changeVar(this.targetElement.id,this.toString().substr(1))',valueElement:null,value:'ffffff'}">
+        Vordergrund
     </button>
     </div>
 
     <div class="buttondiv">
     <button
-        id = "backgroundColorButton"
-        class="colorbutton jscolor {width:150,onFineChange:'newBackground=this.toString()',valueElement:null,value:'000000'}">
-        wird geladen...
+        id="bg"
+        class="colorbutton jscolor {width:150,onFineChange:'changeVar(this.targetElement.id,this.toString().substr(1))',valueElement:null,value:'000000'}">
+        Hintergrund
     </button>
     </div>
 
     <div class="buttondiv">
     <button
-        id = "secondsColorButton"
-        class="colorbutton jscolor {width:150,onFineChange:'newSeconds=this.toString()',valueElement:null,value:'400020'}">
-        wird geladen...
+        id="s"
+        class="colorbutton jscolor {width:150,onFineChange:'changeVar(this.targetElement.id,this.toString().substr(1))',valueElement:null,value:'400020'}">
+        Sekunden
     </button>
+    </div>
+    <div>
+        <input type="range" min="0" max="256" id="brightness" onchange="changeVar(this.id,this.value)"/>
     </div>
 </div>
 
@@ -53,11 +56,12 @@
         <option>Plasma</option>
         <option>Sterne</option>
 	</select>
-	<select style="width: 85%;" name="minutemode" id="minutemode" onchange="changeVar(this.id, this.selectedIndex)">
+	<select style="width: 85%;" name="minuteType" id="minuteType" onchange="changeVar(this.id, this.selectedIndex)">
 		<option>Viertel vor</option>
 		<option>Dreiviertel</option>
 	</select>
-    <select style="width: 85%;" name="template" id="template" onchange="changeVar(this.id, this.selectedIndex)">
+    <select title="Das Layout bezieht sich auf die Anordung der Buchstaben auf der Frontplatte"
+     style="width: 85%;" name="tmpl" id="tmpl" onchange="changeVar(this.id, this.selectedIndex)">
 		<option>Layout 1</option>
 		<option>Layout 2</option>
 		<option>Layout 3</option>
@@ -126,14 +130,6 @@
 </div>
 
 <script>
-    var lastBackground = '';
-    var newBackground = '';
-    var lastForeground = '';
-    var newForeground = '';
-    var lastSeconds = '';
-    var newSeconds = '';
-
-    var timer = setTimeout(sendColorTimer, 250);
 
     let myhost = "http://" + location.hostname + (location.port ? ':'+location.port : '');
 
@@ -156,14 +152,6 @@
         }, 500, varname, value );
     }
 	
-    function updateButton(id, text, r, g, b)
-    {
-        button = document.getElementById(id);
-        button.jscolor.fromRGB(r, g, b);
-        button.innerHTML = text;
-        return button.jscolor.toString();
-    }
-    
     function httpget(path, readycb) {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -180,54 +168,6 @@
         xhttp.send();
     }
 
-    function loadColors() {
-        httpget( "/getcolors", (res) => {
-            let c = res.split(',');
-            newBackground = updateButton('backgroundColorButton', 'Hintergrund', c[0], c[1], c[2]);
-            newForeground = updateButton('foregroundColorButton', 'Vordergrund', c[3], c[4], c[5]);
-            newSeconds = updateButton('secondsColorButton', 'Sekunden', c[6], c[7], c[8]);
-        });
-    }
-
-    function sendColorTimer()
-    {
-        var update = false;
-
-        if(newBackground != '' && newBackground != lastBackground)
-        {
-            lastBackground = newBackground;
-            update = true;
-        }
-        if(newForeground != '' && newForeground != lastForeground)
-        {
-            lastForeground = newForeground;
-            update = true;
-        }
-        if(newSeconds != '' && newSeconds != lastSeconds)
-        {
-            lastSeconds = newSeconds;
-            update = true;
-        }
-
-        if(newSeconds == '' || newBackground == '' || newForeground == '')
-        {
-            update = false;
-        }
-
-        if(update == true)
-        {
-            var request = myhost + "/setcolor?" 
-                + "bg=" + newBackground 
-                + "&fg=" + newForeground 
-                + "&s=" + newSeconds;
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", request, true);
-            xhttp.send();
-        }
-
-        timer = setTimeout(sendColorTimer, 250);
-    }
-
     function isValidIP(ip)
     {
         var s = ip.split('.');
@@ -242,32 +182,28 @@
         return true;
     }
 
-	function loadTimeZone() {
-        httpget( "/gettimezone", (res) => {
-            document.getElementById('timezone').selectedIndex = parseInt(res) + 12;
-        });
-	}
+    const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'mode', 'heartbeat',
+         'ntpserver', 'tmpl', 'fg','bg','s', 'minuteType', 'brightness'];
 
-    function loadVars() {
-        const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'mode', 'heartbeat',
-         'ntpserver', 'template'];
-        for( const v of vars) {
-            httpget( "/getvar?name=" + v, (res) => {
-                const e = document.getElementById(v);
-                if( e ) {
-                    if(e.type === 'checkbox') e.checked = (res == "1" || res == "true");
-                    if(e.type === 'time' || e.type === 'text') e.value = res;
-                    if(e.type === 'select-one' ) e.selectedIndex = parseInt(res);
-                }              
-            });
-        }
-    }
-	
     function loadSettings()
     {
-        loadColors();
-		loadTimeZone();
-        loadVars();
+        httpget( "/config", (res) => {
+            let json = JSON.parse(res);
+            for( const v of vars) {
+                const e = document.getElementById(v);
+                if( e ) {
+                    console.log("setting element ", e);
+                    if(e.type === 'checkbox') e.checked = json[v];
+                    if(e.type === 'time' || e.type === 'text' || e.type === 'range') e.value = json[v];
+                    if(e.type === 'select-one' ) e.selectedIndex = json[v];
+                    if( e.classList.contains('jscolor') ) {
+                        console.log("setting color ", v, json[v]);
+                        e.jscolor.fromString(json[v]);
+                    }
+                }
+            }
+            document.getElementById('timezone').selectedIndex = parseInt(json['timezone']) + 12;
+        });
     }
     
 </script>

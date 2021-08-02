@@ -8,20 +8,26 @@ const config = {
   itIs: 1,
   rainbow: 1,
   rainbowSpeed:1,
-  template: 0,
+  tmpl: 1,
   colors: "255,128,128,40,140,40,56,56,156",
-  mode: "1",
-  timezone: "2",
-  heartbeat: 0,
+  fg: "#ff5555",
+  bg: "#55ff55",
+  s: "#5555ff",
+  mode: 1,
+  timezone: 2,
+  heartbeat: false,
   ntpserver: "129.3.2.2",
-  autoOnOff: 0,
+  autoOnOff: false,
   autoOn: "06:00",
-  autoOff: "23:45"
+  autoOff: "23:45",
+  brightness: 240
 };
 
 app.get('/:cmd', function (req, res) {
   let what = req.params.cmd.substr(3);
-  if( req.params.cmd.startsWith('get') ) {
+  if( req.params.cmd == 'config') {
+    res.status(200).json(config);
+  } else if( req.params.cmd.startsWith('get') ) {
     if( what === 'var') {
       what = req.query.name;
       console.log("request for name: "+what+ " -> "+config[what]);

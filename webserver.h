@@ -40,6 +40,7 @@ private:
 	void handleSaveConfig();
 	void handleLoadConfig();
 	void handleGetColors();
+	void handleGetConfig();
 	void handleSetColor();
 	void handleNotFound();
 	void handleSetTimeZone();
