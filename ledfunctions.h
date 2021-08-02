@@ -67,14 +67,15 @@ public:
 	uint8_t currentValues[NUM_PIXELS * 3];
 
 private:
-	static const std::vector<leds_template_t> hoursTemplate;
-	static const std::vector<leds_template_t> minutesTemplate[2];
+	static const std::vector<leds_template_t> hoursTemplate[3];
+	static const std::vector<leds_template_t> minutesTemplate[3][2];
 	static const palette_entry firePalette[];
 	static const palette_entry plasmaPalette[];
 	static const DisplayMode randomModes[];
 
 	DisplayMode mode = DisplayMode::plain;
 	bool randomMode = false;
+	bool displayOn = true;
 	int randomTicker = 0;
 	int rainbowTicker = 0;
 	int rainbowIndex = 0;

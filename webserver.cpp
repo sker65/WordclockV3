@@ -302,7 +302,7 @@ void WebServerClass::handleGetVar()
 			this->server->send(200, "text/plain", String(Config.heartbeat));
 		}
 		if(this->server->arg("name") == "mode" ) {
-			this->server->send(200, "text/plain", String((int)Config.defaultMode);
+			this->server->send(200, "text/plain", String((int)Config.defaultMode));
 		}
 	}
 }

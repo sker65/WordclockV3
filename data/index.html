@@ -57,7 +57,7 @@
 		<option>Viertel vor</option>
 		<option>Dreiviertel</option>
 	</select>
-    <select style="width: 85%;" name="minuteTemplate" id="minuteTemplate" onchange="changeVar(this.id, this.selectedIndex)">
+    <select style="width: 85%;" name="template" id="template" onchange="changeVar(this.id, this.selectedIndex)">
 		<option>Layout 1</option>
 		<option>Layout 2</option>
 		<option>Layout 3</option>
@@ -103,7 +103,7 @@
         <label><input type="checkbox" name="heartbeat" id="heartbeat" onchange="changeVar(this.id, this.checked)">Heartbeat</label><br/>
         <label><input type="checkbox" name="itIs" id="itIs" onchange="changeVar(this.id, this.checked)">"Es ist" anzeigen</label><br/>
         <label><input type="checkbox" name="rainbow" id="rainbow" onchange="changeVar(this.id, this.checked)">Rainbow</label>
-        <select style="width: 55%;" name="rainbowSpeed" id="rainbowSpeed" onchange="changeVar(this.id, this.value)">
+        <select style="width: 55%;" name="rainbowSpeed" id="rainbowSpeed" onchange="changeVar(this.id, this.selectedIndex)">
             <option>langsam</option>
             <option>mittel</option>
             <option>schnell</option>
@@ -249,7 +249,8 @@
 	}
 
     function loadVars() {
-        const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'mode', 'heartbeat', 'ntpserver'];
+        const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'mode', 'heartbeat',
+         'ntpserver', 'template'];
         for( const v of vars) {
             httpget( "/getvar?name=" + v, (res) => {
                 const e = document.getElementById(v);

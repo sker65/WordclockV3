@@ -106,6 +106,15 @@ void ConfigClass::save()
 	this->config->showItIs = this->showItIs;
 	this->config->minuteType = this->minuteType;
 	this->config->fgRainbow = this->fgRainbow;
+	
+	this->config->rainbowSpeed = this->rainbowSpeed;
+	this->config->autoOnOff = this->autoOnOff;
+	this->config->autoOnHour = this->autoOnHour;
+	this->config->autoOnMin = this->autoOnMin;
+	this->config->autoOffHour = this->autoOffHour; 
+	this->config->autoOffMin = this->autoOffMin; 
+	this->config->tmpl = this->tmpl;
+
 	for (int i = 0; i < EEPROM_SIZE; i++)
 		EEPROM.write(i, this->eeprom_data[i]);
 	EEPROM.commit();
@@ -151,9 +160,17 @@ void ConfigClass::reset()
 	this->ntpserver[2] = this->config->ntpserver[2];
 	this->ntpserver[3] = this->config->ntpserver[3];
 
-	this->showItIs = true;
-	this->minuteType = 0;
-	this->fgRainbow = false;
+	this->config->showItIs = this->showItIs = true;
+	this->config->minuteType = this->minuteType = 0;
+	this->config->fgRainbow = this->fgRainbow = false;
+	
+	this->config->rainbowSpeed = this->rainbowSpeed = 0;
+	this->config->autoOnOff = this->autoOnOff = false;
+	this->config->autoOnHour = this->autoOnHour = 0;
+	this->config->autoOnMin = this->autoOnMin = 0;
+	this->config->autoOffHour = this->autoOffHour = 0; 
+	this->config->autoOffMin = this->autoOffMin = 0; 
+	this->config->tmpl = this->tmpl = 0;
 }
 
 //---------------------------------------------------------------------------------------
@@ -187,4 +204,12 @@ void ConfigClass::load()
 	this->fgRainbow = this->config->fgRainbow;
 	for (int i = 0; i < 4; i++)
 		this->ntpserver[i] = this->config->ntpserver[i];
+	
+	this->rainbowSpeed = this->config->rainbowSpeed;
+	this->autoOnOff = this->config->autoOnOff;
+	this->autoOnHour = this->config->autoOnHour;
+	this->autoOnMin = this->config->autoOnMin;
+	this->autoOffHour = this->config->autoOffHour; 
+	this->autoOffMin = this->config->autoOffMin; 
+	this->tmpl = this->config->tmpl;
 }

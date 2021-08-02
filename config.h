@@ -41,8 +41,15 @@ typedef struct _config_struct
 	uint32_t mode;
 	uint32_t timeZone;
 	bool showItIs;
-	uint32_t minuteType;
+	uint8_t minuteType;
 	bool fgRainbow;
+	uint8_t rainbowSpeed;
+	bool autoOnOff;
+	uint8_t  autoOnHour;
+	uint8_t  autoOnMin;
+	uint8_t autoOffHour; 
+	uint8_t autoOffMin; 
+	uint8_t tmpl;
 } config_struct;
 
 #define EEPROM_SIZE 512
@@ -75,7 +82,15 @@ public:
 	bool heartbeat = true;
 	bool showItIs = true;
 	bool fgRainbow = false;
-	uint32_t minuteType = 1;
+	uint8_t minuteType = 1;
+	uint8_t rainbowSpeed = 0;
+	bool autoOnOff = false;
+	uint8_t  autoOnHour;
+	uint8_t  autoOnMin;
+	uint8_t autoOffHour; 
+	uint8_t autoOffMin; 
+	uint8_t tmpl;
+
 	bool debugMode = false;
 	int delayedWriteTimer = 0;
 	bool delayedWriteFlag = false;

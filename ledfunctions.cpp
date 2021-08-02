@@ -39,77 +39,100 @@ uint8_t plasmaBuf[NUM_PIXELS];
 // param0 controls whether the hour has to be incremented for the given minutes
 // param1 is the matching minimum minute count (inclusive)
 // param2 is the matching maximum minute count (inclusive)
-#if 0 // code folding minutes template
-const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
-{
-	{ 0,  0,  4,{ 106, 107, 108 } },                                  // UHR
-	{ 0,  5,  9,{ 7, 8, 9, 10, 34, 35, 36, 37 } },                    // FüNF NACH
-	{ 0, 10, 14,{ 11, 12, 13, 14, 34, 35, 36, 37 } },                 // ZEHN NACH
-	{ 0, 15, 19,{ 15, 16, 17, 18, 19, 20, 21, 34, 35, 36, 37 } },     // VIERTEL NACH
-	{ 0, 20, 24,{ 22, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37 } },     // ZWANZIG NACH
-	{ 1, 25, 29,{ 7, 8, 9, 10, 30, 31, 32, 39, 40, 41, 42 } },        // FüNF VOR HALB
-	{ 1, 30, 34,{ 39, 40, 41, 42 } },                                 // HALB
-	{ 1, 35, 39,{ 7, 8, 9, 10, 34, 35, 36, 37, 39, 40, 41, 42 } },    // FüNF NACH HALB
-	{ 1, 40, 44,{ 22, 23, 24, 25, 26, 27, 28, 30, 31, 32 } },         // ZWANZIG VOR
-	{ 1, 45, 49,{ 15, 16, 17, 18, 19, 20, 21, 30, 31, 32 } },         // VIERTEL VOR
-	{ 1, 50, 54,{ 11, 12, 13, 14, 30, 31, 32 } },                     // ZEHN VOR
-	{ 1, 55, 59,{ 7, 8, 9, 10, 30, 31, 32 } }                         // FüNF VOR
-};
-#endif
 
-#if 0 // ALTERNATIVE code folding minutes template
-const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate =
+const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[3][2] =
 {
-  { 0,  0,  4,{ 107, 108, 109 } },                             // UHR
-  { 0,  5,  9,{ 7,8,9,10, 40,41,42,43 } },                     // FüNF NACH
-  { 0, 10, 14,{ 11, 12, 13, 14, 40,41,42,43 } },               // ZEHN NACH
-  { 0, 15, 19,{ 26,27,28,29,30,31,32, 40,41,42,43 } },         // VIERTEL NACH
-  { 0, 20, 24,{ 15,16,17,18,19,20,21, 40,41,42,43 } },         // ZWANZIG NACH
-  { 1, 25, 29,{ 7,8,9,10, 33,34,35, 44,45,46,47 } },           // FüNF VOR HALB
-  { 1, 30, 34,{ 44,45,46,47 } },                               // HALB
-  { 1, 35, 39,{ 7,8,9,10, 40,41,42,43, 44,45,46,47 } },        // FüNF NACH HALB
-  { 1, 40, 44,{ 15,16,17,18,19,20,21, 33,34,35 } },            // ZWANZIG VOR
-  { 1, 45, 49,{ 26,27,28,29,30,31,32, 33,34,35 } },            // VIERTEL VOR
-  { 1, 50, 54,{ 11,12,13,14, 33,34,35 } },                     // ZEHN VOR
-  { 1, 55, 59,{ 7,8,9,10, 33,34,35 } }                         // FüNF VOR
-};
-#endif
-
-#if 1 // ALTERNATIVE 2 code folding minutes template
-const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[] =
-{
-	{
-		{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
-		{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
-		{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
-		{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
-		{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
-		{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
-		{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
-		{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
-		{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
-		{ 1, 45, 49,{ 26,27,28,29,30,31,32, 39,40,41 } },            // VIERTEL VOR
-		// { 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
-		{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
-		{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+	{	
+		{
+			{ 0,  0,  4,{ 106, 107, 108 } },                                  // UHR
+			{ 0,  5,  9,{ 7, 8, 9, 10, 34, 35, 36, 37 } },                    // FüNF NACH
+			{ 0, 10, 14,{ 11, 12, 13, 14, 34, 35, 36, 37 } },                 // ZEHN NACH
+			{ 0, 15, 19,{ 15, 16, 17, 18, 19, 20, 21, 34, 35, 36, 37 } },     // VIERTEL NACH
+			{ 0, 20, 24,{ 22, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37 } },     // ZWANZIG NACH
+			{ 1, 25, 29,{ 7, 8, 9, 10, 30, 31, 32, 39, 40, 41, 42 } },        // FüNF VOR HALB
+			{ 1, 30, 34,{ 39, 40, 41, 42 } },                                 // HALB
+			{ 1, 35, 39,{ 7, 8, 9, 10, 34, 35, 36, 37, 39, 40, 41, 42 } },    // FüNF NACH HALB
+			{ 1, 40, 44,{ 22, 23, 24, 25, 26, 27, 28, 30, 31, 32 } },         // ZWANZIG VOR
+			{ 1, 45, 49,{ 15, 16, 17, 18, 19, 20, 21, 30, 31, 32 } },         // VIERTEL VOR
+			{ 1, 50, 54,{ 11, 12, 13, 14, 30, 31, 32 } },                     // ZEHN VOR
+			{ 1, 55, 59,{ 7, 8, 9, 10, 30, 31, 32 } }                         // FüNF VOR
+		},
+		{
+			{ 0,  0,  4,{ 106, 107, 108 } },                                  // UHR
+			{ 0,  5,  9,{ 7, 8, 9, 10, 34, 35, 36, 37 } },                    // FüNF NACH
+			{ 0, 10, 14,{ 11, 12, 13, 14, 34, 35, 36, 37 } },                 // ZEHN NACH
+			{ 0, 15, 19,{ 15, 16, 17, 18, 19, 20, 21, 34, 35, 36, 37 } },     // VIERTEL NACH
+			{ 0, 20, 24,{ 22, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37 } },     // ZWANZIG NACH
+			{ 1, 25, 29,{ 7, 8, 9, 10, 30, 31, 32, 39, 40, 41, 42 } },        // FüNF VOR HALB
+			{ 1, 30, 34,{ 39, 40, 41, 42 } },                                 // HALB
+			{ 1, 35, 39,{ 7, 8, 9, 10, 34, 35, 36, 37, 39, 40, 41, 42 } },    // FüNF NACH HALB
+			{ 1, 40, 44,{ 22, 23, 24, 25, 26, 27, 28, 30, 31, 32 } },         // ZWANZIG VOR
+			{ 1, 45, 49,{ 15, 16, 17, 18, 19, 20, 21, 30, 31, 32 } },         // VIERTEL VOR
+			{ 1, 50, 54,{ 11, 12, 13, 14, 30, 31, 32 } },                     // ZEHN VOR
+			{ 1, 55, 59,{ 7, 8, 9, 10, 30, 31, 32 } }                         // FüNF VOR
+		}
 	},
 	{
-		{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
-		{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
-		{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
-		{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
-		{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
-		{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
-		{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
-		{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
-		{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
-		//{ 1, 45, 49,{ 26,27,28,29,30,31,32, 39,40,41 } },            // VIERTEL VOR
-	  { 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
-		{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
-		{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+		{
+			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+			{ 0,  5,  9,{ 7,8,9,10, 40,41,42,43 } },                     // FüNF NACH
+			{ 0, 10, 14,{ 11, 12, 13, 14, 40,41,42,43 } },               // ZEHN NACH
+			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 40,41,42,43 } },         // VIERTEL NACH
+			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 40,41,42,43 } },         // ZWANZIG NACH
+			{ 1, 25, 29,{ 7,8,9,10, 33,34,35, 44,45,46,47 } },           // FüNF VOR HALB
+			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+			{ 1, 35, 39,{ 7,8,9,10, 40,41,42,43, 44,45,46,47 } },        // FüNF NACH HALB
+			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 33,34,35 } },            // ZWANZIG VOR
+			{ 1, 45, 49,{ 26,27,28,29,30,31,32, 33,34,35 } },            // VIERTEL VOR
+			{ 1, 50, 54,{ 11,12,13,14, 33,34,35 } },                     // ZEHN VOR
+			{ 1, 55, 59,{ 7,8,9,10, 33,34,35 } }                         // FüNF VOR
+		},
+		{
+			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+			{ 0,  5,  9,{ 7,8,9,10, 40,41,42,43 } },                     // FüNF NACH
+			{ 0, 10, 14,{ 11, 12, 13, 14, 40,41,42,43 } },               // ZEHN NACH
+			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 40,41,42,43 } },         // VIERTEL NACH
+			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 40,41,42,43 } },         // ZWANZIG NACH
+			{ 1, 25, 29,{ 7,8,9,10, 33,34,35, 44,45,46,47 } },           // FüNF VOR HALB
+			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+			{ 1, 35, 39,{ 7,8,9,10, 40,41,42,43, 44,45,46,47 } },        // FüNF NACH HALB
+			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 33,34,35 } },            // ZWANZIG VOR
+			{ 1, 45, 49,{ 26,27,28,29,30,31,32, 33,34,35 } },            // VIERTEL VOR
+			{ 1, 50, 54,{ 11,12,13,14, 33,34,35 } },                     // ZEHN VOR
+			{ 1, 55, 59,{ 7,8,9,10, 33,34,35 } }                         // FüNF VOR
+		}
+	},
+	{
+		{
+			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+			{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
+			{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
+			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
+			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
+			{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
+			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+			{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
+			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
+			{ 1, 45, 49,{ 26,27,28,29,30,31,32, 39,40,41 } },            // VIERTEL VOR
+			{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
+			{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+		},
+		{
+			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+			{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
+			{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
+			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
+			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
+			{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
+			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
+			{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
+			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
+			{ 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
+			{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
+			{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+		}
 	}
 };
-#endif
 
 // This defines the LED output for different hours
 // param0 deals with special cases:
@@ -118,8 +141,9 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[] =
 //     = 2: matches hour in param1 and param2 whenever minute is >= 5
 // param1: hour to match
 // param2: alternative hour to match
-#if 0 // code folding hours template
-const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
+#if 1 // code folding hours template
+const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate[3] =
+{
 {
 	{ 0,  0, 12,{ 100, 101, 102, 103, 104 } }, // ZWÖLF
 	{ 1,  1, 13,{ 44, 45, 46 } },             // EIN
@@ -134,11 +158,7 @@ const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
 	{ 0,  9, 21,{ 88, 89, 90, 91 } },         // NEUN
 	{ 0, 10, 22,{ 92, 93, 94, 95 } },         // ZEHN
 	{ 0, 11, 23,{ 96, 97, 98 } },             // ELF
-};
-#endif
-
-#if 0 //  ALTERNATIVE template code folding hours template
-const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
+},
 {
   { 0,  0, 12,{ 94,95,96,97,98 } },      // ZWÖLF
   { 1,  1, 13,{ 55,56,57 } },            // EIN
@@ -153,10 +173,7 @@ const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
   { 0,  9, 21,{ 102,103,104,105 } },     // NEUN
   { 0, 10, 22,{ 99,100,101,102 } },      // ZEHN
   { 0, 11, 23,{ 49,50,51 } },            // ELF
-};
-#endif
-#if 1 //  ALTERNATIVE 2 template code folding hours template
-const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
+},
 {
   { 0,  0, 12,{ 49,50,51,52,53 } },      // ZWÖLF
   { 1,  1, 13,{ 57,58,59 } },            // EIN
@@ -171,6 +188,7 @@ const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate =
   { 0,  9, 21,{ 80,81,82,83 } },         // NEUN
   { 0, 10, 22,{ 93,94,95,96 } },         // ZEHN
   { 0, 11, 23,{ 77,78,79 } },            // ELF
+} 
 };
 #endif
 
@@ -422,12 +440,23 @@ void LEDFunctionsClass::process()
 	if (this->s > 59 || this->s < 0) this->s = 0;
 	if (this->ms > 999 || this->ms < 0) this->ms = 0;
 
+	if( Config.autoOnOff ) {
+		// check against switch off
+		if( this->h == Config.autoOffHour && this->m == Config.autoOffMin ) displayOn = false;
+		if( this->h == Config.autoOnHour && this->m == Config.autoOnMin ) displayOn = true;
+	}
+
 	// load palette colors from configuration
-	palette_entry palette[] = {
-		{ Config.bg.r, Config.bg.g, Config.bg.b },
-		{ Config.fg.r, Config.fg.g, Config.fg.b },
-		{ Config.s.r,  Config.s.g,  Config.s.b }
-	};
+	palette_entry palette[3];
+	if( displayOn ) {
+		palette[0] = { Config.bg.r, Config.bg.g, Config.bg.b };
+		palette[1] = { Config.fg.r, Config.fg.g, Config.fg.b };
+		palette[2] = { Config.s.r,  Config.s.g,  Config.s.b };
+	} else {
+		palette[0] = { 0,0,0 };
+		palette[1] = { 0,0,0 };
+		palette[2] = { 0,0,0 };
+	}
 
 	// deal with random handling
 	if( this->randomTicker > 0 ) {
@@ -443,7 +472,7 @@ void LEDFunctionsClass::process()
 		this->rainbowTicker--;
 	}
 	if( Config.fgRainbow && this->rainbowTicker == 0) {
-		this->rainbowTicker = 800;
+		this->rainbowTicker = 800 * (3 - Config.rainbowSpeed);
 		if( this->rainbowIndex++ > 64 ) this->rainbowIndex = 0;
 		HsbColor hsb((float) this->rainbowIndex / 64.0, 1.0, 1.0 );
 		RgbColor col(hsb);
@@ -813,7 +842,7 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 	int mt = Config.minuteType;
 	if( mt>1 || mt <0 ) mt = 0;
 	int adjust_hour = 0;
-	for (leds_template_t t : LEDFunctionsClass::minutesTemplate[mt])
+	for (leds_template_t t : LEDFunctionsClass::minutesTemplate[Config.tmpl][mt])
 	{
 		// test if this template matches the current minute
 		if (m >= t.param1 && m <= t.param2)
@@ -830,7 +859,7 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 	if (h > 23)	h -= 24;
 
 	// iterate over hours template
-	for (leds_template_t t : LEDFunctionsClass::hoursTemplate)
+	for (leds_template_t t : LEDFunctionsClass::hoursTemplate[Config.tmpl])
 	{
 		// test if this template matches the current hour
 		if ((t.param1 == h || t.param2 == h) &&

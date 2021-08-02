@@ -8,6 +8,7 @@ const config = {
   itIs: 1,
   rainbow: 1,
   rainbowSpeed:1,
+  template: 0,
   colors: "255,128,128,40,140,40,56,56,156",
   mode: "1",
   timezone: "2",
