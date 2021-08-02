@@ -5,12 +5,14 @@ http://diskussion.christians-bastel-laden.de/index.php                      - Fo
 
 https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - alternative Version (mehr Funktionen)
 
-# changes / extension
+# changes / extensions
 
 - added some alternative mapping tables for other word positions (for now only compile time switches)
 - added random mode for transitions
 - added rainbow color mode.
 - added alternative way of spelling minutes (dreiviertel vs. viertel vor)
+- code refactored to run with neopixel bus (https://github.com/Makuna/NeoPixelBus) to avoid flickering
+- "PROGMEM" aligned to 4 to avoid unaligned access exception
 # esp8266wordclock
 Wordclock with WS2812B RGB LED modules driven by an ESP8266 module
 
@@ -18,7 +20,7 @@ This is my interpretation of the popular wordclock project. Key features:
 
 - runs on ESP8266 (ESP-07)
 - using Arduino framework
-- 114 WS2812B LEDs (driven by AdaFruit_NeoPixel library)
+- 114 WS2812B LEDs (driven by neopixel bus (formerly AdaFruit_NeoPixel) library)
 - WiFi connected
 - WiFiManager allows for easy configuration when WiFi network is not yet configured
 - NTP client regularly fetches time
