@@ -11,6 +11,7 @@ https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - al
 - added random mode for transitions
 - added rainbow color mode.
 - added alternative way of spelling minutes (dreiviertel vs. viertel vor)
+- make constant "Es ist" display switchable
 - code refactored to run with neopixel bus (https://github.com/Makuna/NeoPixelBus) to avoid flickering
 - "PROGMEM" aligned to 4 to avoid unaligned access exception
 # esp8266wordclock
