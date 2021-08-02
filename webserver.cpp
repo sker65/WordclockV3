@@ -75,11 +75,7 @@ void WebServerClass::begin()
 	this->server->on("/info", std::bind(&WebServerClass::handleInfo, this));
 	this->server->on("/saveconfig", std::bind(&WebServerClass::handleSaveConfig, this));
 	this->server->on("/loadconfig", std::bind(&WebServerClass::handleLoadConfig, this));
-	this->server->on("/setheartbeat", std::bind(&WebServerClass::handleSetHeartbeat, this));
-	this->server->on("/getheartbeat", std::bind(&WebServerClass::handleGetHeartbeat, this));
 	this->server->on("/getcolors", std::bind(&WebServerClass::handleGetColors, this));
-	this->server->on("/getntpserver", std::bind(&WebServerClass::handleGetNtpServer, this));
-	this->server->on("/setntpserver", std::bind(&WebServerClass::handleSetNtpServer, this));
 	this->server->on("/h", std::bind(&WebServerClass::handleH, this));
 	this->server->on("/m", std::bind(&WebServerClass::handleM, this));
 	this->server->on("/r", std::bind(&WebServerClass::handleR, this));
@@ -87,12 +83,8 @@ void WebServerClass::begin()
 	this->server->on("/b", std::bind(&WebServerClass::handleB, this));
 	this->server->on("/brightness", std::bind(&WebServerClass::handleSetBrightness, this));
 	this->server->on("/getadc", std::bind(&WebServerClass::handleGetADC, this));
-	this->server->on("/setmode", std::bind(&WebServerClass::handleSetMode, this));
-	this->server->on("/getmode", std::bind(&WebServerClass::handleGetMode, this));
 	this->server->on("/setvar", std::bind(&WebServerClass::handleSetVar, this));
 	this->server->on("/getvar", std::bind(&WebServerClass::handleGetVar, this));
-	this->server->on("/settimezone", std::bind(&WebServerClass::handleSetTimeZone, this));
-	this->server->on("/gettimezone", std::bind(&WebServerClass::handleGetTimeZone, this));
 	this->server->on("/debug", std::bind(&WebServerClass::handleDebug, this));
 
 	this->server->onNotFound(std::bind(&WebServerClass::handleNotFound, this));
@@ -288,48 +280,6 @@ void WebServerClass::handleGetADC()
 	this->server->send(200, "text/plain", String(Brightness.avg));
 }
 
-//---------------------------------------------------------------------------------------
-// handleSetTimeZone
-//
-//
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleSetTimeZone()
-{
-	int newTimeZone = -999;
-	if(this->server->hasArg("value"))
-	{
-		newTimeZone = this->server->arg("value").toInt();
-		if(newTimeZone < - 12 || newTimeZone > 14)
-		{
-			this->server->send(400, "text/plain", "ERR");
-		}
-		else
-		{
-			Config.timeZone = newTimeZone;
-			Config.save();
-			NTP.setTimeZone(Config.timeZone);
-			this->server->send(200, "text/plain", "OK");
-		}
-	}
-
-}
-
-//---------------------------------------------------------------------------------------
-// handleGetTimeZone
-//
-// Handles the /gettimezone request, delivers offset to UTC in hours.
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleGetTimeZone()
-{
-	this->server->send(200, "text/plain", String(Config.timeZone));
-}
-
 void WebServerClass::handleGetVar()
 {
 	if( this->server->hasArg("name") ) {
@@ -341,6 +291,18 @@ void WebServerClass::handleGetVar()
 		}
 		if(this->server->arg("name") == "minuteType" ) {
 			this->server->send(200, "text/plain", String(Config.minuteType));
+		}
+		if(this->server->arg("name") == "timezone" ) {
+			this->server->send(200, "text/plain", String(Config.timeZone));
+		}
+		if(this->server->arg("name") == "ntpserver" ) {
+			this->server->send(200, "text/plain", String(Config.ntpserver.toString()));
+		}
+		if(this->server->arg("name") == "heartbeat" ) {
+			this->server->send(200, "text/plain", String(Config.heartbeat));
+		}
+		if(this->server->arg("name") == "mode" ) {
+			this->server->send(200, "text/plain", String((int)Config.defaultMode);
 		}
 	}
 }
@@ -361,6 +323,46 @@ void WebServerClass::handleSetVar()
 			if(this->server->arg("value") == "0") Config.minuteType = 0; else Config.minuteType = 1;
 			mustSave = true;
 		}
+		if(this->server->arg("name") == "timezone" ) {
+			int newTimeZone = this->server->arg("value").toInt();
+			if(newTimeZone < - 12 || newTimeZone > 14)
+			{
+				this->server->send(400, "text/plain", "ERR: timezone not in range -12 ... 14");
+			}
+			else
+			{
+				Config.timeZone = newTimeZone;
+				NTP.setTimeZone(Config.timeZone);
+				this->server->send(200, "text/plain", "OK");
+			}
+			mustSave = true;
+		}
+		if(this->server->arg("name") == "ntpserver" ) {
+			IPAddress ip;
+			if (ip.fromString(this->server->arg("ip")))
+			{
+				Config.ntpserver = ip;
+				// set IP address in client
+				NTP.setServer(ip);
+				mustSave = true;
+			}
+		}
+		if(this->server->arg("name") == "heartbeat" ) {
+			if(this->server->arg("value") == "0") Config.heartbeat = 0; else Config.heartbeat = 1;
+			mustSave = true;
+		}
+		if(this->server->arg("name") == "mode" ) {
+			int newMode = this->server->arg("value").toInt();
+			if( newMode >= 0 && newMode <= 10 ) {
+				DisplayMode mode = (DisplayMode)newMode;
+				if( mode != DisplayMode::random ) {
+					LED.resetRandom();
+				}
+				LED.setMode(mode);
+				Config.defaultMode = mode;
+				mustSave = true;
+			}
+		}
 	}
 	if( mustSave ) {
 		Config.save();
@@ -368,65 +370,6 @@ void WebServerClass::handleSetVar()
 	} else {
 		this->server->send(400, "text/plain", "ERR");
 	}
-}
-
-//---------------------------------------------------------------------------------------
-// handleSetMode
-//
-// Handles the /setmode request. Sets the display mode to one of the allowed values,
-// saves it as the new default mode.
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleSetMode()
-{
-	DisplayMode mode = DisplayMode::invalid;
-
-	if(this->server->hasArg("value"))
-	{
-		// handle each allowed value for safety random, matrix, heart, fire, plasma, stars,
-		if(this->server->arg("value") == "0") mode = DisplayMode::plain;
-		if(this->server->arg("value") == "1") mode = DisplayMode::fade;
-		if(this->server->arg("value") == "2") mode = DisplayMode::flyingLettersVerticalUp;
-		if(this->server->arg("value") == "3") mode = DisplayMode::flyingLettersVerticalDown;
-		if(this->server->arg("value") == "4") mode = DisplayMode::explode;
-		if(this->server->arg("value") == "5") mode = DisplayMode::random;
-		if(this->server->arg("value") == "6") mode = DisplayMode::matrix;
-		if(this->server->arg("value") == "7") mode = DisplayMode::heart;
-		if(this->server->arg("value") == "8") mode = DisplayMode::fire;
-		if(this->server->arg("value") == "9") mode = DisplayMode::plasma;
-		if(this->server->arg("value") == "10") mode = DisplayMode::stars;
-	}
-
-	if(mode == DisplayMode::invalid)
-	{
-		this->server->send(400, "text/plain", "ERR");
-	}
-	else
-	{
-		if( mode != DisplayMode::random ) {
-			LED.resetRandom();
-		}
-		LED.setMode(mode);
-		Config.defaultMode = mode;
-		Config.save();
-		this->server->send(200, "text/plain", "OK");
-	}
-}
-
-//---------------------------------------------------------------------------------------
-// handleGetMode
-//
-// Handles the /getmode request and returns the current default display mode.
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleGetMode()
-{
-	int mode = (int)Config.defaultMode;
-	this->server->send(200, "text/plain", String(mode));
 }
 
 //---------------------------------------------------------------------------------------
@@ -459,45 +402,6 @@ void WebServerClass::handleNotFound()
 		}
 		this->server->send(404, "text/plain", message);
 	}
-}
-
-//---------------------------------------------------------------------------------------
-// handleGetNtpServer
-//
-// Delivers the currently configured NTP server IP address
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleGetNtpServer()
-{
-	this->server->send(200, "application/json", Config.ntpserver.toString());
-}
-
-//---------------------------------------------------------------------------------------
-// handleSetNtpServer
-//
-// Sets a new IP address for the NTP client
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleSetNtpServer()
-{
-	if (this->server->hasArg("ip"))
-	{
-		IPAddress ip;
-		if (ip.fromString(this->server->arg("ip")))
-		{
-			// set IP address in config
-			Config.ntpserver = ip;
-			Config.save();
-
-			// set IP address in client
-			NTP.setServer(ip);
-		}
-	}
-	this->server->send(200, "application/json", "OK");
 }
 
 //---------------------------------------------------------------------------------------
@@ -634,35 +538,6 @@ void WebServerClass::handleLoadConfig()
 {
 	Config.load();
 	this->server->send(200, "text/plain", "OK");
-}
-
-//---------------------------------------------------------------------------------------
-// handleSetHeartbeat
-//
-// Sets or resets the heartbeat flag in the configuration based on argument "state"
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleSetHeartbeat()
-{
-	Config.heartbeat = (this->server->hasArg("value") && this->server->arg("value") == "1");
-	Config.save();
-	this->server->send(200, "text/plain", "OK");
-}
-
-//---------------------------------------------------------------------------------------
-// handleGetHeartbeat
-//
-// Returns the state of the heartbeat flag.
-//
-// -> --
-// <- --
-//---------------------------------------------------------------------------------------
-void WebServerClass::handleGetHeartbeat()
-{
-	if(Config.heartbeat) this->server->send(200, "text/plain", "1");
-	else this->server->send(200, "text/plain", "0");
 }
 
 //---------------------------------------------------------------------------------------

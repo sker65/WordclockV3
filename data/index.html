@@ -40,7 +40,7 @@
 
 <div class="outer_frame">
     <p>Modus</p>
-	<select name="displaymode" id="displaymode" onchange="displayModeChanged()">
+	<select style="width: 85%;" name="displaymode" id="displaymode" onchange="changeVar(this.id, this.selectedIndex)">
 		<option>Einfach</option>
 		<option>Weiche Übergänge</option>
 		<option>Fliegende Buchstaben aufwärts</option>
@@ -53,15 +53,20 @@
         <option>Plasma</option>
         <option>Sterne</option>
 	</select>
-	<select name="minutemode" id="minutemode" onchange="minutemodeChanged()">
+	<select style="width: 85%;" name="minutemode" id="minutemode" onchange="changeVar(this.id, this.selectedIndex)">
 		<option>Viertel vor</option>
 		<option>Dreiviertel</option>
+	</select>
+    <select style="width: 85%;" name="minuteTemplate" id="minuteTemplate" onchange="changeVar(this.id, this.selectedIndex)">
+		<option>Layout 1</option>
+		<option>Layout 2</option>
+		<option>Layout 3</option>
 	</select>
 </div>
 
 <div class="outer_frame">
     <p>Zeitzone</p>
-	<select name="timezone" id="timezone" onchange="timeZoneChanged()">
+	<select name="timezone" id="timezone" onchange="changeVar(this.id, this.selectedIndex-12)">
 		<option>UTC-12:00</option>
 		<option>UTC-11:00</option>
 		<option>UTC-10:00</option>
@@ -95,18 +100,29 @@
 <div class="outer_frame" >
     <p>Optionen</p>
     <div style="text-align: left;" >
-        <label><input type="checkbox" name="heartbeat" id="heartbeat" onchange="heartbeatEnableChanged()">Heartbeat</label><br/>
-        <label><input type="checkbox" name="itIs" id="itIs" onchange="changeCheckbox('itIs', 'itIs')">"Es ist" anzeigen</label><br/>
-        <label><input type="checkbox" name="rainbow" id="rainbow" onchange="changeCheckbox('rainbow', 'rainbow')">Rainbow</label><br/>
+        <label><input type="checkbox" name="heartbeat" id="heartbeat" onchange="changeVar(this.id, this.checked)">Heartbeat</label><br/>
+        <label><input type="checkbox" name="itIs" id="itIs" onchange="changeVar(this.id, this.checked)">"Es ist" anzeigen</label><br/>
+        <label><input type="checkbox" name="rainbow" id="rainbow" onchange="changeVar(this.id, this.checked)">Rainbow</label>
+        <select style="width: 55%;" name="rainbowSpeed" id="rainbowSpeed" onchange="changeVar(this.id, this.value)">
+            <option>langsam</option>
+            <option>mittel</option>
+            <option>schnell</option>
+        </select>
     </div>
 </div>
 
 <div class="outer_frame">
+    <p>Ausschalt-Automatik</p>
+    <div style="text-align: left;" >
+    <label><input type="checkbox" name="autoOnOff" id="autoOnOff" onchange="changeVar(this.id, this.checked)">aktiv</label>
+    <input type="time" id="autoOn" style="width: 6em;" onchange="changeVar(this.id, this.value)"> - 
+    <input type="time" style="width: 6em;" id="autoOff" onchange="changeVar(this.id, this.value)"> 
+</div>
+</div>
+
+<div class="outer_frame">
     <p>Zeitserver</p>
-    <input type="text" class="ntp_input" id="ntpserver" value="wird geladen..." onClick="this.setSelectionRange(0, this.value.length)">
-    <div class="buttondiv">
-    <button class="colorbutton" onclick="saveNtpServer()">speichern</button>
-    </div>
+    <input type="text" class="ntp_input" id="ntpserver" value="wird geladen..." onkeyup="changeIP(this.id, this.value)">
 </div>
 
 <script>
@@ -121,42 +137,24 @@
 
     let myhost = "http://" + location.hostname + (location.port ? ':'+location.port : '');
 
-    function changeCheckbox( id, varname) {
-		var enabled = 0;
-		var checkbox = document.getElementById(id);
-		if(checkbox.checked == true) enabled = 1;
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", myhost + "/setvar?name="+varname+"&value=" + enabled, true);
-        xhttp.send();
+    const timers = {};
+
+    function changeIP( varname, value) {
+        if( isValidIP(v) ) {
+            changeVar(n,v);
+        }
     }
 
-	function heartbeatEnableChanged()
-	{
-		var enabled = 0;
-		var heartbeatCheckbox = document.getElementById("heartbeat");
-		if(heartbeatCheckbox.checked == true) enabled = 1;
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", myhost + "/setheartbeat?value=" + enabled, true);
-        xhttp.send();
-	}
-	
-	function displayModeChanged()
-	{		
-		let idx = document.getElementById("displaymode").selectedIndex;
-        // max is 10
-        let newMode = idx >= 0 && idx <= 10 ? idx : 0;
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", myhost + "/setmode?value=" + newMode, true);
-        xhttp.send();
-	}
-	
-	function timeZoneChanged() {
-		let idx = document.getElementById("timezone").selectedIndex;
-        let newTimeZone = idx >= 0 && idx <= 26 ? ( idx - 12 ) : 0;
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", myhost + "/settimezone?value=" + newTimeZone, true);
-        xhttp.send();
-	}
+    function changeVar( varname, value ) {
+        clearTimeout(timers[varname]);
+        timers[varname] = setTimeout((n,v)=>{
+            if( v === true ) v = 1;
+            if( v === false ) v = 0;
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", myhost + "/setvar?name="+n+"&value=" + v, true);
+            xhttp.send(); 
+        }, 500, varname, value );
+    }
 	
     function updateButton(id, text, r, g, b)
     {
@@ -188,12 +186,6 @@
             newBackground = updateButton('backgroundColorButton', 'Hintergrund', c[0], c[1], c[2]);
             newForeground = updateButton('foregroundColorButton', 'Vordergrund', c[3], c[4], c[5]);
             newSeconds = updateButton('secondsColorButton', 'Sekunden', c[6], c[7], c[8]);
-        });
-    }
-
-    function loadNtpServer() {
-        httpget( "/getntpserver", (res) => {
-            document.getElementById('ntpserver').value = res;
         });
     }
 
@@ -250,53 +242,29 @@
         return true;
     }
 
-    function saveNtpServer() {
-        var server = document.getElementById('ntpserver').value;
-        if(!isValidIP(server))
-        {
-            alert("Die IP ist ungültig.");
-            return;
-        }
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", myhost + "/setntpserver?ip=" + server, true);
-        xhttp.send();
-    }
-	
 	function loadTimeZone() {
         httpget( "/gettimezone", (res) => {
             document.getElementById('timezone').selectedIndex = parseInt(res) + 12;
         });
 	}
-	
-	function loadMode() {
-        httpget( "/getmode", (res) => {
-            document.getElementById('displaymode').selectedIndex = res;
-        });
-	}
-
-	function loadHeartbeat() {
-        httpget( "/getheartbeat", (res) => {
-            document.getElementById('heartbeat').checked = res == "1";
-        });
-	}
 
     function loadVars() {
-        httpget( "/getvar?name=itIs", (res) => {
-            document.getElementById('itIs').checked = res == "1";
-        });
-        httpget( "/getvar?name=rainbow", (res) => {
-            document.getElementById('rainbow').checked = res == "1";
-        });
-
+        const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'mode', 'heartbeat', 'ntpserver'];
+        for( const v of vars) {
+            httpget( "/getvar?name=" + v, (res) => {
+                const e = document.getElementById(v);
+                if( e ) {
+                    if(e.type === 'checkbox') e.checked = (res == "1" || res == "true");
+                    if(e.type === 'time' || e.type === 'text') e.value = res;
+                    if(e.type === 'select-one' ) e.selectedIndex = parseInt(res);
+                }              
+            });
+        }
     }
 	
     function loadSettings()
     {
         loadColors();
-        loadNtpServer();
-		loadMode();
-		loadHeartbeat();
 		loadTimeZone();
         loadVars();
     }

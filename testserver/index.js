@@ -7,11 +7,15 @@ app.use(express.static('../data', {fallthrough: true}));
 const config = {
   itIs: 1,
   rainbow: 1,
-  colors: "255,128,128,40,40,40,56,56,56",
+  rainbowSpeed:1,
+  colors: "255,128,128,40,140,40,56,56,156",
   mode: "1",
   timezone: "2",
   heartbeat: 0,
-  ntpserver: "129.3.2.2"
+  ntpserver: "129.3.2.2",
+  autoOnOff: 0,
+  autoOn: "06:00",
+  autoOff: "23:45"
 };
 
 app.get('/:cmd', function (req, res) {
