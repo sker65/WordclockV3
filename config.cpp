@@ -164,7 +164,7 @@ void ConfigClass::reset()
 	this->config->minuteType = this->minuteType = 0;
 	this->config->fgRainbow = this->fgRainbow = false;
 	
-	this->config->rainbowSpeed = this->rainbowSpeed = 0;
+	this->config->rainbowSpeed = 0; this->rainbowSpeed = 0;
 	this->config->autoOnOff = this->autoOnOff = false;
 	this->config->autoOnHour = this->autoOnHour = 0;
 	this->config->autoOnMin = this->autoOnMin = 0;
