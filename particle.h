@@ -38,6 +38,7 @@ public:
 
 	Particle(float x, float y, float vx, float vy, int delay);
 	virtual ~Particle();
+	void init(float x, float y, float vx, float vy, int delay);
 
 	void render(uint8_t *target, palette_entry palette[]);
 	float distance();

@@ -49,6 +49,18 @@ Particle::Particle(float x, float y, float vx, float vy, int delay)
 	this->alive = true;
 }
 
+void Particle::init(float x, float y, float vx, float vy, int delay)
+{
+	this->x = x;
+	this->y = y;
+	this->vx = vx;
+	this->vy = vy;
+	this->x0 = x;
+	this->y0 = y;
+	this->delay = delay;
+	this->alive = true;
+}
+
 //---------------------------------------------------------------------------------------
 // ~Particle
 //
