@@ -280,7 +280,12 @@ void WebServerClass::handleSetVar()
 			mustSave = true;
 		} 
 		if(this->server->arg("name") == "autoOnOff" ) {
-			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") Config.autoOnOff = false; else Config.fgRainbow = true;
+			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") {
+				Config.autoOnOff = false;
+				LED.setDisplayOn(true);
+			} else {
+				Config.autoOnOff = true;
+			}
 			mustSave = true;
 		}
 		if(this->server->arg("name") == "autoOn" ) {
@@ -298,15 +303,20 @@ void WebServerClass::handleSetVar()
 			uint8_t h,m;
 			int res = sscanf(this->server->arg("value").c_str(), "%02d:%02d", &h, &m);
 			if( res == 2 ) {
-				Config.autoOnHour = h;
-				Config.autoOnMin = m;
+				Config.autoOffHour = h;
+				Config.autoOffMin = m;
 				mustSave = true;
 			} else {
 				err =  "ERR: bad time format, must be HH:MM";
 			}
 		}		
 		if(this->server->arg("name") == "rainbow" ) {
-			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") Config.fgRainbow = false; else Config.fgRainbow = true;
+			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") {
+				Config.fgRainbow = false; 
+			} else {
+				Config.fgRainbow = true;
+				LED.resetRainbowColor();
+			}
 			mustSave = true;
 		}
 		if(this->server->arg("name") == "minuteType" ) {
@@ -376,24 +386,21 @@ void WebServerClass::handleSetVar()
 			}
 		}
 		if( this->server->arg("name") == "fg" ){
-			this->extractColor("fg", Config.fg);
+			this->extractColor("value", Config.fg);
 			mustSave = true;
 		}	
 		if( this->server->arg("name") == "s" ){
-			this->extractColor("s", Config.s);
+			this->extractColor("value", Config.s);
 			mustSave = true;
 		}
 		if( this->server->arg("name") == "bg" ){
-			this->extractColor("bg", Config.bg);
+			this->extractColor("value", Config.bg);
 			mustSave = true;
 		}
 		if(this->server->arg("name") == "displaymode" ) {
 			int newMode = this->server->arg("value").toInt();
 			if( newMode >= 0 && newMode <= 10 ) {
 				DisplayMode mode = (DisplayMode)newMode;
-				if( mode != DisplayMode::random ) {
-					LED.resetRandom();
-				}
 				LED.setMode(mode);
 				Config.defaultMode = mode;
 				mustSave = true;

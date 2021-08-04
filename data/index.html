@@ -16,7 +16,7 @@
     <div class="buttondiv">
     <button
         id="fg"
-        class="colorbutton jscolor {width:150, onFineChange:'changeVar(this.targetElement.id,this.toString().substr(1))',valueElement:null,value:'ffffff'}">
+        class="colorbutton jscolor {width:150, onFineChange:'changeVar(this.targetElement.id,this.toString())',valueElement:null,value:'ffffff'}">
         Vordergrund
     </button>
     </div>
@@ -24,7 +24,7 @@
     <div class="buttondiv">
     <button
         id="bg"
-        class="colorbutton jscolor {width:150,onFineChange:'changeVar(this.targetElement.id,this.toString().substr(1))',valueElement:null,value:'000000'}">
+        class="colorbutton jscolor {width:150,onFineChange:'changeVar(this.targetElement.id,this.toString())',valueElement:null,value:'000000'}">
         Hintergrund
     </button>
     </div>
@@ -32,12 +32,12 @@
     <div class="buttondiv">
     <button
         id="s"
-        class="colorbutton jscolor {width:150,onFineChange:'changeVar(this.targetElement.id,this.toString().substr(1))',valueElement:null,value:'400020'}">
+        class="colorbutton jscolor {width:150,onFineChange:'changeVar(this.targetElement.id,this.toString())',valueElement:null,value:'400020'}">
         Sekunden
     </button>
     </div>
     <div>
-        <input type="range" min="0" max="256" id="brightness" onchange="changeVar(this.id,this.value)"/>
+        <input title="Helligkeit" type="range" min="0" max="256" id="brightness" onchange="changeVar(this.id,this.value)"/>
     </div>
 </div>
 
@@ -104,10 +104,10 @@
 <div class="outer_frame" >
     <p>Optionen</p>
     <div style="text-align: left;" >
-        <label><input type="checkbox" name="heartbeat" id="heartbeat" onchange="changeVar(this.id, this.checked)">Heartbeat</label><br/>
-        <label><input type="checkbox" name="itIs" id="itIs" onchange="changeVar(this.id, this.checked)">"Es ist" anzeigen</label><br/>
-        <label><input type="checkbox" name="rainbow" id="rainbow" onchange="changeVar(this.id, this.checked)">Rainbow</label>
-        <select style="width: 55%;" name="rainbowSpeed" id="rainbowSpeed" onchange="changeVar(this.id, this.selectedIndex)">
+        <label title="Blinkende LED am Controller"><input type="checkbox" name="heartbeat" id="heartbeat" onchange="changeVar(this.id, this.checked)">Heartbeat</label><br/>
+        <label title="Dauerhafte Anzeige von 'Es ist'"><input type="checkbox" name="itIs" id="itIs" onchange="changeVar(this.id, this.checked)">"Es ist" anzeigen</label><br/>
+        <label title="Zyklisches Ändern der Vordergrund Farbe"><input type="checkbox" name="rainbow" id="rainbow" onchange="changeVar(this.id, this.checked); setRainbow(this.checked);">Rainbow</label>
+        <select title="Geschwingkeit des Farbwechsels" style="width: 55%;" name="rainbowSpeed" id="rainbowSpeed" onchange="changeVar(this.id, this.selectedIndex)">
             <option>langsam</option>
             <option>mittel</option>
             <option>schnell</option>
@@ -118,7 +118,7 @@
 <div class="outer_frame">
     <p>Ausschalt-Automatik</p>
     <div style="text-align: left;" >
-    <label><input type="checkbox" name="autoOnOff" id="autoOnOff" onchange="changeVar(this.id, this.checked)">aktiv</label>
+    <label title="Uhr leuchtet nur in dem vorgegebenen Zeit-Intervall"><input type="checkbox" name="autoOnOff" id="autoOnOff" onchange="changeVar(this.id, this.checked)">aktiv</label>
     <input type="time" id="autoOn" style="width: 6em;" onchange="changeVar(this.id, this.value)"> - 
     <input type="time" style="width: 6em;" id="autoOff" onchange="changeVar(this.id, this.value)"> 
 </div>
@@ -126,23 +126,24 @@
 
 <div class="outer_frame">
     <p>Zeitserver</p>
-    <input type="text" class="ntp_input" id="ntpserver" value="wird geladen..." onkeyup="changeIP(this.id, this.value)">
+    <input title="Server der für die Zeit-Synchronisierung genutzt wird (IP-Addresse)" type="text" class="ntp_input" id="ntpserver" value="wird geladen..." onkeyup="changeVar(this.id, this.value, isValidIP)">
 </div>
 
 <script>
+    const myhost = "http://" + location.hostname + (location.port ? ':'+location.port : '');
+    const timers = {}; // times map for delayed update requests, when vars change
 
-    let myhost = "http://" + location.hostname + (location.port ? ':'+location.port : '');
-
-    const timers = {};
-
-    function changeIP( varname, value) {
-        if( isValidIP(v) ) {
-            changeVar(n,v);
-        }
-    }
-
-    function changeVar( varname, value ) {
+    // propagate delay var changes to the server, optional callback to check valid values
+    // if the function is called more than one time for the same var within 500ms
+    // the server is updated only once
+    function changeVar( varname, value, validCb ) {
         clearTimeout(timers[varname]);
+        if( validCb ) {
+            if( !validCb(value) ) {
+                console.warn(varname, " = ", value, " -> not valid");
+                return;
+            }
+        }
         timers[varname] = setTimeout((n,v)=>{
             if( v === true ) v = 1;
             if( v === false ) v = 0;
@@ -152,7 +153,28 @@
         }, 500, varname, value );
     }
 	
-    function httpget(path, readycb) {
+    // jQuery like id selector
+    function $(id) {
+        if(id.startsWith('#'))
+            return document.getElementById(id.substr(1));
+    }
+
+    // triggered on rainbow checkbox changes: -> diable forground color button, when rainbow is active
+    function setRainbow( val ) {
+        const fgBut = $('#fg');
+        fgBut.disabled = val;
+        if( val ) {
+            fgBut.style['background-color'] = '#909090';
+            fgBut.style['color'] = '#A0A0A0';
+        } else {
+            const jsc = fgBut.jscolor;
+            fgBut.style['background-color'] = jsc.toHEXString();
+            fgBut.style['color'] = jsc.isLight() ? '#000000' : '#FFFFFF';
+        }
+    }
+
+    // xhr get request to the server 
+    function get(path, readycb) {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if(xhttp.readyState == 4 ) {
@@ -168,29 +190,21 @@
         xhttp.send();
     }
 
-    function isValidIP(ip)
-    {
-        var s = ip.split('.');
-        if(s.length != 4) return false;
-        for(var i=0; i<3; i++)
-        {
-            if(s[i] == '') return false;
-            if(isNaN(s[i])) return false;
-            var n = parseInt(s[i]);
-            if(n < 0 || n > 255) return false;
-        }
-        return true;
+    // validate ip address for ntp server
+    function isValidIP(ip) {
+        return /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test(ip);
     }
 
+    // vars to load & set
     const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'mode', 'heartbeat',
          'ntpserver', 'tmpl', 'fg','bg','s', 'minuteType', 'brightness'];
 
-    function loadSettings()
-    {
-        httpget( "/config", (res) => {
+    // load settings from server and propagate to page elements
+    function loadSettings() {
+        get( "/config", (res) => {
             let json = JSON.parse(res);
             for( const v of vars) {
-                const e = document.getElementById(v);
+                const e = $('#'+v);
                 if( e ) {
                     console.log("setting element ", e);
                     if(e.type === 'checkbox') e.checked = json[v];
@@ -202,12 +216,11 @@
                     }
                 }
             }
-            document.getElementById('timezone').selectedIndex = parseInt(json['timezone']) + 12;
+            setRainbow(json.rainbow);
+            $('#timezone').selectedIndex = parseInt(json['timezone']) + 12;
         });
     }
     
 </script>
-
-
 </body>
 </html>
