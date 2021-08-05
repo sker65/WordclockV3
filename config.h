@@ -61,6 +61,7 @@ enum class DisplayMode
 	yellowHourglass, greenHourglass, update, updateComplete, updateError,
 	wifiManager, invalid
 };
+#define MAX_DISPLAY_MODE_TO_SET 20 
 
 class ConfigClass
 {
