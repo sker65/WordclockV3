@@ -59,8 +59,8 @@ public:
 	void setBrightness(int brightness);
 	void setMode(DisplayMode newMode);
 	void show();
-	void resetRandom() { this->randomMode = false; }
-
+	void resetRainbowColor();
+	void setDisplayOn(bool val) { this->displayOn = val; }
 	static int getOffset(int x, int y);
 	static const int width = 11;
 	static const int height = 10;
@@ -74,11 +74,12 @@ private:
 	static const DisplayMode randomModes[];
 
 	DisplayMode mode = DisplayMode::plain;
-	bool randomMode = false;
+	DisplayMode randomMode = DisplayMode::plain;
 	bool displayOn = true;
-	int randomTicker = 0;
+	//int randomTicker = 0;
 	int rainbowTicker = 0;
 	int rainbowIndex = 0;
+	palette_entry currentRainbowColor;
 
 	std::vector<Particle*> particles;
 	std::vector<xy_t> arrivingLetters;
@@ -86,6 +87,7 @@ private:
 	std::vector<MatrixObject> matrix;
 	std::vector<StarObject> stars;
 	uint8_t targetValues[NUM_PIXELS * 3];
+	uint8_t animationBuf[NUM_PIXELS];
 	//Adafruit_NeoPixel *pixels = NULL;
   NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> *strip = NULL; //(NUM_PIXELS);
 	int heartBrightness = 0;
@@ -97,7 +99,19 @@ private:
 	int ms = 0;
 	int lastM = -1;
 	int lastH = -1;
+	bool forceTransition = false;
 
+	u_int8_t snakeX = 0;
+	u_int8_t snakeY = 0;
+#define SNAKE_LEN 20
+	u_int8_t snake[SNAKE_LEN+1];
+	u_int8_t snakeHead;
+	u_int8_t snakeTail;
+	int 		 snakeDX = 1;
+	int 		 snakeTicker = 0;
+	int 		 snakeSpeed = 10;
+
+	bool activeParticles();
 	void fillBackground(int seconds, int milliseconds, uint8_t *buf);
 	void renderRed();
 	void renderGreen();
@@ -113,11 +127,15 @@ private:
 	void renderHourglass(uint8_t animationStep, bool green);
 	void renderWifiManager();
 	void renderTime(uint8_t *target, int h, int m, int s, int ms);
-	void renderFlyingLetters();
+	void renderFlyingLetters(bool transition);
 	void prepareFlyingLetters(uint8_t *source);
-	void renderExplosion();
+	void renderExplosion(bool transition, int initHour, int initMinute);
+	void renderSnake(bool transition, int initHour, int initMinute);
 	void prepareExplosion(uint8_t *source);
 	void fade();
+	void preparePalette(palette_entry* palette);
+	bool displayTimeChanged();
+	bool modeHasTransition(DisplayMode m);
 	
 	void set(const uint8_t *buf, palette_entry palette[]);
 	void set(const uint8_t *buf, palette_entry palette[], bool immediately);

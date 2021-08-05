@@ -28,8 +28,10 @@
 // global instance
 //---------------------------------------------------------------------------------------
 LEDFunctionsClass LED = LEDFunctionsClass();
-uint8_t fireBuf[NUM_PIXELS];
-uint8_t plasmaBuf[NUM_PIXELS];
+
+uint8_t fireBuf[NUM_PIXELS] __attribute__ ((aligned (4)));
+uint8_t plasmaBuf[NUM_PIXELS] __attribute__ ((aligned (4)));
+
 //---------------------------------------------------------------------------------------
 // variables in PROGMEM (mapping table, images)
 //---------------------------------------------------------------------------------------
@@ -117,16 +119,24 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[3][2] =
 			{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
 			{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
 		},
+#define L2_UHR 107,108,109
+#define L2_FUNF 7,8,9,10
+#define L2_ZEHN 11,12,13,14
+#define L2_NACH 35,36,37,38
+#define L2_VOR 39,40,41
+#define L2_HALB 44,45,46,47
+#define L2_ZWANZIG 15,16,17,18,19,20,21
+#define L2_DREIVIERTEL 22,23,24,25,26,27,28,29,30,31,32
 		{
-			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
+			{ 0,  0,  4,{ L2_UHR } },                             // UHR
 			{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
-			{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
-			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
-			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
+			{ 0, 10, 14,{ 11,12,13,14, 35,36,37,38 } },               		// ZEHN NACH
+			{ 1, 15, 19,{ 26,27,28,29,30,31,32 } },         						 // VIERTEL ++
+			{ 1, 20, 24,{ 11,12,13,14, 39,40,41, 44,45,46,47 } },        // ZEHN VOR HALB
 			{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
 			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
 			{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
-			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
+			{ 1, 40, 44,{ L2_ZEHN, L2_NACH, L2_HALB } },            		 // ZEHN NACH HALB
 			{ 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
 			{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
 			{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
@@ -418,10 +428,42 @@ void LEDFunctionsClass::begin(int pin)
 	this->strip->Begin();
 }
 const DisplayMode LEDFunctionsClass::randomModes[] = {
-	DisplayMode::plain, DisplayMode::fade, DisplayMode::flyingLettersVerticalUp, DisplayMode::flyingLettersVerticalDown, DisplayMode::explode,
-	DisplayMode::matrix, DisplayMode::heart, DisplayMode::fire, DisplayMode::plasma, DisplayMode::stars
+	DisplayMode::fade, DisplayMode::flyingLettersVerticalUp, DisplayMode::flyingLettersVerticalDown, DisplayMode::explode, DisplayMode::snake
 };
+#define NUM_RANDOM_MODES 5
 
+void LEDFunctionsClass::resetRainbowColor() {
+	this->currentRainbowColor.r = Config.fg.r;
+	this->currentRainbowColor.b = Config.fg.g;
+	this->currentRainbowColor.b = Config.fg.b;
+}
+
+void LEDFunctionsClass::preparePalette(palette_entry* palette) {
+		// load palette colors from configuration
+	palette[0].r = Config.bg.r;
+	palette[0].g = Config.bg.g;
+	palette[0].b = Config.bg.b;
+	palette[1].r = Config.fg.r;
+	palette[1].g = Config.fg.g;
+	palette[1].b = Config.fg.b;
+	palette[2].r = Config.s.r;
+	palette[2].g = Config.s.g;
+	palette[2].b = Config.s.b;
+	
+	if( this->displayOn ) {
+		if( Config.fgRainbow ) {
+			palette[1].r = this->currentRainbowColor.r;
+			palette[1].g = this->currentRainbowColor.g;
+			palette[1].b = this->currentRainbowColor.b;
+		} 
+	} else {
+		for(int i = 0; i<=2; i++) {
+			palette[i].r=0;
+			palette[i].g=0;
+			palette[i].b=0;
+		}
+	}
+}
 //---------------------------------------------------------------------------------------
 // process
 //
@@ -446,43 +488,39 @@ void LEDFunctionsClass::process()
 		if( this->h == Config.autoOnHour && this->m == Config.autoOnMin ) displayOn = true;
 	}
 
-	// load palette colors from configuration
 	palette_entry palette[3];
-	if( displayOn ) {
-		palette[0] = { Config.bg.r, Config.bg.g, Config.bg.b };
-		palette[1] = { Config.fg.r, Config.fg.g, Config.fg.b };
-		palette[2] = { Config.s.r,  Config.s.g,  Config.s.b };
-	} else {
-		palette[0] = { 0,0,0 };
-		palette[1] = { 0,0,0 };
-		palette[2] = { 0,0,0 };
-	}
+	this->preparePalette(palette);
+	bool displayTimeChanged = this->displayTimeChanged();
+	
+	int lm = this->lastM;
+	int lh = this->lastH;
+
+	this->lastM = this->m;
+	this->lastH = this->h;
 
 	// deal with random handling
-	if( this->randomTicker > 0 ) {
-		this->randomTicker--;
-	}
-	if( this->randomMode && this->randomTicker == 0) {
-		this->randomTicker = 100 * 60;
-		int idx = random(10);
-		this->setMode(randomModes[idx]);
+	if( this->randomMode != DisplayMode::plain && displayTimeChanged) {
+		this->randomMode = randomModes[random(NUM_RANDOM_MODES)];
+		this->mode = this->randomMode;
+		Serial.printf("random: mode changed to=%i\r\n", this->mode);
 	}
 
 	if( this->rainbowTicker > 0 ) {
 		this->rainbowTicker--;
 	}
-	if( Config.fgRainbow && this->rainbowTicker == 0) {
+	if( Config.fgRainbow && this->rainbowTicker <= 0) {
 		this->rainbowTicker = 800 * (3 - Config.rainbowSpeed);
 		if( this->rainbowIndex++ > 64 ) this->rainbowIndex = 0;
 		HsbColor hsb((float) this->rainbowIndex / 64.0, 1.0, 1.0 );
 		RgbColor col(hsb);
-		palette[1].r = col.R;
-		palette[1].g = col.G;
-		palette[1].b = col.B;
+		this->currentRainbowColor.r = col.R;
+		this->currentRainbowColor.g = col.G;
+		this->currentRainbowColor.b = col.B;
+		Serial.printf("rainbow=%i, r=%i, g=%i b=%i\r\n", this->rainbowIndex, col.R, col.G, col.B);
 	}
 
 	uint8_t buf[NUM_PIXELS];
-
+	//Serial.printf("mode=%i\r\n", this->mode);
 	switch (this->mode)
 	{
 	case DisplayMode::wifiManager:
@@ -520,10 +558,13 @@ void LEDFunctionsClass::process()
 		break;
 	case DisplayMode::flyingLettersVerticalUp:
 	case DisplayMode::flyingLettersVerticalDown:
-		this->renderFlyingLetters();
+		this->renderFlyingLetters(displayTimeChanged);
 		break;
 	case DisplayMode::explode:
-		this->renderExplosion();
+		this->renderExplosion(displayTimeChanged, lh, lm);
+		break;
+	case DisplayMode::snake:
+		this->renderSnake(displayTimeChanged, lh, lm);
 		break;
 	case DisplayMode::matrix:
 		this->renderMatrix();
@@ -583,6 +624,10 @@ void LEDFunctionsClass::setTime(int h, int m, int s, int ms)
 	this->ms = ms;
 }
 
+bool LEDFunctionsClass::modeHasTransition(DisplayMode m) {
+	return m == DisplayMode::snake || m == DisplayMode::flyingLettersVerticalDown 
+		|| m == DisplayMode::flyingLettersVerticalUp || m == DisplayMode::explode;
+}
 //---------------------------------------------------------------------------------------
 // setMode
 //
@@ -596,31 +641,17 @@ void LEDFunctionsClass::setMode(DisplayMode newMode)
 {
 	uint8_t buf[NUM_PIXELS];
 	DisplayMode previousMode = this->mode;
-	if( newMode == DisplayMode::random) {
-		int i = random(10);
-		this->randomMode = true;
-		this->randomTicker = 100 * 60;
-		newMode = randomModes[i];
+	if( newMode == DisplayMode::random ) {
+		if( this->randomMode == DisplayMode::plain)
+			this->randomMode = randomModes[random(NUM_RANDOM_MODES)];
+		newMode = this->randomMode;
 	} else {
-		this->mode = newMode;
-	}
+		this->randomMode = DisplayMode::plain;
+	} 
+	this->mode = newMode;
 
-	// if we changed to an animated letters mode, then start animation
-	// even if the current time did not yet change
-	if (newMode != previousMode &&
-		(newMode == DisplayMode::flyingLettersVerticalUp ||
-			newMode == DisplayMode::flyingLettersVerticalDown))
-	{
-		this->renderTime(buf, this->h, this->m, this->s, this->ms);
-		this->prepareFlyingLetters(buf);
-	}
-
-	// if we changed to exploding letters mode, then start animation
-	// even if the current time did not yet change
-	if (newMode != previousMode && newMode == DisplayMode::explode)
-	{
-		this->renderTime(buf, this->h, this->m, this->s, this->ms);
-		this->prepareExplosion(buf);
+	if (newMode != previousMode && modeHasTransition(newMode)) {
+		this->forceTransition = true;
 	}
 
 	this->process();
@@ -934,7 +965,8 @@ void LEDFunctionsClass::renderMatrix()
 	// iterate over all matrix objects, move and render them
 	for (MatrixObject &m : this->matrix) m.render(this->currentValues);
 }
-const palette_entry LEDFunctionsClass::firePalette[256] = {
+
+const palette_entry LEDFunctionsClass::firePalette[256] __attribute__ ((aligned (4))) = {
 	{0, 0, 0}, {4, 0, 0}, {8, 0, 0}, {12, 0, 0}, {16, 0, 0}, {20, 0, 0}, {24, 0, 0}, {28, 0, 0},
 	{32, 0, 0}, {36, 0, 0}, {40, 0, 0}, {44, 0, 0}, {48, 0, 0}, {52, 0, 0}, {56, 0, 0}, {60, 0, 0},
 	{64, 0, 0}, {68, 0, 0}, {72, 0, 0}, {76, 0, 0}, {80, 0, 0}, {85, 0, 0}, {89, 0, 0}, {93, 0, 0},
@@ -1157,10 +1189,16 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 	int ofs = 0;
 	Particle *p;
 	int delay;
-
+	Serial.printf("prepare explosion ... \n\r");
 	// compute angle increment
 	float angle_increment = 2.0f * 3.141592654f / (float)(PARTICLE_COUNT);
 
+	/*if( this->particles.size() == 0 ) {
+		for (int i = 0; i < PARTICLE_COUNT; i++) { // init
+			p = new Particle(0, 0, 0, 0, 100);
+			this->particles.push_back(p);
+		}
+	}*/
 	// iterate over every position in the screen buffer
 	for (int y = 0; y < LEDFunctionsClass::height; y++)
 	{
@@ -1183,7 +1221,7 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 					vx = PARTICLE_SPEED * sin(angle);
 					vy = PARTICLE_SPEED * cos(angle);
 
-					// create new particle and add it to particles list
+					//this->particles[i]->init(x, y, vx, vy, delay);
 					p = new Particle(x, y, vx, vy, delay);
 					this->particles.push_back(p);
 					angle += angle_increment;
@@ -1191,6 +1229,107 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 			}
 		}
 	}
+}
+
+bool LEDFunctionsClass::activeParticles() {
+	int c = 0;
+	for (Particle *p : this->particles) if(p->alive)c++;
+	return c;
+}
+
+void LEDFunctionsClass::renderSnake(bool transition, int h, int m) {
+	uint8_t buf[NUM_PIXELS] __attribute__ ((aligned (4)));
+	uint8_t act[NUM_PIXELS] __attribute__ ((aligned (4)));
+	palette_entry palette[5];	// 4/5. color for snake
+	this->preparePalette(palette);
+
+  palette[3] = {255,0,0};
+	palette[4] = {0,255,0};
+
+	if (transition) {
+		// prepare new animation with old time
+		this->renderTime(this->animationBuf, h, m, 0, 0);
+		snakeX = 0;
+		snakeY = 0;
+		snakeDX = 1;
+		snakeHead = 0;
+		snakeTail = 0;
+		snake[snakeHead++] = 0;
+		snakeTicker = snakeSpeed;
+		Serial.printf("prepare snake ... \n\r");
+	}
+
+	// create empty buffer filled with seconds color
+	this->fillBackground(this->s, this->ms, buf);
+	this->fillBackground(this->s, this->ms, act);
+
+	// minutes 1...4 for the corners
+	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[height * width + i] = 1;
+	this->renderTime(act, this->h, this->m, this->s, this->ms);
+
+	// animate
+	int len = snakeHead > snakeTail ? snakeHead - snakeTail : snakeTail - snakeHead;
+	if( snakeY < height || len > 0) { // animate until the tail has vanished
+		if( snakeTicker <= 0 ) {
+			snakeTicker = snakeSpeed;
+
+			if( snakeY < height ) { //move
+				// check if there is someting in current line
+				int hit = 0;
+				for(int x = 0; x < width; x++ ) {
+					if( animationBuf[x+snakeY*width] == 1 || act[x+snakeY*width] == 1){
+						hit=1;
+						break;
+					}
+				}
+				if( hit )
+					snakeX += snakeDX;
+				else
+					snakeY++;
+				if( snakeX < 0 || snakeX > width-1 ) {
+					snakeY++;
+					snakeDX = snakeDX == 1 ? -1 : 1;
+					snakeX += snakeDX;
+				}
+				Serial.printf("snake moved x=%i, y=%i\n\r", snakeX, snakeY);
+				snake[snakeHead++] = snakeY*width + snakeX;
+			} 
+			int len = snakeHead > snakeTail ? snakeHead - snakeTail : snakeTail - snakeHead;
+			if( len > 8 || snakeY >= height ) snakeTail++;
+			if( snakeHead == SNAKE_LEN ) snakeHead = 0;
+			if( snakeTail == SNAKE_LEN ) snakeTail = 0;
+		} else {
+			snakeTicker--;
+		}
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++ ) {
+				if( y < snakeY ) {
+					buf[x+y*width] = act[x+y*width];
+				} else if( y > snakeY ) {
+					buf[x+y*width] = animationBuf[x+y*width];
+				} else {
+					if( snakeDX == 1) { // rennt rechts
+						buf[x+y*width] = x < snakeX ? act[x+y*width] : animationBuf[x+y*width];
+					} else {
+						buf[x+y*width] = x > snakeX ? act[x+y*width] : animationBuf[x+y*width];
+					}
+				}
+			}
+		}
+		uint8_t t = snakeTail;
+		while( t != snakeHead ) {
+			buf[snake[t]] = 4;
+			t++;
+			if(t == SNAKE_LEN) t=0;
+		}
+		if(snakeY*width + snakeX < width*height  ) buf[snakeY*width + snakeX] = 3;
+		this->set(buf, palette, true);
+	} else {
+		this->renderTime(buf, this->h, this->m, this->s, this->ms);
+		this->set(buf, palette, true);
+		this->fade();
+	}
+
 }
 
 //---------------------------------------------------------------------------------------
@@ -1201,28 +1340,19 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderExplosion()
+void LEDFunctionsClass::renderExplosion(bool transition, int h, int m)
 {
-	std::vector<Particle*> particlesToKeep;
 	uint8_t buf[NUM_PIXELS];
 
-	// load palette colors from configuration
-	palette_entry palette[] = {
-		{ Config.bg.r, Config.bg.g, Config.bg.b },
-		{ Config.fg.r, Config.fg.g, Config.fg.b },
-		{ Config.s.r,  Config.s.g,  Config.s.b }
-	};
+	palette_entry palette[3];
+	this->preparePalette(palette);
 
 	// check if the displayed time has changed
-	if ((this->m / 5 != this->lastM / 5) || (this->h != this->lastH))
-	{
+	if (transition) {
 		// prepare new animation with old time
-		this->renderTime(buf, this->lastH, this->lastM, 0, 0);
+		this->renderTime(buf, h, m, 0, 0);
 		this->prepareExplosion(buf);
 	}
-
-	this->lastM = this->m;
-	this->lastH = this->h;
 
 	// create empty buffer filled with seconds color
 	this->fillBackground(this->s, this->ms, buf);
@@ -1231,27 +1361,20 @@ void LEDFunctionsClass::renderExplosion()
 	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[10 * 11 + i] = 1;
 
 	// Do we have something to explode?
-	if (this->particles.size() > 0)
+	if (this->activeParticles() > 0)
 	{
 		// transfer background created by fillBackground to target buffer
 		this->set(buf, palette, true);
-
 		// iterate over all particles
-		for (Particle *p : this->particles)
-		{
+		for (Particle *p : this->particles)	{
 			// move and render current particle
-			p->render(this->currentValues, palette);
-
-			// if particle is still active, keep it; kill it otherwise
-			if (p->alive) particlesToKeep.push_back(p); else delete p;
+			if(p->alive) p->render(this->currentValues, palette);
 		}
-
-		// only keep active particles, discard the rest
-		// -> use particlesToKeep as new list
-		this->particles.swap(particlesToKeep);
 	}
 	else
 	{
+		for(int i = this->particles.size()-1; i>=0; i--) delete this->particles[i]; // delete in reverse order
+		this->particles.clear();
 		// present the current time in boring mode with simple fading
 		this->renderTime(buf, this->h, this->m, this->s, this->ms);
 		this->set(buf, palette, false);
@@ -1337,6 +1460,12 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 	}
 }
 
+bool LEDFunctionsClass::displayTimeChanged() {
+	bool r = forceTransition || (this->m / 5 != this->lastM / 5) || (this->h != this->lastH);
+	forceTransition = false;
+	return r;
+}
+
 //---------------------------------------------------------------------------------------
 // renderFlyingLetters
 //
@@ -1346,28 +1475,19 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderFlyingLetters()
+void LEDFunctionsClass::renderFlyingLetters(bool transition)
 {
 	uint8_t buf[NUM_PIXELS];
 
-	// load palette colors from configuration
-	palette_entry palette[] = {
-		{ Config.bg.r, Config.bg.g, Config.bg.b },
-		{ Config.fg.r, Config.fg.g, Config.fg.b },
-		{ Config.s.r,  Config.s.g,  Config.s.b }
-	};
+	palette_entry palette[3];
+	this->preparePalette(palette);
 
 	// check if the displayed time has changed
-	if ((this->m / 5 != this->lastM / 5) || (this->h != this->lastH))
-	{
+	if (transition){
 		// prepare new animation
 		this->renderTime(buf, this->h, this->m, this->s, this->ms);
 		this->prepareFlyingLetters(buf);
 	}
-
-	this->lastM = this->m;
-	this->lastH = this->h;
-
 
 	// create empty buffer filled with seconds color
 	this->fillBackground(this->s, this->ms, buf);
