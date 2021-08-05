@@ -399,13 +399,13 @@ void WebServerClass::handleSetVar()
 		}
 		if(this->server->arg("name") == "displaymode" ) {
 			int newMode = this->server->arg("value").toInt();
-			if( newMode >= 0 && newMode <= 10 ) {
+			if( newMode >= 0 && newMode <= 11 ) {
 				DisplayMode mode = (DisplayMode)newMode;
 				LED.setMode(mode);
 				Config.defaultMode = mode;
 				mustSave = true;
 			} else {
-				err =  "ERR: displaymode not in range 0..10";
+				err =  "ERR: displaymode not in range 0..11";
 			}
 		}
 	}
@@ -469,7 +469,7 @@ void WebServerClass::handleGetConfig() {
 	sprintf(autoOff,"%02d:%02d", Config.autoOffHour, Config.autoOffMin);
 	json["autoOff"] = autoOff;
 	json["tmpl"] = Config.tmpl;
-	json["mode"] = (int)Config.defaultMode;
+	json["displaymode"] = (int)Config.defaultMode;
 	char fg[9];
 	sprintf(fg,"#%02x%02x%02x", Config.fg.r, Config.fg.g, Config.fg.b);
 	json["fg"] = fg;
