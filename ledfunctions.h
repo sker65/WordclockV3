@@ -48,11 +48,11 @@ typedef struct _xy_t
 #define NUM_STARS 10
 #define NUM_BRIGHTNESS_CURVES 2
 
-class LEDFunctionsClass
+class LEDFunctions
 {
 public:
-	LEDFunctionsClass();
-	~LEDFunctionsClass();
+	LEDFunctions();
+	~LEDFunctions();
 	void begin(int pin);
 	void process();
 	void setTime(int h, int m, int s, int ms);
@@ -151,6 +151,6 @@ private:
 	static const uint32_t PROGMEM brightnessCurvesB[256*NUM_BRIGHTNESS_CURVES];;
 };
 
-extern LEDFunctionsClass LED;
+extern LEDFunctions LED;
 
 #endif

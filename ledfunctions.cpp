@@ -21,13 +21,13 @@
 #include "ledfunctions.h"
 //hallo
 //---------------------------------------------------------------------------------------
-#if 1 // variables
+
 //---------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------
 // global instance
 //---------------------------------------------------------------------------------------
-LEDFunctionsClass LED = LEDFunctionsClass();
+LEDFunctions LED = LEDFunctions();
 
 uint8_t fireBuf[NUM_PIXELS] __attribute__ ((aligned (4)));
 uint8_t plasmaBuf[NUM_PIXELS] __attribute__ ((aligned (4)));
@@ -42,9 +42,10 @@ uint8_t plasmaBuf[NUM_PIXELS] __attribute__ ((aligned (4)));
 // param1 is the matching minimum minute count (inclusive)
 // param2 is the matching maximum minute count (inclusive)
 
-const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[3][2] =
+const std::vector<leds_template_t> LEDFunctions::minutesTemplate[3][2] =
 {
-	{	
+	{
+		// layout 1
 		{
 			{ 0,  0,  4,{ 106, 107, 108 } },                                  // UHR
 			{ 0,  5,  9,{ 7, 8, 9, 10, 34, 35, 36, 37 } },                    // FüNF NACH
@@ -74,6 +75,7 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[3][2] =
 			{ 1, 55, 59,{ 7, 8, 9, 10, 30, 31, 32 } }                         // FüNF VOR
 		}
 	},
+	// layout 2
 	{
 		{
 			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
@@ -105,41 +107,43 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[3][2] =
 		}
 	},
 	{
+// words for layout 3
+#define L3_UHR 107,108,109
+#define L3_FUNF 7,8,9,10
+#define L3_ZEHN 11,12,13,14
+#define L3_NACH 35,36,37,38
+#define L3_VOR 39,40,41
+#define L3_HALB 44,45,46,47
+#define L3_ZWANZIG 15,16,17,18,19,20,21
+#define L3_DREI 22,23,24
+#define L3_VIERTEL 26,27,28,29,30,31,32
 		{
-			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
-			{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
-			{ 0, 10, 14,{ 11, 12, 13, 14, 35,36,37,38 } },               // ZEHN NACH
-			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 35,36,37,38 } },         // VIERTEL NACH
-			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 35,36,37,38 } },         // ZWANZIG NACH
-			{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
-			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
-			{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
-			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 39,40,41 } },            // ZWANZIG VOR
-			{ 1, 45, 49,{ 26,27,28,29,30,31,32, 39,40,41 } },            // VIERTEL VOR
-			{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
-			{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+			{ 0,  0,  4,{ L3_UHR } },
+			{ 0,  5,  9,{ L3_FUNF, L3_NACH } },
+			{ 0, 10, 14,{ L3_ZEHN, L3_NACH } },
+			{ 0, 15, 19,{ L3_VIERTEL, L3_NACH } },
+			{ 0, 20, 24,{ L3_ZWANZIG, L3_NACH } },
+			{ 1, 25, 29,{ L3_FUNF, L3_VOR, L3_HALB } },
+			{ 1, 30, 34,{ L3_HALB } },
+			{ 1, 35, 39,{ L3_FUNF, L3_NACH, L3_HALB } },
+			{ 1, 40, 44,{ L3_ZWANZIG, L3_VOR } },
+			{ 1, 45, 49,{ L3_VIERTEL, L3_VOR } },
+			{ 1, 50, 54,{ L3_ZEHN, L3_VOR } },
+			{ 1, 55, 59,{ L3_FUNF, L3_VOR } }
 		},
-#define L2_UHR 107,108,109
-#define L2_FUNF 7,8,9,10
-#define L2_ZEHN 11,12,13,14
-#define L2_NACH 35,36,37,38
-#define L2_VOR 39,40,41
-#define L2_HALB 44,45,46,47
-#define L2_ZWANZIG 15,16,17,18,19,20,21
-#define L2_DREIVIERTEL 22,23,24,25,26,27,28,29,30,31,32
 		{
-			{ 0,  0,  4,{ L2_UHR } },                             // UHR
-			{ 0,  5,  9,{ 7,8,9,10, 35,36,37,38 } },                     // FüNF NACH
-			{ 0, 10, 14,{ 11,12,13,14, 35,36,37,38 } },               		// ZEHN NACH
-			{ 1, 15, 19,{ 26,27,28,29,30,31,32 } },         						 // VIERTEL ++
-			{ 1, 20, 24,{ 11,12,13,14, 39,40,41, 44,45,46,47 } },        // ZEHN VOR HALB
-			{ 1, 25, 29,{ 7,8,9,10, 39,40,41, 44,45,46,47 } },           // FüNF VOR HALB
-			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
-			{ 1, 35, 39,{ 7,8,9,10, 35,36,37,38, 44,45,46,47 } },        // FüNF NACH HALB
-			{ 1, 40, 44,{ L2_ZEHN, L2_NACH, L2_HALB } },            		 // ZEHN NACH HALB
-			{ 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },         // DREIVIERTEL
-			{ 1, 50, 54,{ 11,12,13,14, 39,40,41 } },                     // ZEHN VOR
-			{ 1, 55, 59,{ 7,8,9,10, 39,40,41 } }                         // FüNF VOR
+			{ 0,  0,  4,{ L3_UHR } },
+			{ 0,  5,  9,{ L3_FUNF, L3_NACH } },
+			{ 0, 10, 14,{ L3_ZEHN, L3_NACH } },
+			{ 1, 15, 19,{ L3_VIERTEL } },
+			{ 1, 20, 24,{ L3_ZEHN, L3_VOR, L3_HALB } },
+			{ 1, 25, 29,{ L3_FUNF, L3_VOR, L3_HALB } }, 
+			{ 1, 30, 34,{ L3_HALB } },
+			{ 1, 35, 39,{ L3_FUNF, L3_NACH, L3_HALB } },
+			{ 1, 40, 44,{ L3_ZEHN, L3_NACH, L3_HALB } }, 
+			{ 1, 45, 49,{ L3_DREI,L3_VIERTEL } },
+			{ 1, 50, 54,{ L3_ZEHN, L3_VOR } },
+			{ 1, 55, 59,{ L3_FUNF, L3_VOR } }
 		}
 	}
 };
@@ -151,61 +155,60 @@ const std::vector<leds_template_t> LEDFunctionsClass::minutesTemplate[3][2] =
 //     = 2: matches hour in param1 and param2 whenever minute is >= 5
 // param1: hour to match
 // param2: alternative hour to match
-#if 1 // code folding hours template
-const std::vector<leds_template_t> LEDFunctionsClass::hoursTemplate[3] =
+const std::vector<leds_template_t> LEDFunctions::hoursTemplate[3] =
 {
-{
-	{ 0,  0, 12,{ 100, 101, 102, 103, 104 } }, // ZWÖLF
-	{ 1,  1, 13,{ 44, 45, 46 } },             // EIN
-	{ 2,  1, 13,{ 44, 45, 46, 47 } },         // EINS
-	{ 0,  2, 14,{ 49, 50, 51, 52 } },         // ZWEI
-	{ 0,  3, 15,{ 56, 57, 58, 59 } },         // DREI
-	{ 0,  4, 16,{ 61, 62, 63, 64 } },         // VIER
-	{ 0,  5, 17,{ 66, 67, 68, 69 } },         // FÜNF
-	{ 0,  6, 18,{ 71, 72, 73, 74, 75 } },     // SECHS
-	{ 0,  7, 19,{ 78, 79, 80, 81, 82, 83 } }, // SIEBEN
-	{ 0,  8, 20,{ 84, 85, 86, 87 } },         // ACHT
-	{ 0,  9, 21,{ 88, 89, 90, 91 } },         // NEUN
-	{ 0, 10, 22,{ 92, 93, 94, 95 } },         // ZEHN
-	{ 0, 11, 23,{ 96, 97, 98 } },             // ELF
-},
-{
-  { 0,  0, 12,{ 94,95,96,97,98 } },      // ZWÖLF
-  { 1,  1, 13,{ 55,56,57 } },            // EIN
-  { 2,  1, 13,{ 55,56,57,58 } },         // EINS
-  { 0,  2, 14,{ 62,63,64,65 } },         // ZWEI
-  { 0,  3, 15,{ 66,67,68,69 } },         // DREI
-  { 0,  4, 16,{ 73,74,75,76 } },         // VIER
-  { 0,  5, 17,{ 51,52,53,54 } },         // FÜNF
-  { 0,  6, 18,{ 77,78,79,80 } },         // SECHS
-  { 0,  7, 19,{ 88,89,90,91,92,93 } },   // SIEBEN
-  { 0,  8, 20,{ 84, 85, 86, 87 } },      // ACHT
-  { 0,  9, 21,{ 102,103,104,105 } },     // NEUN
-  { 0, 10, 22,{ 99,100,101,102 } },      // ZEHN
-  { 0, 11, 23,{ 49,50,51 } },            // ELF
-},
-{
-  { 0,  0, 12,{ 49,50,51,52,53 } },      // ZWÖLF
-  { 1,  1, 13,{ 57,58,59 } },            // EIN
-  { 2,  1, 13,{ 57,58,59,60 } },         // EINS
-  { 0,  2, 14,{ 55,56,57,58 } },         // ZWEI
-  { 0,  3, 15,{ 67,68,69,70 } },         // DREI
-  { 0,  4, 16,{ 84,85,86,87 } },         // VIER
-  { 0,  5, 17,{ 73,74,75,76 } },         // FÜNF
-  { 0,  6, 18,{ 100,101,102,103,104 } }, // SECHS
-  { 0,  7, 19,{ 60,61,62,63,64,65 } },   // SIEBEN
-  { 0,  8, 20,{ 89,90,91,92 } },         // ACHT
-  { 0,  9, 21,{ 80,81,82,83 } },         // NEUN
-  { 0, 10, 22,{ 93,94,95,96 } },         // ZEHN
-  { 0, 11, 23,{ 77,78,79 } },            // ELF
-} 
+	{
+		{ 0,  0, 12,{ 100, 101, 102, 103, 104 } }, // ZWÖLF
+		{ 1,  1, 13,{ 44, 45, 46 } },             // EIN
+		{ 2,  1, 13,{ 44, 45, 46, 47 } },         // EINS
+		{ 0,  2, 14,{ 49, 50, 51, 52 } },         // ZWEI
+		{ 0,  3, 15,{ 56, 57, 58, 59 } },         // DREI
+		{ 0,  4, 16,{ 61, 62, 63, 64 } },         // VIER
+		{ 0,  5, 17,{ 66, 67, 68, 69 } },         // FÜNF
+		{ 0,  6, 18,{ 71, 72, 73, 74, 75 } },     // SECHS
+		{ 0,  7, 19,{ 78, 79, 80, 81, 82, 83 } }, // SIEBEN
+		{ 0,  8, 20,{ 84, 85, 86, 87 } },         // ACHT
+		{ 0,  9, 21,{ 88, 89, 90, 91 } },         // NEUN
+		{ 0, 10, 22,{ 92, 93, 94, 95 } },         // ZEHN
+		{ 0, 11, 23,{ 96, 97, 98 } },             // ELF
+	},
+	{
+		{ 0,  0, 12,{ 94,95,96,97,98 } },      // ZWÖLF
+		{ 1,  1, 13,{ 55,56,57 } },            // EIN
+		{ 2,  1, 13,{ 55,56,57,58 } },         // EINS
+		{ 0,  2, 14,{ 62,63,64,65 } },         // ZWEI
+		{ 0,  3, 15,{ 66,67,68,69 } },         // DREI
+		{ 0,  4, 16,{ 73,74,75,76 } },         // VIER
+		{ 0,  5, 17,{ 51,52,53,54 } },         // FÜNF
+		{ 0,  6, 18,{ 77,78,79,80 } },         // SECHS
+		{ 0,  7, 19,{ 88,89,90,91,92,93 } },   // SIEBEN
+		{ 0,  8, 20,{ 84, 85, 86, 87 } },      // ACHT
+		{ 0,  9, 21,{ 102,103,104,105 } },     // NEUN
+		{ 0, 10, 22,{ 99,100,101,102 } },      // ZEHN
+		{ 0, 11, 23,{ 49,50,51 } },            // ELF
+	},
+	{
+		{ 0,  0, 12,{ 49,50,51,52,53 } },      // ZWÖLF
+		{ 1,  1, 13,{ 57,58,59 } },            // EIN
+		{ 2,  1, 13,{ 57,58,59,60 } },         // EINS
+		{ 0,  2, 14,{ 55,56,57,58 } },         // ZWEI
+		{ 0,  3, 15,{ 67,68,69,70 } },         // DREI
+		{ 0,  4, 16,{ 84,85,86,87 } },         // VIER
+		{ 0,  5, 17,{ 73,74,75,76 } },         // FÜNF
+		{ 0,  6, 18,{ 100,101,102,103,104 } }, // SECHS
+		{ 0,  7, 19,{ 60,61,62,63,64,65 } },   // SIEBEN
+		{ 0,  8, 20,{ 89,90,91,92 } },         // ACHT
+		{ 0,  9, 21,{ 80,81,82,83 } },         // NEUN
+		{ 0, 10, 22,{ 93,94,95,96 } },         // ZEHN
+		{ 0, 11, 23,{ 77,78,79 } },            // ELF
+	} 
 };
-#endif
 
-#if 1 // code folding mapping table
+
+
 // this mapping table maps the linear memory buffer structure used throughout the
 // project to the physical layout of the LEDs
-const uint32_t PROGMEM LEDFunctionsClass::mapping[NUM_PIXELS] = {
+const uint32_t PROGMEM LEDFunctions::mapping[NUM_PIXELS] = {
 	0  , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  ,
 	21  , 20  , 19  , 18  , 17  , 16  , 15  , 14  , 13  , 12  , 11  ,
 	22  , 23  , 24  , 25  , 26  , 27  , 28  , 29  , 30  , 31  , 32  ,
@@ -218,10 +221,9 @@ const uint32_t PROGMEM LEDFunctionsClass::mapping[NUM_PIXELS] = {
 	109 , 108 , 107 , 106 , 105 , 104 , 103 , 102 , 101 , 100 , 99 ,
 	110, 111, 112, 113
 };
-#endif
 
-#if 1 // code folding brightness adjust tables
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurveSelect[NUM_PIXELS] = {
+
+const uint32_t PROGMEM LEDFunctions::brightnessCurveSelect[NUM_PIXELS] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -246,7 +248,7 @@ const uint32_t PROGMEM LEDFunctionsClass::brightnessCurveSelect[NUM_PIXELS] = {
 	0, 1, 0, 1*/
 };
 
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES] = {
+const uint32_t PROGMEM LEDFunctions::brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES] = {
 	// LED type 1, 1:1 mapping (neutral)
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
@@ -287,7 +289,7 @@ const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesR[256 * NUM_BRIGHTNESS
 	216, 216, 218, 218
 };
 
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES] = {
+const uint32_t PROGMEM LEDFunctions::brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES] = {
 	// LED type 1, 1:1 mapping (neutral)
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
@@ -328,7 +330,7 @@ const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesG[256 * NUM_BRIGHTNESS
 	232, 234, 234
 };
 
-const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesB[256 * NUM_BRIGHTNESS_CURVES] = {
+const uint32_t PROGMEM LEDFunctions::brightnessCurvesB[256 * NUM_BRIGHTNESS_CURVES] = {
 	// LED type 1, 1:1 mapping (neutral)
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
@@ -369,36 +371,33 @@ const uint32_t PROGMEM LEDFunctionsClass::brightnessCurvesB[256 * NUM_BRIGHTNESS
 	226, 228, 228, 230
 };
 
-#endif
-
-#endif
 
 //---------------------------------------------------------------------------------------
-#if 1 // getters, setters, data flow
+// getters, setters, data flow
 //---------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------
-// ~LEDFunctionsClass
+// ~LEDFunctions
 //
 // Destructor
 //
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-LEDFunctionsClass::~LEDFunctionsClass()
+LEDFunctions::~LEDFunctions()
 {
 	//	for(MatrixObject* m : this->matrix_objects) delete m;
 }
 
 //---------------------------------------------------------------------------------------
-// LEDFunctionsClass
+// LEDFunctions
 //
 // Constructor, initializes data structures
 //
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-LEDFunctionsClass::LEDFunctionsClass()
+LEDFunctions::LEDFunctions()
 {
 	// initialize matrix objects with random coordinates
 	for (int i = 0; i < NUM_MATRIX_OBJECTS; i++)
@@ -421,24 +420,24 @@ LEDFunctionsClass::LEDFunctionsClass()
 // -> pin: hardware pin to use for WS2812B data output
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::begin(int pin)
+void LEDFunctions::begin(int pin)
 {
 	//this->pixels = new Adafruit_NeoPixel(NUM_PIXELS, pin, NEO_GRB + NEO_KHZ800);
   this->strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod>(NUM_PIXELS);
 	this->strip->Begin();
 }
-const DisplayMode LEDFunctionsClass::randomModes[] = {
+const DisplayMode LEDFunctions::randomModes[] = {
 	DisplayMode::fade, DisplayMode::flyingLettersVerticalUp, DisplayMode::flyingLettersVerticalDown, DisplayMode::explode, DisplayMode::snake
 };
 #define NUM_RANDOM_MODES 5
 
-void LEDFunctionsClass::resetRainbowColor() {
+void LEDFunctions::resetRainbowColor() {
 	this->currentRainbowColor.r = Config.fg.r;
 	this->currentRainbowColor.b = Config.fg.g;
 	this->currentRainbowColor.b = Config.fg.b;
 }
 
-void LEDFunctionsClass::preparePalette(palette_entry* palette) {
+void LEDFunctions::preparePalette(palette_entry* palette) {
 		// load palette colors from configuration
 	palette[0].r = Config.bg.r;
 	palette[0].g = Config.bg.g;
@@ -472,7 +471,7 @@ void LEDFunctionsClass::preparePalette(palette_entry* palette) {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::process()
+void LEDFunctions::process()
 {
 	if (Config.debugMode) return;
 
@@ -602,7 +601,7 @@ void LEDFunctionsClass::process()
 // -> brightness: [0...256]
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::setBrightness(int brightness)
+void LEDFunctions::setBrightness(int brightness)
 {
 	this->brightness = brightness;
 }
@@ -616,7 +615,7 @@ void LEDFunctionsClass::setBrightness(int brightness)
 // -> h, m, s, ms: Time in hours, minutes, seconds, milliseconds
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::setTime(int h, int m, int s, int ms)
+void LEDFunctions::setTime(int h, int m, int s, int ms)
 {
 	this->h = h;
 	this->m = m;
@@ -624,7 +623,7 @@ void LEDFunctionsClass::setTime(int h, int m, int s, int ms)
 	this->ms = ms;
 }
 
-bool LEDFunctionsClass::modeHasTransition(DisplayMode m) {
+bool LEDFunctions::modeHasTransition(DisplayMode m) {
 	return m == DisplayMode::snake || m == DisplayMode::flyingLettersVerticalDown 
 		|| m == DisplayMode::flyingLettersVerticalUp || m == DisplayMode::explode;
 }
@@ -632,12 +631,12 @@ bool LEDFunctionsClass::modeHasTransition(DisplayMode m) {
 // setMode
 //
 // Sets the display mode to one of the members of the DisplayMode enum and thus changes
-// what will be shown on the display during the next calls of LEDFunctionsClass.process()
+// what will be shown on the display during the next calls of LEDFunctions.process()
 //
 // -> newMode: mode to be set
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::setMode(DisplayMode newMode)
+void LEDFunctions::setMode(DisplayMode newMode)
 {
 	uint8_t buf[NUM_PIXELS];
 	DisplayMode previousMode = this->mode;
@@ -670,7 +669,7 @@ void LEDFunctionsClass::setMode(DisplayMode newMode)
 //	palette: color definition for source buffer
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[])
+void LEDFunctions::set(const uint8_t *buf, palette_entry palette[])
 {
 	this->set(buf, palette, false);
 }
@@ -689,7 +688,7 @@ void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[])
 //	  immediately: if true, display buffer immediately; fade to new colors if false
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[],
+void LEDFunctions::set(const uint8_t *buf, palette_entry palette[],
 	bool immediately)
 {
 	this->setBuffer(this->targetValues, buf, palette);
@@ -712,7 +711,7 @@ void LEDFunctionsClass::set(const uint8_t *buf, palette_entry palette[],
 //	  palette: colors for indexed source buffer
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::setBuffer(uint8_t *target, const uint8_t *source,
+void LEDFunctions::setBuffer(uint8_t *target, const uint8_t *source,
 	palette_entry palette[])
 {
 	uint32_t mapping, palette_index, curveOffset;
@@ -731,8 +730,8 @@ void LEDFunctionsClass::setBuffer(uint8_t *target, const uint8_t *source,
 		if (byteCounter == 0) currentDWord = buf[i >> 2];
 
 		palette_index = currentBytes[byteCounter];
-		mapping = LEDFunctionsClass::mapping[i] * 3;
-		curveOffset = LEDFunctionsClass::brightnessCurveSelect[i] << 8;
+		mapping = LEDFunctions::mapping[i] * 3;
+		curveOffset = LEDFunctions::brightnessCurveSelect[i] << 8;
 
 		// select color value using palette and brightness correction curves
 		target[mapping + 0] = brightnessCurvesR[curveOffset + palette[palette_index].r];
@@ -753,7 +752,7 @@ void LEDFunctionsClass::setBuffer(uint8_t *target, const uint8_t *source,
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::fade()
+void LEDFunctions::fade()
 {
 	static int prescaler = 0;
 	if (++prescaler < 2) return;
@@ -780,7 +779,7 @@ void LEDFunctionsClass::fade()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::show()
+void LEDFunctions::show()
 {
 	uint8_t *data = this->currentValues;
 	int ofs = 0;
@@ -807,11 +806,11 @@ void LEDFunctionsClass::show()
 //    y: y coordinate
 // <- offset for given coordinates
 //---------------------------------------------------------------------------------------
-int LEDFunctionsClass::getOffset(int x, int y)
+int LEDFunctions::getOffset(int x, int y)
 {
-	if (x >= 0 && y >= 0 && x < LEDFunctionsClass::width && y < LEDFunctionsClass::height)
+	if (x >= 0 && y >= 0 && x < LEDFunctions::width && y < LEDFunctions::height)
 	{
-		return LEDFunctionsClass::mapping[x + y * LEDFunctionsClass::width] * 3;
+		return LEDFunctions::mapping[x + y * LEDFunctions::width] * 3;
 	}
 	else
 	{
@@ -830,16 +829,14 @@ int LEDFunctionsClass::getOffset(int x, int y)
 //    buf: destination buffer
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::fillBackground(int seconds, int milliseconds, uint8_t *buf)
+void LEDFunctions::fillBackground(int seconds, int milliseconds, uint8_t *buf)
 {
 	int pos = (((seconds * 1000 + milliseconds) * 110) / 60000) + 1;
 	for (int i = 0; i < NUM_PIXELS; i++) buf[i] = (i < pos) ? 2 : 0;
 }
 
-#endif
-
 //---------------------------------------------------------------------------------------
-#if 1 // rendering methods
+// rendering methods
 //---------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------
@@ -852,7 +849,7 @@ void LEDFunctionsClass::fillBackground(int seconds, int milliseconds, uint8_t *b
 //            filled with palette indexes representing the time
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
+void LEDFunctions::renderTime(uint8_t *target, int h, int m, int s, int ms)
 {
 	this->fillBackground(s, ms, target);
 
@@ -873,7 +870,7 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 	int mt = Config.minuteType;
 	if( mt>1 || mt <0 ) mt = 0;
 	int adjust_hour = 0;
-	for (leds_template_t t : LEDFunctionsClass::minutesTemplate[Config.tmpl][mt])
+	for (leds_template_t t : LEDFunctions::minutesTemplate[Config.tmpl][mt])
 	{
 		// test if this template matches the current minute
 		if (m >= t.param1 && m <= t.param2)
@@ -890,7 +887,7 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 	if (h > 23)	h -= 24;
 
 	// iterate over hours template
-	for (leds_template_t t : LEDFunctionsClass::hoursTemplate[Config.tmpl])
+	for (leds_template_t t : LEDFunctions::hoursTemplate[Config.tmpl])
 	{
 		// test if this template matches the current hour
 		if ((t.param1 == h || t.param2 == h) &&
@@ -934,7 +931,7 @@ void LEDFunctionsClass::renderTime(uint8_t *target, int h, int m, int s, int ms)
 //           window)
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderHourglass(uint8_t animationStep, bool green)
+void LEDFunctions::renderHourglass(uint8_t animationStep, bool green)
 {
 	// colors in palette: black, white, yellow
 	palette_entry p[] = { { 0, 0, 0 },{ 255, 255, 255 },{ 255, 255, 0 },{ 255, 255, 0 } };
@@ -954,7 +951,7 @@ void LEDFunctionsClass::renderHourglass(uint8_t animationStep, bool green)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderMatrix()
+void LEDFunctions::renderMatrix()
 {
 	// clear buffer
 	memset(this->currentValues, 0, sizeof(this->currentValues));
@@ -966,7 +963,7 @@ void LEDFunctionsClass::renderMatrix()
 	for (MatrixObject &m : this->matrix) m.render(this->currentValues);
 }
 
-const palette_entry LEDFunctionsClass::firePalette[256] __attribute__ ((aligned (4))) = {
+const palette_entry LEDFunctions::firePalette[256] __attribute__ ((aligned (4))) = {
 	{0, 0, 0}, {4, 0, 0}, {8, 0, 0}, {12, 0, 0}, {16, 0, 0}, {20, 0, 0}, {24, 0, 0}, {28, 0, 0},
 	{32, 0, 0}, {36, 0, 0}, {40, 0, 0}, {44, 0, 0}, {48, 0, 0}, {52, 0, 0}, {56, 0, 0}, {60, 0, 0},
 	{64, 0, 0}, {68, 0, 0}, {72, 0, 0}, {76, 0, 0}, {80, 0, 0}, {85, 0, 0}, {89, 0, 0}, {93, 0, 0},
@@ -1000,7 +997,7 @@ const palette_entry LEDFunctionsClass::firePalette[256] __attribute__ ((aligned 
 	{255, 255, 230}, {255, 255, 232}, {255, 255, 234}, {255, 255, 235}, {255, 255, 237}, {255, 255, 238}, {255, 255, 240}, {255, 255, 242},
 	{255, 255, 243}, {255, 255, 245}, {255, 255, 246}, {255, 255, 248}, {255, 255, 250}, {255, 255, 251}, {255, 255, 253}, {255, 255, 255}
 };
-const palette_entry LEDFunctionsClass::plasmaPalette[256] = {
+const palette_entry LEDFunctions::plasmaPalette[256] = {
 	{255, 0, 0}, {255, 6, 0}, {255, 12, 0}, {255, 18, 0}, {255, 24, 0}, {255, 30, 0}, {255, 36, 0}, {255, 42, 0},
 	{255, 48, 0}, {255, 54, 0}, {255, 60, 0}, {255, 66, 0}, {255, 72, 0}, {255, 78, 0}, {255, 84, 0}, {255, 90, 0},
 	{255, 96, 0}, {255, 102, 0}, {255, 108, 0}, {255, 114, 0}, {255, 120, 0}, {255, 126, 0}, {255, 131, 0}, {255, 137, 0},
@@ -1037,61 +1034,61 @@ const palette_entry LEDFunctionsClass::plasmaPalette[256] = {
 
 
 double _time = 0;
-void LEDFunctionsClass::renderPlasma()
+void LEDFunctions::renderPlasma()
 {
     int color;
     double cx, cy, xx, yy;
 
     _time += 0.05;
 
-    for (int y=0; y<LEDFunctionsClass::height; y++)
+    for (int y=0; y<LEDFunctions::height; y++)
     {
-        yy = (double)y / (double)LEDFunctionsClass::height / 3.0;
-        for (int x=0; x<LEDFunctionsClass::width; x++)
+        yy = (double)y / (double)LEDFunctions::height / 3.0;
+        for (int x=0; x<LEDFunctions::width; x++)
         {
-            xx = (double)x / (double)LEDFunctionsClass::width / 3.0;
+            xx = (double)x / (double)LEDFunctions::width / 3.0;
             cx = xx + 0.5 * sin(_time / 5.0);
-            cy = (double)y/(double)LEDFunctionsClass::height / 3.0 + 0.5 * sin(_time / 3.0);
+            cy = (double)y/(double)LEDFunctions::height / 3.0 + 0.5 * sin(_time / 3.0);
             color = (
             	sin(
                     sqrt(100 * (cx*cx + cy*cy) + 1 + _time) +
                     6.0 * (xx * sin(_time/2) + yy * cos(_time/3) + _time / 4.0)
                 ) + 1.0
 			) * 128.0;
-            plasmaBuf[x + y * LEDFunctionsClass::width] = color;
+            plasmaBuf[x + y * LEDFunctions::width] = color;
         }
     }
     this->set(plasmaBuf, (palette_entry*)plasmaPalette, true);
 }
 
-void LEDFunctionsClass::renderFire()
+void LEDFunctions::renderFire()
 {
     int f;
 
     // iterate over bottom row, create fire seed
-    for (int i = 0; i < LEDFunctionsClass::width; i++)
+    for (int i = 0; i < LEDFunctions::width; i++)
     {
         // only set hot spot with probability of 1/4
         f = (random(4) == 0) ? random(256) : 0;
 
         // update one pixel in bottom row
-        fireBuf[i + (LEDFunctionsClass::height - 1) * LEDFunctionsClass::width] = f;
+        fireBuf[i + (LEDFunctions::height - 1) * LEDFunctions::width] = f;
     }
 
     int y1, y2, l, r;
-    for (int y = 0; y < LEDFunctionsClass::height - 1; y++)
+    for (int y = 0; y < LEDFunctions::height - 1; y++)
     {
-        y1 = y + 1; if (y1 >= LEDFunctionsClass::height) y1 = LEDFunctionsClass::height - 1;
-        y2 = y + 2; if (y2 >= LEDFunctionsClass::height) y2 = LEDFunctionsClass::height - 1;
-        for (int x = 0; x < LEDFunctionsClass::width; x++)
+        y1 = y + 1; if (y1 >= LEDFunctions::height) y1 = LEDFunctions::height - 1;
+        y2 = y + 2; if (y2 >= LEDFunctions::height) y2 = LEDFunctions::height - 1;
+        for (int x = 0; x < LEDFunctions::width; x++)
         {
             l = x - 1; if (l < 0) l = 0;
-            r = x + 1; if (r >= LEDFunctionsClass::width) r = LEDFunctionsClass::width - 1;
-            fireBuf[x + y * LEDFunctionsClass::width] =
-                ((fireBuf[y1 * LEDFunctionsClass::width + l]
-                + fireBuf[y1 * LEDFunctionsClass::width + x]
-                + fireBuf[y1 * LEDFunctionsClass::width + r]
-                + fireBuf[y2 * LEDFunctionsClass::width + x])
+            r = x + 1; if (r >= LEDFunctions::width) r = LEDFunctions::width - 1;
+            fireBuf[x + y * LEDFunctions::width] =
+                ((fireBuf[y1 * LEDFunctions::width + l]
+                + fireBuf[y1 * LEDFunctions::width + x]
+                + fireBuf[y1 * LEDFunctions::width + r]
+                + fireBuf[y2 * LEDFunctions::width + x])
                 * 32) / 129;
         }
     }
@@ -1107,7 +1104,7 @@ void LEDFunctionsClass::renderFire()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderStars()
+void LEDFunctions::renderStars()
 {
 	// clear buffer
 	memset(this->currentValues, 0, sizeof(this->currentValues));
@@ -1123,7 +1120,7 @@ void LEDFunctionsClass::renderStars()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderHeart()
+void LEDFunctions::renderHeart()
 {
 	palette_entry palette[2];
 	uint8_t heart[] = {
@@ -1180,7 +1177,7 @@ void LEDFunctionsClass::renderHeart()
 // -> source: buffer to read the currently active LEDs from
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::prepareExplosion(uint8_t *source)
+void LEDFunctions::prepareExplosion(uint8_t *source)
 {
 #define PARTICLE_COUNT 16
 #define PARTICLE_SPEED 0.15f
@@ -1200,9 +1197,9 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 		}
 	}*/
 	// iterate over every position in the screen buffer
-	for (int y = 0; y < LEDFunctionsClass::height; y++)
+	for (int y = 0; y < LEDFunctions::height; y++)
 	{
-		for (int x = 0; x < LEDFunctionsClass::width; x++)
+		for (int x = 0; x < LEDFunctions::width; x++)
 		{
 			// create entry in particles vector if current pixel is foreground
 			if (source[ofs++] == 1)
@@ -1231,13 +1228,13 @@ void LEDFunctionsClass::prepareExplosion(uint8_t *source)
 	}
 }
 
-bool LEDFunctionsClass::activeParticles() {
+bool LEDFunctions::activeParticles() {
 	int c = 0;
 	for (Particle *p : this->particles) if(p->alive)c++;
 	return c;
 }
 
-void LEDFunctionsClass::renderSnake(bool transition, int h, int m) {
+void LEDFunctions::renderSnake(bool transition, int h, int m) {
 	uint8_t buf[NUM_PIXELS] __attribute__ ((aligned (4)));
 	uint8_t act[NUM_PIXELS] __attribute__ ((aligned (4)));
 	palette_entry palette[5];	// 4/5. color for snake
@@ -1340,7 +1337,7 @@ void LEDFunctionsClass::renderSnake(bool transition, int h, int m) {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderExplosion(bool transition, int h, int m)
+void LEDFunctions::renderExplosion(bool transition, int h, int m)
 {
 	uint8_t buf[NUM_PIXELS];
 
@@ -1391,7 +1388,7 @@ void LEDFunctionsClass::renderExplosion(bool transition, int h, int m)
 // -> source: buffer to read the currently active LEDs from
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
+void LEDFunctions::prepareFlyingLetters(uint8_t *source)
 {
 	// transfer the previous flying letters in the leaving letters vector to prepare for
 	// outgoing animation
@@ -1407,8 +1404,8 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 		}
 		else
 		{
-			p.delay = (LEDFunctionsClass::height - p.y - 1) * 2 + p.x + 1 + random(5);
-			p.yTarget = LEDFunctionsClass::height;
+			p.delay = (LEDFunctions::height - p.y - 1) * 2 + p.x + 1 + random(5);
+			p.yTarget = LEDFunctions::height;
 		}
 		this->leavingLetters.push_back(p);
 	}
@@ -1418,16 +1415,16 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 	int ofs = 0;
 
 	// iterate over every position in the screen buffer
-	for (int y = 0; y < LEDFunctionsClass::height; y++)
+	for (int y = 0; y < LEDFunctions::height; y++)
 	{
-		for (int x = 0; x < LEDFunctionsClass::width; x++)
+		for (int x = 0; x < LEDFunctions::width; x++)
 		{
 			// create entry in arrivingLetters vector if current pixel is foreground
 			if (source[ofs++] == 1)
 			{
 				if (this->mode == DisplayMode::flyingLettersVerticalUp)
 				{
-					xy_t p = { x, y, x, LEDFunctionsClass::height,
+					xy_t p = { x, y, x, LEDFunctions::height,
 						y * 2 + x + 1 + random(5), 200, 0
 					};
 					this->arrivingLetters.push_back(p);
@@ -1435,7 +1432,7 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 				else
 				{
 					xy_t p = { x, y, x, -1,
-						(LEDFunctionsClass::height - y - 1) * 2 + x + 1 + random(5),
+						(LEDFunctions::height - y - 1) * 2 + x + 1 + random(5),
 						200, 0
 					};
 					this->arrivingLetters.push_back(p);
@@ -1460,7 +1457,7 @@ void LEDFunctionsClass::prepareFlyingLetters(uint8_t *source)
 	}
 }
 
-bool LEDFunctionsClass::displayTimeChanged() {
+bool LEDFunctions::displayTimeChanged() {
 	bool r = forceTransition || (this->m / 5 != this->lastM / 5) || (this->h != this->lastH);
 	forceTransition = false;
 	return r;
@@ -1475,7 +1472,7 @@ bool LEDFunctionsClass::displayTimeChanged() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderFlyingLetters(bool transition)
+void LEDFunctions::renderFlyingLetters(bool transition)
 {
 	uint8_t buf[NUM_PIXELS];
 
@@ -1505,9 +1502,9 @@ void LEDFunctionsClass::renderFlyingLetters(bool transition)
 		for (xy_t &p : this->leavingLetters)
 		{
 			// draw letter only if inside visible area
-			if (p.x >= 0 && p.y >= 0 && p.x < LEDFunctionsClass::width
-				&& p.y < LEDFunctionsClass::height)
-				buf[p.x + p.y * LEDFunctionsClass::width] = 1;
+			if (p.x >= 0 && p.y >= 0 && p.x < LEDFunctions::width
+				&& p.y < LEDFunctions::height)
+				buf[p.x + p.y * LEDFunctions::width] = 1;
 
 			// continue with next letter if the current letter already
 			// reached its target position
@@ -1536,9 +1533,9 @@ void LEDFunctionsClass::renderFlyingLetters(bool transition)
 		for (xy_t &p : this->arrivingLetters)
 		{
 			// draw letter only if inside visible area
-			if (p.x >= 0 && p.y >= 0 && p.x < LEDFunctionsClass::width
-				&& p.y < LEDFunctionsClass::height)
-				buf[p.x + p.y * LEDFunctionsClass::width] = 1;
+			if (p.x >= 0 && p.y >= 0 && p.x < LEDFunctions::width
+				&& p.y < LEDFunctions::height)
+				buf[p.x + p.y * LEDFunctions::width] = 1;
 
 			// continue with next letter if the current letter already
 			// reached its target position
@@ -1572,7 +1569,7 @@ void LEDFunctionsClass::renderFlyingLetters(bool transition)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderRed()
+void LEDFunctions::renderRed()
 {
 	palette_entry palette[2];
 	uint8_t heart[] = {
@@ -1601,7 +1598,7 @@ void LEDFunctionsClass::renderRed()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderGreen()
+void LEDFunctions::renderGreen()
 {
 	palette_entry palette[2];
 	uint8_t heart[] = {
@@ -1630,7 +1627,7 @@ void LEDFunctionsClass::renderGreen()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderBlue()
+void LEDFunctions::renderBlue()
 {
 	palette_entry palette[2];
 	uint8_t heart[] = {
@@ -1660,7 +1657,7 @@ void LEDFunctionsClass::renderBlue()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderUpdate()
+void LEDFunctions::renderUpdate()
 {
 	uint8_t update[] = {
 		0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
@@ -1695,7 +1692,7 @@ void LEDFunctionsClass::renderUpdate()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderUpdateComplete()
+void LEDFunctions::renderUpdateComplete()
 {
 	const uint8_t update_ok[] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1722,7 +1719,7 @@ void LEDFunctionsClass::renderUpdateComplete()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderUpdateError()
+void LEDFunctions::renderUpdateError()
 {
 	const uint8_t update_err[] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1749,7 +1746,7 @@ void LEDFunctionsClass::renderUpdateError()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void LEDFunctionsClass::renderWifiManager()
+void LEDFunctions::renderWifiManager()
 {
 	const uint8_t wifimanager[] = {
 		0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0,
@@ -1768,4 +1765,3 @@ void LEDFunctionsClass::renderWifiManager()
 	this->set(wifimanager, p, true);
 }
 
-#endif
