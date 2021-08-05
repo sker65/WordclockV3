@@ -5,7 +5,7 @@ http://diskussion.christians-bastel-laden.de/index.php                      - Fo
 
 https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - alternative Version (mehr Funktionen)
 
-# changes / extensions
+# changes / extensions by sker65
 
 - added some alternative mapping tables for other word positions (for now only compile time switches)
 - added random mode for transitions
@@ -14,6 +14,9 @@ https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - al
 - make constant "Es ist" display switchable
 - code refactored to run with neopixel bus (https://github.com/Makuna/NeoPixelBus) to avoid flickering
 - "PROGMEM" aligned to 4 to avoid unaligned access exception
+- added new snake transition
+- added switch off at night time feature
+- cleanup weg ui / JS
 # esp8266wordclock
 Wordclock with WS2812B RGB LED modules driven by an ESP8266 module
 
