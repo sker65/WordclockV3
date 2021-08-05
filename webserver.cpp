@@ -399,13 +399,13 @@ void WebServerClass::handleSetVar()
 		}
 		if(this->server->arg("name") == "displaymode" ) {
 			int newMode = this->server->arg("value").toInt();
-			if( newMode >= 0 && newMode <= 11 ) {
+			if( newMode >= 0 && newMode <= MAX_DISPLAY_MODE_TO_SET ) {
 				DisplayMode mode = (DisplayMode)newMode;
 				LED.setMode(mode);
 				Config.defaultMode = mode;
 				mustSave = true;
 			} else {
-				err =  "ERR: displaymode not in range 0..11";
+				err =  "ERR: displaymode not in range 0..?";
 			}
 		}
 	}
