@@ -56,8 +56,8 @@ void StarObject::randomize(std::vector<StarObject> &allStars)
 		distanceOK = true;
 
 		// create new random pair
-		newX = random(LEDFunctions::width);
-		newY = random(LEDFunctions::height);
+		newX = random(LEDMatrix::width);
+		newY = random(LEDMatrix::height);
 		retryCount++;
 
 		// iterate over all other stars and check distance to newly generated coordinate
@@ -136,7 +136,7 @@ void StarObject::render(uint8_t* buf, std::vector<StarObject> &allStars)
 	this->update(allStars);
 
 	// write brightness to target buffer
-	int offset = LEDFunctions::getOffset(this->x, this->y);
+	int offset = LEDMatrix::getOffset(this->x, this->y);
 	buf[offset + 0] = this->brightness;
 	buf[offset + 1] = this->brightness;
 	buf[offset + 2] = this->brightness;

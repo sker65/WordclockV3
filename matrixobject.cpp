@@ -65,7 +65,7 @@ void MatrixObject::move()
 	{
 		this->prescaler -= 30000;
 		this->y++;
-		int limit = LEDFunctions::height + MatrixObject::MatrixGradient.size();
+		int limit = LEDMatrix::height + MatrixObject::MatrixGradient.size();
 		if(this->y > limit) this->randomize();
 	}
 }
@@ -80,7 +80,7 @@ void MatrixObject::move()
 //---------------------------------------------------------------------------------------
 void MatrixObject::randomize()
 {
-	this->x = random(LEDFunctions::width); //   0 ... width
+	this->x = random(LEDMatrix::width); //   0 ... width
 	this->y = random(25) - 25;                  // -25 ... -1
 	this->speed = MatrixObject::MinMatrixSpeed
 			+ random(MatrixObject::MaxMatrixSpeed - MatrixObject::MinMatrixSpeed);
@@ -101,7 +101,7 @@ void MatrixObject::render(uint8_t *buf)
 	this->move();
 
 	// check boundaries
-	if(this->x<0 || this->x >= LEDFunctions::width) return;
+	if(this->x<0 || this->x >= LEDMatrix::width) return;
 
 	int currentY = this->y;
 	int ofs;
@@ -109,9 +109,9 @@ void MatrixObject::render(uint8_t *buf)
 	for (palette_entry p : MatrixObject::MatrixGradient)
 	{
 		// only render if inside screen rectangle
-		if(currentY>=0 && currentY<LEDFunctions::height)
+		if(currentY>=0 && currentY<LEDMatrix::height)
 		{
-			ofs = LEDFunctions::getOffset(this->x, currentY);
+			ofs = LEDMatrix::getOffset(this->x, currentY);
 			buf[ofs + 0] = p.r;
 			buf[ofs + 1] = p.g;
 			buf[ofs + 2] = p.b;

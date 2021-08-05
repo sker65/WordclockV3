@@ -133,7 +133,7 @@ float Particle::move()
 //
 // Moves the particle, renders it to the given buffer.
 //
-// -> target: RGB target buffer (i. e. LEDFunctions::currentValues)
+// -> target: RGB target buffer (i. e. LEDMatrix::currentValues)
 //    palette: palette with background color, foreground color
 // <- --
 //---------------------------------------------------------------------------------------
@@ -143,8 +143,8 @@ void Particle::render(uint8_t *target, palette_entry palette[])
 	int d = (int)this->move();
 
 	// check boundaries
-	if(this->x<0 || this->x >= LEDFunctions::width) return;
-	if(this->y<0 || this->y >= LEDFunctions::height) return;
+	if(this->x<0 || this->x >= LEDMatrix::width) return;
+	if(this->y<0 || this->y >= LEDMatrix::height) return;
 
 	// limit distance
 	if(d >= MAX_PARTICLE_DISTANCE) d = MAX_PARTICLE_DISTANCE - 1;
@@ -155,7 +155,7 @@ void Particle::render(uint8_t *target, palette_entry palette[])
 	float pb = (float)palette[1].b;
 
 	// calculate offset in buffer from given coordinates
-	int ofs = LEDFunctions::getOffset(this->x, this->y);
+	int ofs = LEDMatrix::getOffset(this->x, this->y);
 
 	// calculate fading color depending on distance from starting point and add it
 	// to the previous value of the pixel corresponding to the particle
