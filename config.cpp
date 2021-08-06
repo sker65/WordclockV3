@@ -171,6 +171,7 @@ void ConfigClass::reset()
 	this->config->autoOffHour = this->autoOffHour = 0; 
 	this->config->autoOffMin = this->autoOffMin = 0; 
 	this->config->tmpl = this->tmpl = 0;
+	this->config->fillMode = this->fillMode = 0;
 }
 
 //---------------------------------------------------------------------------------------
@@ -212,4 +213,5 @@ void ConfigClass::load()
 	this->autoOffHour = this->config->autoOffHour; 
 	this->autoOffMin = this->config->autoOffMin; 
 	this->tmpl = this->config->tmpl;
+	this->fillMode = this->config->fillMode;
 }

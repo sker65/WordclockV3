@@ -50,6 +50,7 @@ typedef struct _config_struct
 	uint8_t autoOffHour; 
 	uint8_t autoOffMin; 
 	uint8_t tmpl;
+	uint8_t fillMode;
 } config_struct;
 
 #define EEPROM_SIZE 512
@@ -91,7 +92,8 @@ public:
 	uint8_t autoOffHour; 
 	uint8_t autoOffMin; 
 	uint8_t tmpl;
-
+  uint8_t fillMode;
+	
 	bool debugMode = false;
 	int delayedWriteTimer = 0;
 	bool delayedWriteFlag = false;
