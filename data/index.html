@@ -68,6 +68,11 @@
 		<option>Layout 2</option>
 		<option>Layout 3</option>
 	</select>
+    <select title="Sekunden füllung des Hintergrunds" id="fillMode" onchange="changeVar(this.id, this.selectedIndex)">
+        <option>Von vorne</option>
+        <option>Voll -> Leer</option>
+        <option>Ausgeschaltet</option>
+    </select>
 </div>
 
 <div class="outer_frame">
@@ -199,7 +204,7 @@
 
     // vars to load & set
     const vars = ['itIs', 'rainbow', 'rainbowSpeed', 'autoOnOff', 'autoOn', 'autoOff', 'displaymode', 'heartbeat',
-         'ntpserver', 'tmpl', 'fg','bg','s', 'minuteType', 'brightness'];
+         'ntpserver', 'tmpl', 'fg','bg','s', 'minuteType', 'brightness', 'fillMode'];
 
     // load settings from server and propagate to page elements
     function loadSettings() {
