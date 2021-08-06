@@ -278,7 +278,7 @@ void WebServerClass::handleSetVar()
 		if(this->server->arg("name") == "itIs" ) {
 			if(this->server->arg("value") == "0" || this->server->arg("value") == "false") Config.showItIs = false; else Config.showItIs = true;
 			mustSave = true;
-		} 
+		} else
 		if(this->server->arg("name") == "autoOnOff" ) {
 			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") {
 				Config.autoOnOff = false;
@@ -287,7 +287,7 @@ void WebServerClass::handleSetVar()
 				Config.autoOnOff = true;
 			}
 			mustSave = true;
-		}
+		} else
 		if(this->server->arg("name") == "autoOn" ) {
 			uint8_t h,m;
 			int res = sscanf(this->server->arg("value").c_str(), "%02d:%02d", &h, &m);
@@ -298,7 +298,7 @@ void WebServerClass::handleSetVar()
 			} else {
 				err = "text/plain", "ERR: bad time format, must be HH:MM";
 			}
-		}		
+		} else	
 		if(this->server->arg("name") == "autoOff" ) {
 			uint8_t h,m;
 			int res = sscanf(this->server->arg("value").c_str(), "%02d:%02d", &h, &m);
@@ -309,7 +309,7 @@ void WebServerClass::handleSetVar()
 			} else {
 				err =  "ERR: bad time format, must be HH:MM";
 			}
-		}		
+		} else		
 		if(this->server->arg("name") == "rainbow" ) {
 			if(this->server->arg("value") == "0"|| this->server->arg("value") == "false") {
 				Config.fgRainbow = false; 
@@ -318,11 +318,11 @@ void WebServerClass::handleSetVar()
 				LED.resetRainbowColor();
 			}
 			mustSave = true;
-		}
+		} else
 		if(this->server->arg("name") == "minuteType" ) {
 			if(this->server->arg("value") == "0") Config.minuteType = 0; else Config.minuteType = 1;
 			mustSave = true;
-		}
+		} else
 		if(this->server->arg("name") == "brightness" ) {
 			int v = this->server->arg("value").toInt();
 			if(v < 0 || v > 257) {
@@ -331,7 +331,7 @@ void WebServerClass::handleSetVar()
 				Brightness.brightnessOverride = v;
 				mustSave = true;
 			}
-		}
+		} else
 		if(this->server->arg("name") == "rainbowSpeed" ) {
 			int v = this->server->arg("value").toInt();
 			if(v < 0 || v > 2)
@@ -343,7 +343,7 @@ void WebServerClass::handleSetVar()
 				Config.rainbowSpeed = v;
 				mustSave = true;
 			}
-		}
+		} else
 		if(this->server->arg("name") == "timezone" ) {
 			int newTimeZone = this->server->arg("value").toInt();
 			if(newTimeZone < - 12 || newTimeZone > 14)
@@ -356,7 +356,7 @@ void WebServerClass::handleSetVar()
 				NTP.setTimeZone(Config.timeZone);
 				mustSave = true;
 			}
-		}
+		} else
 		if(this->server->arg("name") == "ntpserver" ) {
 			IPAddress ip;
 			if (ip.fromString(this->server->arg("ip")))
@@ -365,14 +365,14 @@ void WebServerClass::handleSetVar()
 				// set IP address in client
 				NTP.setServer(ip);
 				mustSave = true;
+			} else {
+				err = "ERR: bad ip adress format, must be x.x.x.x";
 			}
-		} else {
-			err = "ERR: bad ip adress format, must be x.x.x.x";
-		}
+		} else
 		if(this->server->arg("name") == "heartbeat" ) {
 			if(this->server->arg("value") == "0") Config.heartbeat = 0; else Config.heartbeat = 1;
 			mustSave = true;
-		}
+		} else
 		if(this->server->arg("name") == "tmpl" ) {
 			int v = this->server->arg("value").toInt();
 			if(v < 0 || v > 2)
@@ -384,19 +384,19 @@ void WebServerClass::handleSetVar()
 				Config.tmpl = v;
 				mustSave = true;
 			}
-		}
+		} else
 		if( this->server->arg("name") == "fg" ){
 			this->extractColor("value", Config.fg);
 			mustSave = true;
-		}	
+		}	 else
 		if( this->server->arg("name") == "s" ){
 			this->extractColor("value", Config.s);
 			mustSave = true;
-		}
+		} else
 		if( this->server->arg("name") == "bg" ){
 			this->extractColor("value", Config.bg);
 			mustSave = true;
-		}
+		} else
 		if(this->server->arg("name") == "displaymode" ) {
 			int newMode = this->server->arg("value").toInt();
 			if( newMode >= 0 && newMode <= MAX_DISPLAY_MODE_TO_SET ) {
@@ -407,6 +407,17 @@ void WebServerClass::handleSetVar()
 			} else {
 				err =  "ERR: displaymode not in range 0..?";
 			}
+		} else
+		if(this->server->arg("name") == "fillMode" ) {
+			int newMode = this->server->arg("value").toInt();
+			if( newMode >= 0 && newMode <= 4 ) {
+				Config.fillMode = newMode;
+				mustSave = true;
+			} else {
+				err =  "ERR: fillMode not in range 0..?";
+			}
+		} else {
+				err =  "ERR: var name not valid";
 		}
 	}
 	if( mustSave ) {
@@ -470,6 +481,7 @@ void WebServerClass::handleGetConfig() {
 	json["autoOff"] = autoOff;
 	json["tmpl"] = Config.tmpl;
 	json["displaymode"] = (int)Config.defaultMode;
+	json["fillMode"] = Config.fillMode;
 	char fg[9];
 	sprintf(fg,"#%02x%02x%02x", Config.fg.r, Config.fg.g, Config.fg.b);
 	json["fg"] = fg;
