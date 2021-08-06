@@ -71,6 +71,7 @@ private:
 	static const std::vector<leds_template_t> minutesTemplate[3][2];
 	static const palette_entry firePalette[];
 	static const palette_entry plasmaPalette[];
+	static const palette_entry black;
 	static const DisplayMode randomModes[];
 
 	DisplayMode mode = DisplayMode::plain;
@@ -100,6 +101,7 @@ private:
 	int lastM = -1;
 	int lastH = -1;
 	bool forceTransition = false;
+	int lastFillPos = 0;
 
 	u_int8_t snakeX = 0;
 	u_int8_t snakeY = 0;
@@ -111,8 +113,12 @@ private:
 	int 		 snakeTicker = 0;
 	int 		 snakeSpeed = 10;
 
+	bool fillInvers;
+
+
 	bool activeParticles();
 	void fillBackground(int seconds, int milliseconds, uint8_t *buf);
+	void renderCorner(uint8_t *target, int m);
 	void renderRed();
 	void renderGreen();
 	void renderBlue();

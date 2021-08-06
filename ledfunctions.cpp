@@ -94,14 +94,14 @@ const std::vector<leds_template_t> LEDMatrix::minutesTemplate[3][2] =
 		{
 			{ 0,  0,  4,{ 107, 108, 109 } },                             // UHR
 			{ 0,  5,  9,{ 7,8,9,10, 40,41,42,43 } },                     // FüNF NACH
-			{ 0, 10, 14,{ 11, 12, 13, 14, 40,41,42,43 } },               // ZEHN NACH
-			{ 0, 15, 19,{ 26,27,28,29,30,31,32, 40,41,42,43 } },         // VIERTEL NACH
-			{ 0, 20, 24,{ 15,16,17,18,19,20,21, 40,41,42,43 } },         // ZWANZIG NACH
+			{ 0, 10, 14,{ 11,12,13,14, 40,41,42,43 } },                  // ZEHN NACH
+			{ 1, 15, 19,{ 26,27,28,29,30,31,32 } },         						 // VIERTEL 
+			{ 1, 20, 24,{ 11,12,13,14, 33,34,35, 44,45,46,47 } },        // ZEHN VOR HALB
 			{ 1, 25, 29,{ 7,8,9,10, 33,34,35, 44,45,46,47 } },           // FüNF VOR HALB
 			{ 1, 30, 34,{ 44,45,46,47 } },                               // HALB
 			{ 1, 35, 39,{ 7,8,9,10, 40,41,42,43, 44,45,46,47 } },        // FüNF NACH HALB
-			{ 1, 40, 44,{ 15,16,17,18,19,20,21, 33,34,35 } },            // ZWANZIG VOR
-			{ 1, 45, 49,{ 26,27,28,29,30,31,32, 33,34,35 } },            // VIERTEL VOR
+			{ 1, 40, 44,{ 11,12,13,14, 40,41,42,43, 44,45,46,47 } },  // ZEHN NACH HALB
+			{ 1, 45, 49,{ 22,23,24,25, 26,27,28,29,30,31,32 } },            // DREI VIERTEL
 			{ 1, 50, 54,{ 11,12,13,14, 33,34,35 } },                     // ZEHN VOR
 			{ 1, 55, 59,{ 7,8,9,10, 33,34,35 } }                         // FüNF VOR
 		}
@@ -180,7 +180,7 @@ const std::vector<leds_template_t> LEDMatrix::hoursTemplate[3] =
 		{ 0,  3, 15,{ 66,67,68,69 } },         // DREI
 		{ 0,  4, 16,{ 73,74,75,76 } },         // VIER
 		{ 0,  5, 17,{ 51,52,53,54 } },         // FÜNF
-		{ 0,  6, 18,{ 77,78,79,80 } },         // SECHS
+		{ 0,  6, 18,{ 77,78,79,80,81 } },      // SECHS
 		{ 0,  7, 19,{ 88,89,90,91,92,93 } },   // SIEBEN
 		{ 0,  8, 20,{ 84, 85, 86, 87 } },      // ACHT
 		{ 0,  9, 21,{ 102,103,104,105 } },     // NEUN
@@ -208,7 +208,7 @@ const std::vector<leds_template_t> LEDMatrix::hoursTemplate[3] =
 
 // this mapping table maps the linear memory buffer structure used throughout the
 // project to the physical layout of the LEDs
-const uint32_t PROGMEM LEDMatrix::mapping[NUM_PIXELS] = {
+const uint32_t PROGMEM LEDMatrix::mapping[NUM_PIXELS] __attribute__ ((aligned (4))) = {
 	0  , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  ,
 	21  , 20  , 19  , 18  , 17  , 16  , 15  , 14  , 13  , 12  , 11  ,
 	22  , 23  , 24  , 25  , 26  , 27  , 28  , 29  , 30  , 31  , 32  ,
@@ -223,7 +223,7 @@ const uint32_t PROGMEM LEDMatrix::mapping[NUM_PIXELS] = {
 };
 
 
-const uint32_t PROGMEM LEDMatrix::brightnessCurveSelect[NUM_PIXELS] = {
+const uint32_t PROGMEM LEDMatrix::brightnessCurveSelect[NUM_PIXELS] __attribute__ ((aligned (4))) = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -248,7 +248,7 @@ const uint32_t PROGMEM LEDMatrix::brightnessCurveSelect[NUM_PIXELS] = {
 	0, 1, 0, 1*/
 };
 
-const uint32_t PROGMEM LEDMatrix::brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES] = {
+const uint32_t PROGMEM LEDMatrix::brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES] __attribute__ ((aligned (4))) = {
 	// LED type 1, 1:1 mapping (neutral)
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
@@ -289,7 +289,7 @@ const uint32_t PROGMEM LEDMatrix::brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES]
 	216, 216, 218, 218
 };
 
-const uint32_t PROGMEM LEDMatrix::brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES] = {
+const uint32_t PROGMEM LEDMatrix::brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES] __attribute__ ((aligned (4))) = {
 	// LED type 1, 1:1 mapping (neutral)
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
@@ -330,7 +330,7 @@ const uint32_t PROGMEM LEDMatrix::brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES]
 	232, 234, 234
 };
 
-const uint32_t PROGMEM LEDMatrix::brightnessCurvesB[256 * NUM_BRIGHTNESS_CURVES] = {
+const uint32_t PROGMEM LEDMatrix::brightnessCurvesB[256 * NUM_BRIGHTNESS_CURVES] __attribute__ ((aligned (4))) = {
 	// LED type 1, 1:1 mapping (neutral)
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 	20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
@@ -432,34 +432,22 @@ const DisplayMode LEDMatrix::randomModes[] = {
 #define NUM_RANDOM_MODES 5
 
 void LEDMatrix::resetRainbowColor() {
-	this->currentRainbowColor.r = Config.fg.r;
-	this->currentRainbowColor.b = Config.fg.g;
-	this->currentRainbowColor.b = Config.fg.b;
+	this->currentRainbowColor = Config.fg;
 }
 
 void LEDMatrix::preparePalette(palette_entry* palette) {
 		// load palette colors from configuration
-	palette[0].r = Config.bg.r;
-	palette[0].g = Config.bg.g;
-	palette[0].b = Config.bg.b;
-	palette[1].r = Config.fg.r;
-	palette[1].g = Config.fg.g;
-	palette[1].b = Config.fg.b;
-	palette[2].r = Config.s.r;
-	palette[2].g = Config.s.g;
-	palette[2].b = Config.s.b;
-	
+	palette[0] = Config.bg;
+	palette[1] = Config.fg;
+	palette[2] = Config.s;
+
 	if( this->displayOn ) {
 		if( Config.fgRainbow ) {
-			palette[1].r = this->currentRainbowColor.r;
-			palette[1].g = this->currentRainbowColor.g;
-			palette[1].b = this->currentRainbowColor.b;
+			palette[1] = this->currentRainbowColor;
 		} 
 	} else {
 		for(int i = 0; i<=2; i++) {
-			palette[i].r=0;
-			palette[i].g=0;
-			palette[i].b=0;
+			palette[i] = LEDMatrix::black;
 		}
 	}
 }
@@ -518,7 +506,7 @@ void LEDMatrix::process()
 		Serial.printf("rainbow=%i, r=%i, g=%i b=%i\r\n", this->rainbowIndex, col.R, col.G, col.B);
 	}
 
-	uint8_t buf[NUM_PIXELS];
+	uint8_t buf[NUM_PIXELS] __attribute__ ((aligned (4)));
 	//Serial.printf("mode=%i\r\n", this->mode);
 	switch (this->mode)
 	{
@@ -638,7 +626,6 @@ bool LEDMatrix::modeHasTransition(DisplayMode m) {
 //---------------------------------------------------------------------------------------
 void LEDMatrix::setMode(DisplayMode newMode)
 {
-	uint8_t buf[NUM_PIXELS];
 	DisplayMode previousMode = this->mode;
 	if( newMode == DisplayMode::random ) {
 		if( this->randomMode == DisplayMode::plain)
@@ -832,12 +819,30 @@ int LEDMatrix::getOffset(int x, int y)
 void LEDMatrix::fillBackground(int seconds, int milliseconds, uint8_t *buf)
 {
 	int pos = (((seconds * 1000 + milliseconds) * 110) / 60000) + 1;
-	for (int i = 0; i < NUM_PIXELS; i++) buf[i] = (i < pos) ? 2 : 0;
+	if( pos != lastFillPos ) {
+		lastFillPos = pos;
+		if( pos == 1) { // start again
+			if( Config.fillMode == 0) {
+				fillInvers = false;
+			} else if(Config.fillMode == 1) {
+				fillInvers = !fillInvers;
+			}
+		}
+	}
+	//if( Config.fillMode == 0 || Config.fillMode == 1)
+		for (int i = 0; i < NUM_PIXELS; i++) buf[i] = (i < pos) ? (fillInvers?0:2) : (fillInvers?2:0);
+	// if( Config.fillMode == 2 )
+	// 	for (int i = 0; i < NUM_PIXELS; i++) buf[i] = (i == pos) ? (fillInvers?0:2) : (fillInvers?2:0);
 }
 
 //---------------------------------------------------------------------------------------
 // rendering methods
 //---------------------------------------------------------------------------------------
+
+void LEDMatrix::renderCorner(uint8_t *target, int m) {
+	// minutes 1...4 for the corners
+	for (int i = 0; i <= ((m % 5) - 1); i++) target[height * width + i] = 1;
+}
 
 //---------------------------------------------------------------------------------------
 // renderTime
@@ -862,9 +867,7 @@ void LEDMatrix::renderTime(uint8_t *target, int h, int m, int s, int ms)
 		target[4] = 1; // S
 		target[5] = 1; // T
 	}
-
-				   // minutes 1...4 for the corners
-	for (int i = 0; i <= ((m % 5) - 1); i++) target[10 * 11 + i] = 1;
+	this->renderCorner(target, m);
 
 	// iterate over minutes_template
 	int mt = Config.minuteType;
@@ -963,7 +966,9 @@ void LEDMatrix::renderMatrix()
 	for (MatrixObject &m : this->matrix) m.render(this->currentValues);
 }
 
-const palette_entry LEDMatrix::firePalette[256] __attribute__ ((aligned (4))) = {
+const palette_entry LEDMatrix::black = {0,0,0}; 
+
+const palette_entry LEDMatrix::firePalette[256] = {
 	{0, 0, 0}, {4, 0, 0}, {8, 0, 0}, {12, 0, 0}, {16, 0, 0}, {20, 0, 0}, {24, 0, 0}, {28, 0, 0},
 	{32, 0, 0}, {36, 0, 0}, {40, 0, 0}, {44, 0, 0}, {48, 0, 0}, {52, 0, 0}, {56, 0, 0}, {60, 0, 0},
 	{64, 0, 0}, {68, 0, 0}, {72, 0, 0}, {76, 0, 0}, {80, 0, 0}, {85, 0, 0}, {89, 0, 0}, {93, 0, 0},
@@ -1053,11 +1058,12 @@ void LEDMatrix::renderPlasma()
             	sin(
                     sqrt(100 * (cx*cx + cy*cy) + 1 + _time) +
                     6.0 * (xx * sin(_time/2) + yy * cos(_time/3) + _time / 4.0)
-                ) + 1.0
-			) * 128.0;
+                	) + 1.0
+							) * 128.0;
             plasmaBuf[x + y * LEDMatrix::width] = color;
         }
     }
+		//for(int i = width*height; i < width*height+4; i++ ) plasmaBuf[i]=0;
     this->set(plasmaBuf, (palette_entry*)plasmaPalette, true);
 }
 
@@ -1260,8 +1266,8 @@ void LEDMatrix::renderSnake(bool transition, int h, int m) {
 	this->fillBackground(this->s, this->ms, buf);
 	this->fillBackground(this->s, this->ms, act);
 
-	// minutes 1...4 for the corners
-	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[height * width + i] = 1;
+	this->renderCorner(buf,m);
+
 	this->renderTime(act, this->h, this->m, this->s, this->ms);
 
 	// animate
@@ -1339,7 +1345,7 @@ void LEDMatrix::renderSnake(bool transition, int h, int m) {
 //---------------------------------------------------------------------------------------
 void LEDMatrix::renderExplosion(bool transition, int h, int m)
 {
-	uint8_t buf[NUM_PIXELS];
+	uint8_t buf[NUM_PIXELS] __attribute__ ((aligned (4)));
 
 	palette_entry palette[3];
 	this->preparePalette(palette);
@@ -1354,8 +1360,7 @@ void LEDMatrix::renderExplosion(bool transition, int h, int m)
 	// create empty buffer filled with seconds color
 	this->fillBackground(this->s, this->ms, buf);
 
-	// minutes 1...4 for the corners
-	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[10 * 11 + i] = 1;
+	this->renderCorner(buf,m);
 
 	// Do we have something to explode?
 	if (this->activeParticles() > 0)
@@ -1474,7 +1479,7 @@ bool LEDMatrix::displayTimeChanged() {
 //---------------------------------------------------------------------------------------
 void LEDMatrix::renderFlyingLetters(bool transition)
 {
-	uint8_t buf[NUM_PIXELS];
+	uint8_t buf[NUM_PIXELS] __attribute__ ((aligned (4)));
 
 	palette_entry palette[3];
 	this->preparePalette(palette);
@@ -1489,8 +1494,7 @@ void LEDMatrix::renderFlyingLetters(bool transition)
 	// create empty buffer filled with seconds color
 	this->fillBackground(this->s, this->ms, buf);
 
-	// minutes 1...4 for the corners
-	for (int i = 0; i <= ((this->m % 5) - 1); i++) buf[10 * 11 + i] = 1;
+	this->renderCorner(buf,m);
 
 	// leaving letters animation has priority
 	if (this->leavingLetters.size() > 0)
