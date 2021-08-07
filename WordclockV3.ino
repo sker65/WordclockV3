@@ -1,4 +1,5 @@
 // Copyright (C) 2016 Thoralt Franz, https://github.com/thoralt
+// also (C) 2021 by Stefan Rinke, https://github.com/sker65
 //
 //  This project is the firmware for a Wordclock consisting of 114 WS2812B LEDs.
 //  It implements:
@@ -343,23 +344,24 @@ void loop() {
 		       Brightness.value() );
 	}
 
+	/* Will not work with neo pixel bus
 	if( Serial.available() ) {
-		int incoming = Serial.read();
-		switch( incoming ) {
-		case 'i':
-			Serial.println( "WordClock ESP8266 ready." );
-			break;
+	  int incoming = Serial.read();
+	  switch( incoming ) {
+	  case 'i':
+	    Serial.println( "WordClock ESP8266 ready." );
+	    break;
 
-		case 'X':
-			WiFi.disconnect();
-			ESP.reset();
-			break;
+	  case 'X':
+	    WiFi.disconnect();
+	    ESP.reset();
+	    break;
 
-		default:
-			Serial.printf( "Unknown command '%c'\r\n", incoming );
-			break;
-		}
-	}
+	  default:
+	    Serial.printf( "Unknown command '%c'\r\n", incoming );
+	    break;
+	  }
+	}*/
 
 	if( telnetServer.hasClient() ) {
 		if( telnetClient.connected() ) {

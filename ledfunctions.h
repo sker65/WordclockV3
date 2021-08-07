@@ -2,6 +2,7 @@
 
 // ESP8266 Wordclock
 // Copyright (C) 2016 Thoralt Franz, https://github.com/thoralt
+// also (C) 2021 by Stefan Rinke, https://github.com/sker65
 //
 //  See ledfunctions.cpp for description.
 //

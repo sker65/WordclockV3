@@ -1,5 +1,6 @@
 // ESP8266 Wordclock
 // Copyright (C) 2016 Thoralt Franz, https://github.com/thoralt
+// also (C) 2021 by Stefan Rinke, https://github.com/sker65
 //
 //  This module implements functions to manage the WS2812B LEDs. Two buffers contain
 //  color information with current state and fade target state and are updated by

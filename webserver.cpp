@@ -1,5 +1,6 @@
 // ESP8266 Wordclock
 // Copyright (C) 2016 Thoralt Franz, https://github.com/thoralt
+// also (C) 2021 by Stefan Rinke, https://github.com/sker65
 //
 //  This module encapsulates a small webserver. It replies to requests on port 80
 //  and triggers actions, manipulates configuration attributes or serves files
