@@ -21,36 +21,32 @@
 #ifndef _NTP_H_
 #define _NTP_H_
 
-#include <stdint.h>
 #include <Ticker.h>
 #include <WiFiUdp.h>
+#include <stdint.h>
 
 // type definition for NTP callback
-typedef void (*TNtpCallback)(uint8_t hour, uint8_t min, uint8_t sec, uint8_t ms, int year, int mon, int day);
+typedef void ( *TNtpCallback )( uint8_t hour, uint8_t min, uint8_t sec, uint8_t ms, int year, int mon, int day );
 
-class NtpClass
-{
+class NtpClass {
 public:
 	// public methods
 	NtpClass();
-	void begin(IPAddress ip, TNtpCallback callback, int timezone, bool DST);
-	void setServer(IPAddress address);
+	void begin( IPAddress ip, TNtpCallback callback, int timezone, bool DST );
+	void setServer( IPAddress address );
 	IPAddress getServer();
-	void setTimeZone(int timeZone);
+	void setTimeZone( int timeZone );
 
 	// public members
 	bool syncInProgress = false;
 
 private:
-	enum class NtpState
-	{
-		idle, startRequest, waitingForReply, waitingForReload
-	};
+	enum class NtpState { idle, startRequest, waitingForReply, waitingForReload };
 
-	int lastSunday(int year, int month, int lastDayInMonth);
-	static void tickerFunctionWrapper(NtpClass *obj);
-	int dayOfWeek(int y, int m, int d);
-	void decodeTime(long long t);
+	int lastSunday( int year, int month, int lastDayInMonth );
+	static void tickerFunctionWrapper( NtpClass* obj );
+	int dayOfWeek( int y, int m, int d );
+	void decodeTime( long long t );
 	void tickerFunction();
 	bool isDSTactive();
 	void sendPacket();
@@ -78,4 +74,3 @@ private:
 extern NtpClass NTP;
 
 #endif
-

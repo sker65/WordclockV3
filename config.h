@@ -24,14 +24,12 @@
 #define HOURGLASS_ANIMATION_FRAMES 8
 
 // structure to encapsulate a color value with red, green and blue values
-typedef struct _palette_entry
-{
+typedef struct _palette_entry {
 	uint8_t r, g, b;
 } palette_entry;
 
 // structure with configuration data to be stored in EEPROM
-typedef struct _config_struct
-{
+typedef struct _config_struct {
 	uint32_t magic;
 	palette_entry bg;
 	palette_entry fg;
@@ -45,27 +43,44 @@ typedef struct _config_struct
 	bool fgRainbow;
 	uint8_t rainbowSpeed;
 	bool autoOnOff;
-	uint8_t  autoOnHour;
-	uint8_t  autoOnMin;
-	uint8_t autoOffHour; 
-	uint8_t autoOffMin; 
+	uint8_t autoOnHour;
+	uint8_t autoOnMin;
+	uint8_t autoOffHour;
+	uint8_t autoOffMin;
 	uint8_t tmpl;
 	uint8_t fillMode;
 } config_struct;
 
 #define EEPROM_SIZE 512
 
-enum class DisplayMode
-{
-	plain, fade, flyingLettersVerticalUp, flyingLettersVerticalDown, explode,
-	random, matrix, heart, fire, plasma, stars, snake, moon, red, green, blue,
-	yellowHourglass, greenHourglass, update, updateComplete, updateError,
-	wifiManager, invalid
+enum class DisplayMode {
+	plain,
+	fade,
+	flyingLettersVerticalUp,
+	flyingLettersVerticalDown,
+	explode,
+	random,
+	matrix,
+	heart,
+	fire,
+	plasma,
+	stars,
+	snake,
+	moon,
+	red,
+	green,
+	blue,
+	yellowHourglass,
+	greenHourglass,
+	update,
+	updateComplete,
+	updateError,
+	wifiManager,
+	invalid
 };
-#define MAX_DISPLAY_MODE_TO_SET 21 
+#define MAX_DISPLAY_MODE_TO_SET 21
 
-class ConfigClass
-{
+class ConfigClass {
 public:
 	// public methods
 	ConfigClass();
@@ -80,19 +95,19 @@ public:
 	palette_entry fg;
 	palette_entry bg;
 	palette_entry s;
-	IPAddress ntpserver = IPAddress(0, 0, 0, 0);
+	IPAddress ntpserver = IPAddress( 0, 0, 0, 0 );
 	bool heartbeat = true;
 	bool showItIs = true;
 	bool fgRainbow = false;
 	uint8_t minuteType = 1;
 	uint8_t rainbowSpeed = 0;
 	bool autoOnOff = false;
-	uint8_t  autoOnHour;
-	uint8_t  autoOnMin;
-	uint8_t autoOffHour; 
-	uint8_t autoOffMin; 
+	uint8_t autoOnHour;
+	uint8_t autoOnMin;
+	uint8_t autoOffHour;
+	uint8_t autoOffMin;
 	uint8_t tmpl;
-  uint8_t fillMode;
+	uint8_t fillMode;
 
 	bool debugMode = false;
 	int delayedWriteTimer = 0;
@@ -106,7 +121,7 @@ public:
 
 private:
 	// copy of EEPROM content
-	config_struct *config = (config_struct*) eeprom_data;
+	config_struct* config = (config_struct*)eeprom_data;
 	uint8_t eeprom_data[EEPROM_SIZE];
 };
 

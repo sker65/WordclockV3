@@ -21,9 +21,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#include "config.h"
 #include <Arduino.h>
 #include <EEPROM.h>
-#include "config.h"
 
 //---------------------------------------------------------------------------------------
 // global instance
@@ -38,10 +38,7 @@ ConfigClass Config = ConfigClass();
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-ConfigClass::ConfigClass()
-{
-	this->reset();
-}
+ConfigClass::ConfigClass() { this->reset(); }
 
 //---------------------------------------------------------------------------------------
 // ~ConfigClass
@@ -51,9 +48,7 @@ ConfigClass::ConfigClass()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-ConfigClass::~ConfigClass()
-{
-}
+ConfigClass::~ConfigClass() {}
 
 //---------------------------------------------------------------------------------------
 // begin
@@ -63,9 +58,8 @@ ConfigClass::~ConfigClass()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void ConfigClass::begin()
-{
-	EEPROM.begin(EEPROM_SIZE);
+void ConfigClass::begin() {
+	EEPROM.begin( EEPROM_SIZE );
 	this->load();
 }
 
@@ -78,8 +72,7 @@ void ConfigClass::begin()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void ConfigClass::saveDelayed()
-{
+void ConfigClass::saveDelayed() {
 	this->delayedWriteTimer = 1000; // 10 seconds using 10 ms timer
 }
 
@@ -91,36 +84,34 @@ void ConfigClass::saveDelayed()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void ConfigClass::save()
-{
+void ConfigClass::save() {
 	this->delayedWriteFlag = false;
 	this->config->bg = this->bg;
 	this->config->fg = this->fg;
 	this->config->s = this->s;
 	this->config->timeZone = this->timeZone;
 	this->config->heartbeat = this->heartbeat;
-	this->config->mode = (uint32_t) this->defaultMode;
-	for (int i = 0; i < 4; i++)
+	this->config->mode = (uint32_t)this->defaultMode;
+	for( int i = 0; i < 4; i++ )
 		this->config->ntpserver[i] = this->ntpserver[i];
 
 	this->config->showItIs = this->showItIs;
 	this->config->minuteType = this->minuteType;
 	this->config->fgRainbow = this->fgRainbow;
-	
+
 	this->config->rainbowSpeed = this->rainbowSpeed;
 	this->config->autoOnOff = this->autoOnOff;
 	this->config->autoOnHour = this->autoOnHour;
 	this->config->autoOnMin = this->autoOnMin;
-	this->config->autoOffHour = this->autoOffHour; 
-	this->config->autoOffMin = this->autoOffMin; 
+	this->config->autoOffHour = this->autoOffHour;
+	this->config->autoOffMin = this->autoOffMin;
 	this->config->tmpl = this->tmpl;
 	this->config->fillMode = this->fillMode;
-	
-	for (int i = 0; i < EEPROM_SIZE; i++)
-		EEPROM.write(i, this->eeprom_data[i]);
+
+	for( int i = 0; i < EEPROM_SIZE; i++ )
+		EEPROM.write( i, this->eeprom_data[i] );
 	EEPROM.commit();
 }
-
 
 //---------------------------------------------------------------------------------------
 // reset
@@ -130,26 +121,22 @@ void ConfigClass::save()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void ConfigClass::reset()
-{
+void ConfigClass::reset() {
 	this->config->magic = 0xDEADBEEF;
-	this->config->bg =
-	{	0, 0, 0};
+	this->config->bg = { 0, 0, 0 };
 	this->bg = this->config->bg;
 
-	this->config->fg =
-	{	255, 255, 255};
+	this->config->fg = { 255, 255, 255 };
 	this->fg = this->config->fg;
 
-	this->config->s =
-	{	32, 0, 21};
+	this->config->s = { 32, 0, 21 };
 	this->s = this->config->s;
 
 	this->config->heartbeat = true;
 	this->heartbeat = this->config->heartbeat;
 
 	this->defaultMode = DisplayMode::plain;
-	this->config->mode = (uint32_t) this->defaultMode;
+	this->config->mode = (uint32_t)this->defaultMode;
 	this->timeZone = 0;
 
 	this->config->ntpserver[0] = 129;
@@ -164,13 +151,13 @@ void ConfigClass::reset()
 	this->config->showItIs = this->showItIs = true;
 	this->config->minuteType = this->minuteType = 0;
 	this->config->fgRainbow = this->fgRainbow = false;
-	
-	this->config->rainbowSpeed = 0; this->rainbowSpeed = 0;
+
+	this->config->rainbowSpeed = this->rainbowSpeed = 0;
 	this->config->autoOnOff = this->autoOnOff = false;
 	this->config->autoOnHour = this->autoOnHour = 0;
 	this->config->autoOnMin = this->autoOnMin = 0;
-	this->config->autoOffHour = this->autoOffHour = 0; 
-	this->config->autoOffMin = this->autoOffMin = 0; 
+	this->config->autoOffHour = this->autoOffHour = 0;
+	this->config->autoOffMin = this->autoOffMin = 0;
 	this->config->tmpl = this->tmpl = 0;
 	this->config->fillMode = this->fillMode = 0;
 }
@@ -185,34 +172,32 @@ void ConfigClass::reset()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void ConfigClass::load()
-{
-	Serial.println("Reading EEPROM config");
-	for (int i = 0; i < EEPROM_SIZE; i++)
-		this->eeprom_data[i] = EEPROM.read(i);
-	if (this->config->magic != 0xDEADBEEF)
-	{
-		Serial.println("EEPROM config invalid, writing default values");
+void ConfigClass::load() {
+	Serial.println( "Reading EEPROM config" );
+	for( int i = 0; i < EEPROM_SIZE; i++ )
+		this->eeprom_data[i] = EEPROM.read( i );
+	if( this->config->magic != 0xDEADBEEF ) {
+		Serial.println( "EEPROM config invalid, writing default values" );
 		this->reset();
 		this->save();
 	}
 	this->bg = this->config->bg;
 	this->fg = this->config->fg;
 	this->s = this->config->s;
-	this->defaultMode = (DisplayMode) this->config->mode;
+	this->defaultMode = (DisplayMode)this->config->mode;
 	this->heartbeat = this->config->heartbeat;
 	this->timeZone = this->config->timeZone;
 	this->minuteType = this->config->minuteType;
 	this->fgRainbow = this->config->fgRainbow;
-	for (int i = 0; i < 4; i++)
+	for( int i = 0; i < 4; i++ )
 		this->ntpserver[i] = this->config->ntpserver[i];
-	
+
 	this->rainbowSpeed = this->config->rainbowSpeed;
 	this->autoOnOff = this->config->autoOnOff;
 	this->autoOnHour = this->config->autoOnHour;
 	this->autoOnMin = this->config->autoOnMin;
-	this->autoOffHour = this->config->autoOffHour; 
-	this->autoOffMin = this->config->autoOffMin; 
+	this->autoOffHour = this->config->autoOffHour;
+	this->autoOffMin = this->config->autoOffMin;
 	this->tmpl = this->config->tmpl;
 	this->fillMode = this->config->fillMode;
 }

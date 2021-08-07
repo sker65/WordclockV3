@@ -23,9 +23,9 @@
 //
 // This code is based on (heavily modified):
 // https://github.com/sandeepmistry/esp8266-Arduino/blob/master/esp8266com/esp8266/libraries/ESP8266WiFi/examples/NTPClient
+#include "ntp.h"
 #include <Arduino.h>
 #include <limits.h>
-#include "ntp.h"
 
 //---------------------------------------------------------------------------------------
 // CONSTANTS
@@ -34,7 +34,7 @@
 #define LOCAL_PORT 2390
 #define NTP_TIMEOUT 5000
 #define TIMER_RESOLUTION 10
-#define NTP_RELOAD_INTERVAL (59*60*1000)
+#define NTP_RELOAD_INTERVAL ( 59 * 60 * 1000 )
 
 //---------------------------------------------------------------------------------------
 // global instance
@@ -50,10 +50,7 @@ NtpClass NTP = NtpClass();
 // -> obj: Instance of class to call the method tickerFunctio() on
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpClass::tickerFunctionWrapper(NtpClass *obj)
-{
-	obj->tickerFunction();
-}
+void NtpClass::tickerFunctionWrapper( NtpClass* obj ) { obj->tickerFunction(); }
 
 //---------------------------------------------------------------------------------------
 // NtpClass
@@ -63,11 +60,7 @@ void NtpClass::tickerFunctionWrapper(NtpClass *obj)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-NtpClass::NtpClass()
-{
-	this->ticker.attach_ms(TIMER_RESOLUTION, NtpClass::tickerFunctionWrapper,
-			this);
-}
+NtpClass::NtpClass() { this->ticker.attach_ms( TIMER_RESOLUTION, NtpClass::tickerFunctionWrapper, this ); }
 
 //---------------------------------------------------------------------------------------
 // setServer
@@ -77,8 +70,7 @@ NtpClass::NtpClass()
 // -> address: IP address of the new time server
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpClass::setServer(IPAddress address)
-{
+void NtpClass::setServer( IPAddress address ) {
 	this->timeServer = address;
 	this->state = NtpState::waitingForReload;
 	this->timer = NTP_RELOAD_INTERVAL - 2000;
@@ -92,10 +84,7 @@ void NtpClass::setServer(IPAddress address)
 // -> --
 // <- IPAddress current time server
 //---------------------------------------------------------------------------------------
-IPAddress NtpClass::getServer()
-{
-	return this->timeServer;
-}
+IPAddress NtpClass::getServer() { return this->timeServer; }
 
 //---------------------------------------------------------------------------------------
 // begin
@@ -111,17 +100,16 @@ IPAddress NtpClass::getServer()
 //         adjusted depending on current date
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpClass::begin(IPAddress ip, TNtpCallback callback, int timezone, bool DST)
-{
+void NtpClass::begin( IPAddress ip, TNtpCallback callback, int timezone, bool DST ) {
 	this->_callback = callback;
 	this->timeServer = ip;
 	this->tz = timezone * 3600;
 	this->useDST = DST;
 
-	this->udp.begin(LOCAL_PORT);
+	this->udp.begin( LOCAL_PORT );
 
 	// wait 2 seconds before starting first request
-	Serial.println("NtpClass::begin() Waiting 2 seconds");
+	Serial.println( "NtpClass::begin() Waiting 2 seconds" );
 	this->state = NtpState::waitingForReload;
 	this->timer = NTP_RELOAD_INTERVAL - 2000;
 }
@@ -134,15 +122,13 @@ void NtpClass::begin(IPAddress ip, TNtpCallback callback, int timezone, bool DST
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpClass::tickerFunction()
-{
+void NtpClass::tickerFunction() {
 	// increment timer variable
 	this->timer += TIMER_RESOLUTION;
 
-	switch (this->state)
-	{
+	switch( this->state ) {
 	case NtpState::startRequest:
-		this->udp.flush(); // clear previously received data
+		this->udp.flush();  // clear previously received data
 		this->sendPacket(); // request new time data
 		this->timer = 0;
 		this->state = NtpState::waitingForReply;
@@ -150,17 +136,14 @@ void NtpClass::tickerFunction()
 		break;
 
 	case NtpState::waitingForReply:
-		if (this->timer >= NTP_TIMEOUT)
-		{
-			Serial.println("NtpClass: NTP request timeout");
+		if( this->timer >= NTP_TIMEOUT ) {
+			Serial.println( "NtpClass: NTP request timeout" );
 			this->state = NtpState::startRequest;
-		}
-		else if (udp.parsePacket() > 0)
-		{
-			Serial.println("NtpClass: Received NTP packet");
+		} else if( udp.parsePacket() > 0 ) {
+			Serial.println( "NtpClass: Received NTP packet" );
 			this->parse();
-			if (this->_callback)
-				this->_callback(this->h, this->m, this->s, this->ms, this->year, this->month, this->day);
+			if( this->_callback )
+				this->_callback( this->h, this->m, this->s, this->ms, this->year, this->month, this->day );
 			this->timer = 0;
 			this->state = NtpState::waitingForReload;
 			this->syncInProgress = false;
@@ -168,9 +151,8 @@ void NtpClass::tickerFunction()
 		break;
 
 	case NtpState::waitingForReload:
-		if (this->timer >= NTP_RELOAD_INTERVAL)
-		{
-			Serial.println("NtpClass: NTP reload timer expired.");
+		if( this->timer >= NTP_RELOAD_INTERVAL ) {
+			Serial.println( "NtpClass: NTP reload timer expired." );
 			this->state = NtpState::startRequest;
 		}
 		break;
@@ -189,11 +171,10 @@ void NtpClass::tickerFunction()
 // -> y, m, d: year, month, day to calculate the weekday for
 // <- weekday (0=Sunday, 1=Monday, ...)
 //---------------------------------------------------------------------------------------
-int NtpClass::dayOfWeek(int y, int m, int d)
-{
-	static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+int NtpClass::dayOfWeek( int y, int m, int d ) {
+	static int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 	y -= m < 3;
-	return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+	return ( y + y / 4 - y / 100 + y / 400 + t[m - 1] + d ) % 7;
 }
 
 //---------------------------------------------------------------------------------------
@@ -206,11 +187,10 @@ int NtpClass::dayOfWeek(int y, int m, int d)
 //                    inside the method)
 // <- weekday (0=Sunday, 1=Monday, ...)
 //---------------------------------------------------------------------------------------
-int NtpClass::lastSunday(int year, int month, int lastDayInMonth)
-{
-	for(int day = lastDayInMonth; day > 0; day--)
-	{
-		if(this->dayOfWeek(year, month, day) == 0) return day;
+int NtpClass::lastSunday( int year, int month, int lastDayInMonth ) {
+	for( int day = lastDayInMonth; day > 0; day-- ) {
+		if( this->dayOfWeek( year, month, day ) == 0 )
+			return day;
 	}
 	return 0;
 }
@@ -224,30 +204,32 @@ int NtpClass::lastSunday(int year, int month, int lastDayInMonth)
 // -> --
 // <- true if DST is active
 //---------------------------------------------------------------------------------------
-bool NtpClass::isDSTactive()
-{
+bool NtpClass::isDSTactive() {
 	// active in April ... September
-	if(this->month > 3 && this->month < 10) return true;
+	if( this->month > 3 && this->month < 10 )
+		return true;
 
-	int lastSundayInMarch = this->lastSunday(this->year, 3, 31);
-	int lastSundayInOctober = this->lastSunday(this->year, 10, 31);
+	int lastSundayInMarch = this->lastSunday( this->year, 3, 31 );
+	int lastSundayInOctober = this->lastSunday( this->year, 10, 31 );
 
-	if(this->month == 3)
-	{
+	if( this->month == 3 ) {
 		// active after last Sunday in March
-		if(this->day > lastSundayInMarch) return true;
+		if( this->day > lastSundayInMarch )
+			return true;
 
 		// active on last Sunday in March after 02:00
-		if(this->day == lastSundayInMarch && this->h >= 2) return true;
+		if( this->day == lastSundayInMarch && this->h >= 2 )
+			return true;
 	}
 
-	if(this->month == 10)
-	{
+	if( this->month == 10 ) {
 		// active before last Sunday in October
-		if(this->day < lastSundayInOctober) return true;
+		if( this->day < lastSundayInOctober )
+			return true;
 
 		// active on last Sunday in October before 03:00
-		if(this->day == lastSundayInMarch && this->h < 3) return true;
+		if( this->day == lastSundayInMarch && this->h < 3 )
+			return true;
 	}
 
 	return false;
@@ -261,37 +243,35 @@ bool NtpClass::isDSTactive()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpClass::parse()
-{
+void NtpClass::parse() {
 	byte buf[NTP_PACKET_SIZE];
 	bool DST = false;
 
-	Serial.print("NtpClass::parse() (");
-	Serial.print(this->timer);
+	Serial.print( "NtpClass::parse() (" );
+	Serial.print( this->timer );
 
-	this->udp.read(buf, NTP_PACKET_SIZE);
+	this->udp.read( buf, NTP_PACKET_SIZE );
 	this->udp.flush(); // discard additional data
-	unsigned long highWord = word(buf[40], buf[41]);
-	unsigned long lowWord = word(buf[42], buf[43]);
-	unsigned long secsSince1970 = (highWord << 16 | lowWord) - 2208988800ULL;
+	unsigned long highWord = word( buf[40], buf[41] );
+	unsigned long lowWord = word( buf[42], buf[43] );
+	unsigned long secsSince1970 = ( highWord << 16 | lowWord ) - 2208988800ULL;
 
 	// calculate date and time from timestamp
-	this->decodeTime(secsSince1970 + this->tz);
-	randomSeed(secsSince1970);
+	this->decodeTime( secsSince1970 + this->tz );
+	randomSeed( secsSince1970 );
 
 	// check if we need to adjust for daylight savings time
-	if(this->useDST)
-	{
+	if( this->useDST ) {
 		// check if we are inside DST window
 		DST = this->isDSTactive();
-		if(DST)
-		{
+		if( DST ) {
 			// decode date/time again using DST offset
-			this->decodeTime(secsSince1970 + this->tz + 3600);
+			this->decodeTime( secsSince1970 + this->tz + 3600 );
 		}
 	}
-	Serial.printf("ms), local time: %02i:%02i:%02i, date: %i-%02i-%02i, "
-			"weekday=%i, DST=%i\r\n", h, m, s, year, month, day, weekday, DST);
+	Serial.printf( "ms), local time: %02i:%02i:%02i, date: %i-%02i-%02i, "
+	               "weekday=%i, DST=%i\r\n",
+	               h, m, s, year, month, day, weekday, DST );
 }
 
 //---------------------------------------------------------------------------------------
@@ -302,12 +282,11 @@ void NtpClass::parse()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpClass::sendPacket()
-{
+void NtpClass::sendPacket() {
 	uint8_t buf[NTP_PACKET_SIZE];
 
-	Serial.println("NtpClass::sendPacket()");
-	memset(buf, 0, NTP_PACKET_SIZE);
+	Serial.println( "NtpClass::sendPacket()" );
+	memset( buf, 0, NTP_PACKET_SIZE );
 	buf[0] = 0b11100011;
 	buf[1] = 0;
 	buf[2] = 6;
@@ -316,15 +295,14 @@ void NtpClass::sendPacket()
 	buf[13] = 0x4E;
 	buf[14] = 49;
 	buf[15] = 52;
-	this->udp.beginPacket(this->timeServer, 123);
-	this->udp.write(buf, NTP_PACKET_SIZE);
+	this->udp.beginPacket( this->timeServer, 123 );
+	this->udp.write( buf, NTP_PACKET_SIZE );
 	this->udp.endPacket();
 
 	this->timer = 0;
 }
 
-void NtpClass::setTimeZone(int timeZone)
-{
+void NtpClass::setTimeZone( int timeZone ) {
 	this->tz = timeZone * 3600;
 	this->timer = NTP_RELOAD_INTERVAL - 1000;
 }
@@ -332,65 +310,66 @@ void NtpClass::setTimeZone(int timeZone)
 // modified/borrowed from http://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c?h=v0.9.15
 
 /* 2000-03-01 (mod 400 year, immediately after feb29 */
-#define LEAPOCH (946684800LL + 86400*(31+29))
-#define DAYS_PER_400Y (365*400 + 97)
-#define DAYS_PER_100Y (365*100 + 24)
-#define DAYS_PER_4Y   (365*4   + 1)
-void NtpClass::decodeTime(long long t)
-{
+#define LEAPOCH ( 946684800LL + 86400 * ( 31 + 29 ) )
+#define DAYS_PER_400Y ( 365 * 400 + 97 )
+#define DAYS_PER_100Y ( 365 * 100 + 24 )
+#define DAYS_PER_4Y ( 365 * 4 + 1 )
+void NtpClass::decodeTime( long long t ) {
 	long long days, secs;
 	int remdays, remsecs, remyears;
 	int qc_cycles, c_cycles, q_cycles;
 	int years, months;
 	int wday, yday, leap;
-	static const char days_in_month[] = {31,30,31,30,31,31,30,31,30,31,31,29};
+	static const char days_in_month[] = { 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 29 };
 
 	secs = t - LEAPOCH;
 	days = secs / 86400;
 	remsecs = secs % 86400;
-	if(remsecs < 0)
-	{
+	if( remsecs < 0 ) {
 		remsecs += 86400;
 		days--;
 	}
 
-	wday = (3+days)%7;
-	if (wday < 0) wday += 7;
+	wday = ( 3 + days ) % 7;
+	if( wday < 0 )
+		wday += 7;
 
 	qc_cycles = days / DAYS_PER_400Y;
 	remdays = days % DAYS_PER_400Y;
-	if(remdays < 0)
-	{
+	if( remdays < 0 ) {
 		remdays += DAYS_PER_400Y;
 		qc_cycles--;
 	}
 
 	c_cycles = remdays / DAYS_PER_100Y;
-	if(c_cycles == 4) c_cycles--;
+	if( c_cycles == 4 )
+		c_cycles--;
 	remdays -= c_cycles * DAYS_PER_100Y;
 
 	q_cycles = remdays / DAYS_PER_4Y;
-	if(q_cycles == 25) q_cycles--;
+	if( q_cycles == 25 )
+		q_cycles--;
 	remdays -= q_cycles * DAYS_PER_4Y;
 
 	remyears = remdays / 365;
-	if(remyears == 4) remyears--;
+	if( remyears == 4 )
+		remyears--;
 	remdays -= remyears * 365;
 
-	leap = !remyears && (q_cycles || !c_cycles);
+	leap = !remyears && ( q_cycles || !c_cycles );
 	yday = remdays + 31 + 28 + leap;
-	if(yday >= 365+leap) yday -= 365+leap;
+	if( yday >= 365 + leap )
+		yday -= 365 + leap;
 
-	years = remyears + 4*q_cycles + 100*c_cycles + 400*qc_cycles;
+	years = remyears + 4 * q_cycles + 100 * c_cycles + 400 * qc_cycles;
 
-	for(months=0; days_in_month[months] <= remdays; months++)
+	for( months = 0; days_in_month[months] <= remdays; months++ )
 		remdays -= days_in_month[months];
 
 	this->year = years + 2000;
 	this->month = months + 3;
-	if(this->month >= 12)
-	{
-		this->month -=12;
+	if( this->month >= 12 ) {
+		this->month -= 12;
 		this->year++;
 	}
 	this->day = remdays + 1;
