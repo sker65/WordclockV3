@@ -27,9 +27,7 @@
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-StarObject::StarObject()
-{
-}
+StarObject::StarObject() {}
 
 //---------------------------------------------------------------------------------------
 // randomize
@@ -40,8 +38,7 @@ StarObject::StarObject()
 // -> allStars: Reference to outer container for distance calculation to other stars
 // <- --
 //---------------------------------------------------------------------------------------
-void StarObject::randomize(std::vector<StarObject> &allStars)
-{
+void StarObject::randomize( std::vector<StarObject>& allStars ) {
 	// set coordinates of self to default value
 	this->x = -1;
 	this->y = -1;
@@ -50,37 +47,35 @@ void StarObject::randomize(std::vector<StarObject> &allStars)
 	bool distanceOK;
 	int newX = 0, newY = 0, dx, dy;
 
-	do
-	{
+	do {
 		// assume distance is OK
 		distanceOK = true;
 
 		// create new random pair
-		newX = random(LEDMatrix::width);
-		newY = random(LEDMatrix::height);
+		newX = random( LEDMatrix::width );
+		newY = random( LEDMatrix::height );
 		retryCount++;
 
 		// iterate over all other stars and check distance to newly generated coordinate
-		for (StarObject s : allStars)
-		{
+		for( StarObject s : allStars ) {
 			// skip if default value
-			if (s.x == -1) continue;
+			if( s.x == -1 )
+				continue;
 
 			// calculate distance
 			dx = newX - s.x;
 			dy = newY - s.y;
-			if (dx * dx + dy * dy < StarObject::minimumDistanceSquared)
-			{
+			if( dx * dx + dy * dy < StarObject::minimumDistanceSquared ) {
 				// retry if distance to any star is below limit
 				distanceOK = false;
 				break;
 			}
 		}
-	} while (!distanceOK && retryCount < 100);
+	} while( !distanceOK && retryCount < 100 );
 
 	this->x = newX;
 	this->y = newY;
-	this->speed = 15 + random(15);
+	this->speed = 15 + random( 15 );
 	this->state = 0;
 	this->brightness = 0;
 }
@@ -95,28 +90,22 @@ void StarObject::randomize(std::vector<StarObject> &allStars)
 //              calculation when creating new random position
 // <- --
 //---------------------------------------------------------------------------------------
-void StarObject::update(std::vector<StarObject> &allStars)
-{
+void StarObject::update( std::vector<StarObject>& allStars ) {
 	// increase or decrease brightness depending on current state
-	if (this->state == 0)
-	{
+	if( this->state == 0 ) {
 		this->brightness += this->speed;
-		if (this->brightness >= 255)
-		{
+		if( this->brightness >= 255 ) {
 			// switch to decreasing mode
 			this->brightness = 255;
 			this->state = 1;
 		}
-	}
-	else
-	{
+	} else {
 		this->brightness -= this->speed;
-		if (this->brightness <= 0)
-		{
+		if( this->brightness <= 0 ) {
 			// switch to increasing mode and get new random coordinates
 			this->brightness = 0;
 			this->state = 0;
-			this->randomize(allStars);
+			this->randomize( allStars );
 		}
 	}
 }
@@ -131,12 +120,11 @@ void StarObject::update(std::vector<StarObject> &allStars)
 //              calculation when creating new random position
 // <- --
 //---------------------------------------------------------------------------------------
-void StarObject::render(uint8_t* buf, std::vector<StarObject> &allStars)
-{
-	this->update(allStars);
+void StarObject::render( uint8_t* buf, std::vector<StarObject>& allStars ) {
+	this->update( allStars );
 
 	// write brightness to target buffer
-	int offset = LEDMatrix::getOffset(this->x, this->y);
+	int offset = LEDMatrix::getOffset( this->x, this->y );
 	buf[offset + 0] = this->brightness;
 	buf[offset + 1] = this->brightness;
 	buf[offset + 2] = this->brightness;

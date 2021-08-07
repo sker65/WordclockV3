@@ -15,15 +15,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#include <math.h>
 #include "particle.h"
 #include "ledfunctions.h"
+#include <math.h>
 
 //---------------------------------------------------------------------------------------
 // brightness gradient for moving particle
 //---------------------------------------------------------------------------------------
-const float Particle::ParticleGradient[MAX_PARTICLE_DISTANCE] = {
-	1, 0.75, 0.5, 0.25, 0.125, 0.06, 0.03, 0.01 };
+const float Particle::ParticleGradient[MAX_PARTICLE_DISTANCE] = { 1, 0.75, 0.5, 0.25, 0.125, 0.06, 0.03, 0.01 };
 
 //---------------------------------------------------------------------------------------
 // Particle
@@ -37,8 +36,7 @@ const float Particle::ParticleGradient[MAX_PARTICLE_DISTANCE] = {
 //    delay: time to wait until the particle starts moving
 // <- --
 //---------------------------------------------------------------------------------------
-Particle::Particle(float x, float y, float vx, float vy, int delay)
-{
+Particle::Particle( float x, float y, float vx, float vy, int delay ) {
 	this->x = x;
 	this->y = y;
 	this->vx = vx;
@@ -49,8 +47,7 @@ Particle::Particle(float x, float y, float vx, float vy, int delay)
 	this->alive = true;
 }
 
-void Particle::init(float x, float y, float vx, float vy, int delay)
-{
+void Particle::init( float x, float y, float vx, float vy, int delay ) {
 	this->x = x;
 	this->y = y;
 	this->vx = vx;
@@ -69,9 +66,7 @@ void Particle::init(float x, float y, float vx, float vy, int delay)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-Particle::~Particle()
-{
-}
+Particle::~Particle() {}
 
 //---------------------------------------------------------------------------------------
 // distance
@@ -81,10 +76,7 @@ Particle::~Particle()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-float Particle::distance()
-{
-	return this->distanceTo(this->x0, this->y0);
-}
+float Particle::distance() { return this->distanceTo( this->x0, this->y0 ); }
 
 //---------------------------------------------------------------------------------------
 // distanceTo
@@ -94,11 +86,10 @@ float Particle::distance()
 // -> x, y: Point for distance test
 // <- --
 //---------------------------------------------------------------------------------------
-float Particle::distanceTo(float x, float y)
-{
+float Particle::distanceTo( float x, float y ) {
 	float dx = this->x - x;
 	float dy = this->y - y;
-	return sqrt(dx*dx + dy*dy);
+	return sqrt( dx * dx + dy * dy );
 }
 
 //---------------------------------------------------------------------------------------
@@ -109,11 +100,9 @@ float Particle::distanceTo(float x, float y)
 // -> --
 // <- distance to starting point
 //---------------------------------------------------------------------------------------
-float Particle::move()
-{
+float Particle::move() {
 	// do not move until given delay has expired
-	if(this->delay)
-	{
+	if( this->delay ) {
 		this->delay--;
 		return 0;
 	}
@@ -123,7 +112,8 @@ float Particle::move()
 
 	// mark movement as finished if distance has reached maximum
 	float d = this->distance();
-	if(d > MAX_PARTICLE_DISTANCE) this->alive = false;
+	if( d > MAX_PARTICLE_DISTANCE )
+		this->alive = false;
 
 	return d;
 }
@@ -137,17 +127,19 @@ float Particle::move()
 //    palette: palette with background color, foreground color
 // <- --
 //---------------------------------------------------------------------------------------
-void Particle::render(uint8_t *target, palette_entry palette[])
-{
+void Particle::render( uint8_t* target, palette_entry palette[] ) {
 	// move particle and save traveled distance
 	int d = (int)this->move();
 
 	// check boundaries
-	if(this->x<0 || this->x >= LEDMatrix::width) return;
-	if(this->y<0 || this->y >= LEDMatrix::height) return;
+	if( this->x < 0 || this->x >= LEDMatrix::width )
+		return;
+	if( this->y < 0 || this->y >= LEDMatrix::height )
+		return;
 
 	// limit distance
-	if(d >= MAX_PARTICLE_DISTANCE) d = MAX_PARTICLE_DISTANCE - 1;
+	if( d >= MAX_PARTICLE_DISTANCE )
+		d = MAX_PARTICLE_DISTANCE - 1;
 
 	// get palette color for foreground
 	float pr = (float)palette[1].r;
@@ -155,7 +147,7 @@ void Particle::render(uint8_t *target, palette_entry palette[])
 	float pb = (float)palette[1].b;
 
 	// calculate offset in buffer from given coordinates
-	int ofs = LEDMatrix::getOffset(this->x, this->y);
+	int ofs = LEDMatrix::getOffset( this->x, this->y );
 
 	// calculate fading color depending on distance from starting point and add it
 	// to the previous value of the pixel corresponding to the particle
@@ -164,9 +156,12 @@ void Particle::render(uint8_t *target, palette_entry palette[])
 	float b = (float)target[ofs + 2] + pb * ParticleGradient[d];
 
 	// limit brightness value of each component to foreground color values
-	if(r > pr) r = pr;
-	if(g > pg) g = pg;
-	if(b > pb) b = pb;
+	if( r > pr )
+		r = pr;
+	if( g > pg )
+		g = pg;
+	if( b > pb )
+		b = pb;
 
 	// write back pixel color
 	target[ofs + 0] = r;

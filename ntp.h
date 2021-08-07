@@ -18,8 +18,8 @@
 //
 // This code is based on (heavily modified):
 // https://github.com/sandeepmistry/esp8266-Arduino/blob/master/esp8266com/esp8266/libraries/ESP8266WiFi/examples/NTPClient
-#ifndef _NTP_H_
-#define _NTP_H_
+
+#pragma once
 
 #include <Ticker.h>
 #include <WiFiUdp.h>
@@ -72,5 +72,3 @@ private:
 };
 
 extern NtpClass NTP;
-
-#endif

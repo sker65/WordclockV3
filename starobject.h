@@ -16,18 +16,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef STAROBJECT_H_
-#define STAROBJECT_H_
+#pragma once
 
-#include <vector>
 #include <stdint.h>
+#include <vector>
 
-class StarObject
-{
+class StarObject {
 public:
 	StarObject();
-	void render(uint8_t *buf, std::vector<StarObject> &allStars);
-	void randomize(std::vector<StarObject> &allStars);
+	void render( uint8_t* buf, std::vector<StarObject>& allStars );
+	void randomize( std::vector<StarObject>& allStars );
 
 private:
 	const static int minimumDistanceSquared = 5;
@@ -37,7 +35,5 @@ private:
 	int count = 0;
 	int brightness = 0;
 	int state = 0;
-	void update(std::vector<StarObject> &allStars);
+	void update( std::vector<StarObject>& allStars );
 };
-
-#endif /* STAROBJECT_H_ */

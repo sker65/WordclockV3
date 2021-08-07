@@ -16,18 +16,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MATRIXOBJECT_H_
-#define _MATRIXOBJECT_H_
+#pragma once
 
-#include <vector>
-#include <algorithm>
 #include "config.h"
+#include <algorithm>
+#include <vector>
 
-class MatrixObject
-{
+class MatrixObject {
 public:
-	bool operator<(const MatrixObject &other) const { return other.y < this->y; }
-	void render(uint8_t *buf);
+	bool operator<( const MatrixObject& other ) const { return other.y < this->y; }
+	void render( uint8_t* buf );
 	MatrixObject();
 
 private:
@@ -43,5 +41,3 @@ private:
 	int x = 0;
 	int y = 0;
 };
-
-#endif /* _MATRIXOBJECT_H_ */

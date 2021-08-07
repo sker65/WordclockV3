@@ -15,17 +15,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef PARTICLE_H_
-#define PARTICLE_H_
 
-#include <vector>
-#include <algorithm>
+#pragma once
+
 #include "config.h"
+#include <algorithm>
+#include <vector>
 
 #define MAX_PARTICLE_DISTANCE 8
 
-class Particle
-{
+class Particle {
 private:
 	static const float ParticleGradient[MAX_PARTICLE_DISTANCE];
 	float x, y, vx, vy, x0, y0;
@@ -36,13 +35,11 @@ private:
 public:
 	bool alive;
 
-	Particle(float x, float y, float vx, float vy, int delay);
+	Particle( float x, float y, float vx, float vy, int delay );
 	virtual ~Particle();
-	void init(float x, float y, float vx, float vy, int delay);
+	void init( float x, float y, float vx, float vy, int delay );
 
-	void render(uint8_t *target, palette_entry palette[]);
+	void render( uint8_t* target, palette_entry palette[] );
 	float distance();
-	float distanceTo(float x, float y);
+	float distanceTo( float x, float y );
 };
-
-#endif /* PARTICLE_H_ */

@@ -18,8 +18,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#include <Arduino.h>
 #include "brightness.h"
+#include <Arduino.h>
 
 //---------------------------------------------------------------------------------------
 // global instance
@@ -34,10 +34,7 @@ BrightnessClass Brightness = BrightnessClass();
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-BrightnessClass::BrightnessClass()
-{
-	this->avg = analogRead(A0);
-}
+BrightnessClass::BrightnessClass() { this->avg = analogRead( A0 ); }
 
 //---------------------------------------------------------------------------------------
 // filter
@@ -52,11 +49,9 @@ BrightnessClass::BrightnessClass()
 // -> input: filter input [0...65535]
 // <- --
 //---------------------------------------------------------------------------------------
-uint32_t BrightnessClass::filter(uint16_t input)
-{
-	uint32_t tmp = (65536 - FILTER_COEFFICIENT) * this->avg
-			     + FILTER_COEFFICIENT * (uint32_t)input;
-	return (tmp + 32768) >> 16;
+uint32_t BrightnessClass::filter( uint16_t input ) {
+	uint32_t tmp = ( 65536 - FILTER_COEFFICIENT ) * this->avg + FILTER_COEFFICIENT * (uint32_t)input;
+	return ( tmp + 32768 ) >> 16;
 }
 
 //---------------------------------------------------------------------------------------
@@ -67,8 +62,8 @@ uint32_t BrightnessClass::filter(uint16_t input)
 // -> adcValue: input value [0...1023]
 // <- brightness [0...256]
 //---------------------------------------------------------------------------------------
-uint32_t BrightnessClass::getBrightnessForADCValue(uint32_t adcValue)
-{
+uint32_t BrightnessClass::getBrightnessForADCValue( uint32_t adcValue ) {
+	// clang-format off
 //mit LDR:
 //	float lightTable[] = {
 //		0, 15,
@@ -85,25 +80,22 @@ uint32_t BrightnessClass::getBrightnessForADCValue(uint32_t adcValue)
 		1023, 255,
 		-1, -1
 	};
-
-	if(this->brightnessOverride<256)
-	{
+	// clang-format on
+	if( this->brightnessOverride < 256 ) {
 		return this->brightnessOverride;
 	}
 
 	int i = 0;
 	float result;
 	float value = adcValue;
-	while (lightTable[i] != -1)
-	{
-		if (adcValue >= lightTable[i] && adcValue < lightTable[i + 2])
-		{
+	while( lightTable[i] != -1 ) {
+		if( adcValue >= lightTable[i] && adcValue < lightTable[i + 2] ) {
 			float x1 = lightTable[i + 0];
 			float y1 = lightTable[i + 1];
 			float x2 = lightTable[i + 2];
 			float y2 = lightTable[i + 3];
-			result = y1 + (value - x1) * (y2 - y1) / (x2 - x1);
-			return (int) result;
+			result = y1 + ( value - x1 ) * ( y2 - y1 ) / ( x2 - x1 );
+			return (int)result;
 		}
 		i += 2;
 	}
@@ -119,11 +111,10 @@ uint32_t BrightnessClass::getBrightnessForADCValue(uint32_t adcValue)
 // -> --
 // <- low pass filtered brightness value
 //---------------------------------------------------------------------------------------
-uint32_t BrightnessClass::value()
-{
+uint32_t BrightnessClass::value() {
 	// read next ADC value and apply filter
-	this->avg = this->filter(analogRead(A0));
+	this->avg = this->filter( analogRead( A0 ) );
 
 	// calculate brightness value for filtered ADC value
-	return this->getBrightnessForADCValue(this->avg);
+	return this->getBrightnessForADCValue( this->avg );
 }

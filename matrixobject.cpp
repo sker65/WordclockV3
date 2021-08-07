@@ -22,6 +22,7 @@
 //---------------------------------------------------------------------------------------
 // initializes the static gradient palette
 //---------------------------------------------------------------------------------------
+// clang-format off
 const std::vector<palette_entry> MatrixObject::MatrixGradient = {
 	{ 255, 255, 255 },
 	{ 128, 255, 128 },
@@ -35,7 +36,7 @@ const std::vector<palette_entry> MatrixObject::MatrixGradient = {
 	{ 0, 2, 0 },
 	{ 0, 1, 0 },
 	{ 0, 0, 0 } };
-
+// clang-format on
 //---------------------------------------------------------------------------------------
 // MatrixObject
 //
@@ -44,10 +45,7 @@ const std::vector<palette_entry> MatrixObject::MatrixGradient = {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-MatrixObject::MatrixObject()
-{
-	this->randomize();
-}
+MatrixObject::MatrixObject() { this->randomize(); }
 
 //---------------------------------------------------------------------------------------
 // move
@@ -58,15 +56,14 @@ MatrixObject::MatrixObject()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void MatrixObject::move()
-{
+void MatrixObject::move() {
 	this->prescaler += this->speed;
-	if (this->prescaler > 30000)
-	{
+	if( this->prescaler > 30000 ) {
 		this->prescaler -= 30000;
 		this->y++;
 		int limit = LEDMatrix::height + MatrixObject::MatrixGradient.size();
-		if(this->y > limit) this->randomize();
+		if( this->y > limit )
+			this->randomize();
 	}
 }
 
@@ -78,12 +75,10 @@ void MatrixObject::move()
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void MatrixObject::randomize()
-{
-	this->x = random(LEDMatrix::width); //   0 ... width
-	this->y = random(25) - 25;                  // -25 ... -1
-	this->speed = MatrixObject::MinMatrixSpeed
-			+ random(MatrixObject::MaxMatrixSpeed - MatrixObject::MinMatrixSpeed);
+void MatrixObject::randomize() {
+	this->x = random( LEDMatrix::width ); //   0 ... width
+	this->y = random( 25 ) - 25;          // -25 ... -1
+	this->speed = MatrixObject::MinMatrixSpeed + random( MatrixObject::MaxMatrixSpeed - MatrixObject::MinMatrixSpeed );
 	this->prescaler = 0;
 }
 
@@ -96,22 +91,20 @@ void MatrixObject::randomize()
 // -> buf: Pointer to render target (linear RGB buffer)
 // <- --
 //---------------------------------------------------------------------------------------
-void MatrixObject::render(uint8_t *buf)
-{
+void MatrixObject::render( uint8_t* buf ) {
 	this->move();
 
 	// check boundaries
-	if(this->x<0 || this->x >= LEDMatrix::width) return;
+	if( this->x < 0 || this->x >= LEDMatrix::width )
+		return;
 
 	int currentY = this->y;
 	int ofs;
 
-	for (palette_entry p : MatrixObject::MatrixGradient)
-	{
+	for( palette_entry p : MatrixObject::MatrixGradient ) {
 		// only render if inside screen rectangle
-		if(currentY>=0 && currentY<LEDMatrix::height)
-		{
-			ofs = LEDMatrix::getOffset(this->x, currentY);
+		if( currentY >= 0 && currentY < LEDMatrix::height ) {
+			ofs = LEDMatrix::getOffset( this->x, currentY );
 			buf[ofs + 0] = p.r;
 			buf[ofs + 1] = p.g;
 			buf[ofs + 2] = p.b;

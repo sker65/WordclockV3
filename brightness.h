@@ -15,16 +15,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef _BRIGHTNESS_H_
-#define _BRIGHTNESS_H_
+
+#pragma once
 
 #include <stdint.h>
 
-#define ALPHA(x) ((uint16_t)(x * 65535.0f))
-#define FILTER_COEFFICIENT ALPHA(0.01)
+#define ALPHA( x ) ( (uint16_t)( x * 65535.0f ) )
+#define FILTER_COEFFICIENT ALPHA( 0.01 )
 
-class BrightnessClass
-{
+class BrightnessClass {
 public:
 	BrightnessClass();
 	uint32_t value();
@@ -33,11 +32,8 @@ public:
 	uint32_t brightnessOverride = 256;
 
 private:
-	uint32_t getBrightnessForADCValue(uint32_t adcValue);
-	uint32_t filter(uint16_t input);
+	uint32_t getBrightnessForADCValue( uint32_t adcValue );
+	uint32_t filter( uint16_t input );
 };
 
 extern BrightnessClass Brightness;
-
-#endif
-
