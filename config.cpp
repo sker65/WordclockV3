@@ -114,7 +114,8 @@ void ConfigClass::save()
 	this->config->autoOffHour = this->autoOffHour; 
 	this->config->autoOffMin = this->autoOffMin; 
 	this->config->tmpl = this->tmpl;
-
+	this->config->fillMode = this->fillMode;
+	
 	for (int i = 0; i < EEPROM_SIZE; i++)
 		EEPROM.write(i, this->eeprom_data[i]);
 	EEPROM.commit();
