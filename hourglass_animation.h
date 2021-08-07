@@ -19,13 +19,14 @@
 #ifndef _HOURGLASS_ANIMATION_INC_
 #define _HOURGLASS_ANIMATION_INC_
 
-#include <stdint.h>
 #include "config.h"
+#include <stdint.h>
 
 // animation frames for hourglass animation
 // second dimension is NUM_PIXELS+2 to guarantee each frame starts at
 // a 32 bit boundary
-#define NUM_PIXELS_ALIGNED ((NUM_PIXELS + 3) & ~0x03)
+#define NUM_PIXELS_ALIGNED ( ( NUM_PIXELS + 3 ) & ~0x03 )
+// clang-format off
 static const uint8_t PROGMEM hourglass_animation[HOURGLASS_ANIMATION_FRAMES][NUM_PIXELS_ALIGNED] __attribute__ ((aligned (4))) = {
 	{ 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
 		0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
@@ -116,5 +117,5 @@ static const uint8_t PROGMEM hourglass_animation[HOURGLASS_ANIMATION_FRAMES][NUM
 		0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
 		3, 3, 3, 3, 0, 0}
 };
-
+// clang-format on
 #endif
