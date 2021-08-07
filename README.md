@@ -18,6 +18,7 @@ https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - al
 - added switch off at night time feature
 - cleanup weg ui / JS
 - added fill modes for background filling to not just reset the background (big brightness change)
+- added moon phase rendering
 # esp8266wordclock
 Wordclock with WS2812B RGB LED modules driven by an ESP8266 module
 
