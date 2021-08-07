@@ -60,6 +60,9 @@ int h = 0;
 int m = 0;
 int s = 0;
 int ms = 0;
+int year = 0;
+int month = 0;
+int day = 0;
 int lastSecond = -1;
 bool timeVarLock = false;
 bool startup = true;
@@ -148,7 +151,7 @@ void configModeCallback(WiFiManager *myWiFiManager)
 // ->
 // <- --
 //---------------------------------------------------------------------------------------
-void NtpCallback(uint8_t _h, uint8_t _m, uint8_t _s, uint8_t _ms)
+void NtpCallback(uint8_t _h, uint8_t _m, uint8_t _s, uint8_t _ms, int _year, int _month, int _day)
 {
 	Serial.println("NtpCallback()");
 
@@ -161,14 +164,19 @@ void NtpCallback(uint8_t _h, uint8_t _m, uint8_t _s, uint8_t _ms)
 	m = _m;
 	s = _s;
 	ms = _ms;
+	year = _year;
+	month = _month;
+	day = _day;
 	timeVarLock = false;
 }
 
 void setLED(unsigned char r, unsigned char g, unsigned char b)
 {
+#ifdef HAVE_RGB_LEDS
 	digitalWrite(LED_RED, r);
 	digitalWrite(LED_GREEN, g);
 	digitalWrite(LED_BLUE, b);
+#endif
 }
 
 //---------------------------------------------------------------------------------------
@@ -182,9 +190,11 @@ void setLED(unsigned char r, unsigned char g, unsigned char b)
 void setup()
 {	// ESP8266 LED
 	pinMode(LED_BUILTIN, OUTPUT);
+#ifdef HAVE_RGB_LEDS
 	pinMode(LED_RED, OUTPUT);
 	pinMode(LED_GREEN, OUTPUT);
 	pinMode(LED_BLUE, OUTPUT);
+#endif
 
 	setLED(1, 0, 0);
 
@@ -283,6 +293,7 @@ void loop()
 	// update LEDs
 	LED.setBrightness(Brightness.value());
 	LED.setTime(h, m, s, ms);
+	LED.setDate(year, month, day);
 	LED.process();
 
 	// do not continue if OTA update is in progress
