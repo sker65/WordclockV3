@@ -26,7 +26,7 @@
 #include <WiFiUdp.h>
 
 // type definition for NTP callback
-typedef void (*TNtpCallback)(uint8_t, uint8_t, uint8_t, uint8_t);
+typedef void (*TNtpCallback)(uint8_t hour, uint8_t min, uint8_t sec, uint8_t ms, int year, int mon, int day);
 
 class NtpClass
 {

@@ -160,7 +160,7 @@ void NtpClass::tickerFunction()
 			Serial.println("NtpClass: Received NTP packet");
 			this->parse();
 			if (this->_callback)
-				this->_callback(this->h, this->m, this->s, this->ms);
+				this->_callback(this->h, this->m, this->s, this->ms, this->year, this->month, this->day);
 			this->timer = 0;
 			this->state = NtpState::waitingForReload;
 			this->syncInProgress = false;
