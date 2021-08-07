@@ -58,11 +58,11 @@ typedef struct _config_struct
 enum class DisplayMode
 {
 	plain, fade, flyingLettersVerticalUp, flyingLettersVerticalDown, explode,
-	random, matrix, heart, fire, plasma, stars, snake, red, green, blue,
+	random, matrix, heart, fire, plasma, stars, snake, moon, red, green, blue,
 	yellowHourglass, greenHourglass, update, updateComplete, updateError,
 	wifiManager, invalid
 };
-#define MAX_DISPLAY_MODE_TO_SET 20 
+#define MAX_DISPLAY_MODE_TO_SET 21 
 
 class ConfigClass
 {
@@ -93,7 +93,7 @@ public:
 	uint8_t autoOffMin; 
 	uint8_t tmpl;
   uint8_t fillMode;
-	
+
 	bool debugMode = false;
 	int delayedWriteTimer = 0;
 	bool delayedWriteFlag = false;
