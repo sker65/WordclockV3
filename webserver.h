@@ -34,6 +34,7 @@ public:
 private:
 	ESP8266WebServer* server = NULL;
 	static const char* textPlain;
+	static const char* applicationJson;
 
 	String contentType( String filename );
 	bool serveFile( String path );

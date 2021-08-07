@@ -33,6 +33,7 @@
 WebServer HttpServer = WebServer();
 
 const char* WebServer::textPlain = "text/plain";
+const char* WebServer::applicationJson = "application/json";
 
 //---------------------------------------------------------------------------------------
 // WebServer
@@ -514,7 +515,7 @@ void WebServer::handleGetConfig() {
 	sprintf( s, "#%02x%02x%02x", Config.s.r, Config.s.g, Config.s.b );
 	json["s"] = s;
 	json.printTo( buf, sizeof( buf ) );
-	this->server->send( 200, "application/json", buf );
+	this->server->send( 200, applicationJson, buf );
 }
 
 //---------------------------------------------------------------------------------------
@@ -544,7 +545,7 @@ void WebServer::handleInfo() {
 	json["resetinfo"] = ESP.getResetInfo();
 
 	json.printTo( buf, sizeof( buf ) );
-	this->server->send( 200, "application/json", buf );
+	this->server->send( 200, applicationJson, buf );
 }
 
 //---------------------------------------------------------------------------------------
