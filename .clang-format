@@ -1,0 +1,8 @@
+BasedOnStyle: LLVM
+ColumnLimit: 120
+UseTab: ForIndentation
+SpaceBeforeParens: Never
+SpacesInParentheses: true
+TabWidth: 2
+IndentWidth: 2
+PointerAlignment: Left

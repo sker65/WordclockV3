@@ -21,26 +21,24 @@
 #define _LEDFUNCTIONS_H_
 
 //#include <Adafruit_NeoPixel.h>
-#include <NeoPixelSegmentBus.h>
+#include <NeoPixelAnimator.h>
 #include <NeoPixelBrightnessBus.h>
 #include <NeoPixelBus.h>
-#include <NeoPixelAnimator.h>
+#include <NeoPixelSegmentBus.h>
 #include <stdint.h>
 #include <vector>
 
 #include "config.h"
 #include "matrixobject.h"
-#include "starobject.h"
 #include "particle.h"
+#include "starobject.h"
 
-typedef struct _leds_template_t
-{
+typedef struct _leds_template_t {
 	int param0, param1, param2;
 	const std::vector<int> LEDs;
 } leds_template_t;
 
-typedef struct _xy_t
-{
+typedef struct _xy_t {
 	int xTarget, yTarget, x, y, delay, speed, counter;
 } xy_t;
 
@@ -48,21 +46,24 @@ typedef struct _xy_t
 #define NUM_STARS 10
 #define NUM_BRIGHTNESS_CURVES 2
 
-class LEDMatrix
-{
+class LEDMatrix {
 public:
 	LEDMatrix();
 	~LEDMatrix();
-	void begin(int pin);
+	void begin( int pin );
 	void process();
-	void setTime(int h, int m, int s, int ms);
-	void setDate(int y, int m, int d) { this->year = y; this->month = m; this->day = d;}
-	void setBrightness(int brightness);
-	void setMode(DisplayMode newMode);
+	void setTime( int h, int m, int s, int ms );
+	void setDate( int y, int m, int d ) {
+		this->year = y;
+		this->month = m;
+		this->day = d;
+	}
+	void setBrightness( int brightness );
+	void setMode( DisplayMode newMode );
 	void show();
 	void resetRainbowColor();
-	void setDisplayOn(bool val) { this->displayOn = val; }
-	static int getOffset(int x, int y);
+	void setDisplayOn( bool val ) { this->displayOn = val; }
+	static int getOffset( int x, int y );
 	static const int width = 11;
 	static const int height = 10;
 	uint8_t currentValues[NUM_PIXELS * 3];
@@ -79,7 +80,7 @@ private:
 	DisplayMode mode = DisplayMode::plain;
 	DisplayMode randomMode = DisplayMode::plain;
 	bool displayOn = true;
-	//int randomTicker = 0;
+	// int randomTicker = 0;
 	int rainbowTicker = 0;
 	int rainbowIndex = 0;
 	palette_entry currentRainbowColor;
@@ -91,8 +92,8 @@ private:
 	std::vector<StarObject> stars;
 	uint8_t targetValues[NUM_PIXELS * 3];
 	uint8_t animationBuf[NUM_PIXELS];
-	//Adafruit_NeoPixel *pixels = NULL;
-  NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> *strip = NULL; //(NUM_PIXELS);
+	// Adafruit_NeoPixel *pixels = NULL;
+	NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod>* strip = NULL; //(NUM_PIXELS);
 	int heartBrightness = 0;
 	int heartState = 0;
 	int brightness = 96;
@@ -111,19 +112,19 @@ private:
 	u_int8_t snakeX = 0;
 	u_int8_t snakeY = 0;
 #define SNAKE_LEN 20
-	u_int8_t snake[SNAKE_LEN+1];
+	u_int8_t snake[SNAKE_LEN + 1];
 	u_int8_t snakeHead;
 	u_int8_t snakeTail;
-	int 		 snakeDX = 1;
-	int 		 snakeTicker = 0;
-	int 		 snakeSpeed = 10;
+	int snakeDX = 1;
+	int snakeTicker = 0;
+	int snakeSpeed = 10;
 
 	bool fillInvers;
 
-	int  getMoonphase(int y, int m, int d);
+	int getMoonphase( int y, int m, int d );
 	bool activeParticles();
-	void fillBackground(int seconds, int milliseconds, uint8_t *buf);
-	void renderCorner(uint8_t *target, int m);
+	void fillBackground( int seconds, int milliseconds, uint8_t* buf );
+	void renderCorner( uint8_t* target, int m );
 	void renderRed();
 	void renderGreen();
 	void renderBlue();
@@ -136,31 +137,32 @@ private:
 	void renderUpdate();
 	void renderUpdateComplete();
 	void renderUpdateError();
-	void renderHourglass(uint8_t animationStep, bool green);
+	void renderHourglass( uint8_t animationStep, bool green );
 	void renderWifiManager();
-	void renderTime(uint8_t *target, int h, int m, int s, int ms);
-	void renderFlyingLetters(bool transition);
-	void prepareFlyingLetters(uint8_t *source);
-	void renderExplosion(bool transition, int initHour, int initMinute);
-	void renderSnake(bool transition, int initHour, int initMinute);
-	void prepareExplosion(uint8_t *source);
+	void renderTime( uint8_t* target, int h, int m, int s, int ms );
+	void renderFlyingLetters( bool transition );
+	void prepareFlyingLetters( uint8_t* source );
+	void renderExplosion( bool transition, int initHour, int initMinute );
+	void renderSnake( bool transition, int initHour, int initMinute );
+	void prepareExplosion( uint8_t* source );
 	void fade();
-	void preparePalette(palette_entry* palette);
+	void preparePalette( palette_entry* palette );
 	bool displayTimeChanged();
-	bool modeHasTransition(DisplayMode m);
-	
-	void set(const uint8_t *buf, palette_entry palette[]);
-	void set(const uint8_t *buf, palette_entry palette[], bool immediately);
-	void setBuffer(uint8_t *target, const uint8_t *source, palette_entry palette[]);
+	bool modeHasTransition( DisplayMode m );
+
+	void set( const uint8_t* buf, palette_entry palette[] );
+	void set( const uint8_t* buf, palette_entry palette[], bool immediately );
+	void setBuffer( uint8_t* target, const uint8_t* source, palette_entry palette[] );
 
 	// this mapping table maps the linear memory buffer structure used throughout the
 	// project to the physical layout of the LEDs
 	static const uint32_t PROGMEM mapping[NUM_PIXELS];
 
 	static const uint32_t PROGMEM brightnessCurveSelect[NUM_PIXELS];
-	static const uint32_t PROGMEM brightnessCurvesR[256*NUM_BRIGHTNESS_CURVES];
-	static const uint32_t PROGMEM brightnessCurvesG[256*NUM_BRIGHTNESS_CURVES];
-	static const uint32_t PROGMEM brightnessCurvesB[256*NUM_BRIGHTNESS_CURVES];;
+	static const uint32_t PROGMEM brightnessCurvesR[256 * NUM_BRIGHTNESS_CURVES];
+	static const uint32_t PROGMEM brightnessCurvesG[256 * NUM_BRIGHTNESS_CURVES];
+	static const uint32_t PROGMEM brightnessCurvesB[256 * NUM_BRIGHTNESS_CURVES];
+	;
 };
 
 extern LEDMatrix LED;
