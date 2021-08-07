@@ -76,6 +76,7 @@ void WebServerClass::begin()
 	this->server->on("/saveconfig", std::bind(&WebServerClass::handleSaveConfig, this));
 	this->server->on("/loadconfig", std::bind(&WebServerClass::handleLoadConfig, this));
 	this->server->on("/config", std::bind(&WebServerClass::handleGetConfig, this));
+	this->server->on("/d", std::bind(&WebServerClass::handleD, this));
 	this->server->on("/h", std::bind(&WebServerClass::handleH, this));
 	this->server->on("/m", std::bind(&WebServerClass::handleM, this));
 	this->server->on("/r", std::bind(&WebServerClass::handleR, this));
@@ -160,10 +161,47 @@ String WebServerClass::contentType(String filename)
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-extern int h, m;
+extern int h, m, day, month, year;
 void WebServerClass::handleM()
 {
 	if(++m>59) m = 0;
+	this->server->send(200, "text/plain", "OK");
+}
+
+// debug handler to also test date increments (moon phase)
+void WebServerClass::handleD()
+{
+	day += 1;
+	switch(month) {
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+		case 8:
+		case 10:
+		case 12:
+			if( day == 32){
+				day = 1;
+				month++;
+			}
+			break;
+		case 2:
+			if( day == 29){
+				day = 1;
+				month++;
+			}
+			break;
+		default:
+			if( day == 31){
+				day = 1;
+				month++;
+			}
+			break;
+	}
+	if( month == 13) {
+		month = 1;
+		year++;
+	}
 	this->server->send(200, "text/plain", "OK");
 }
 

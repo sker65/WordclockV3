@@ -52,6 +52,7 @@ private:
 	void handleSetHeartbeat();
 	void handleGetHeartbeat();
 	void handleInfo();
+	void handleD();
 	void handleH();
 	void handleM();
 	void handleR();
