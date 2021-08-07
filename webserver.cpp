@@ -30,27 +30,29 @@
 //---------------------------------------------------------------------------------------
 // global instance
 //---------------------------------------------------------------------------------------
-WebServerClass WebServer = WebServerClass();
+WebServer HttpServer = WebServer();
+
+const char* WebServer::textPlain = "text/plain";
 
 //---------------------------------------------------------------------------------------
-// WebServerClass
+// WebServer
 //
 // Constructor, currently empty
 //
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-WebServerClass::WebServerClass() {}
+WebServer::WebServer() {}
 
 //---------------------------------------------------------------------------------------
-// ~WebServerClass
+// ~WebServer
 //
 // Destructor, removes allocated web server object
 //
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-WebServerClass::~WebServerClass() {
+WebServer::~WebServer() {
 	if( this->server )
 		delete this->server;
 }
@@ -63,26 +65,26 @@ WebServerClass::~WebServerClass() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::begin() {
+void WebServer::begin() {
 	SPIFFS.begin();
 
 	this->server = new ESP8266WebServer( 80 );
 
-	this->server->on( "/info", std::bind( &WebServerClass::handleInfo, this ) );
-	this->server->on( "/saveconfig", std::bind( &WebServerClass::handleSaveConfig, this ) );
-	this->server->on( "/loadconfig", std::bind( &WebServerClass::handleLoadConfig, this ) );
-	this->server->on( "/config", std::bind( &WebServerClass::handleGetConfig, this ) );
-	this->server->on( "/d", std::bind( &WebServerClass::handleD, this ) );
-	this->server->on( "/h", std::bind( &WebServerClass::handleH, this ) );
-	this->server->on( "/m", std::bind( &WebServerClass::handleM, this ) );
-	this->server->on( "/r", std::bind( &WebServerClass::handleR, this ) );
-	this->server->on( "/g", std::bind( &WebServerClass::handleG, this ) );
-	this->server->on( "/b", std::bind( &WebServerClass::handleB, this ) );
-	this->server->on( "/getadc", std::bind( &WebServerClass::handleGetADC, this ) );
-	this->server->on( "/setvar", std::bind( &WebServerClass::handleSetVar, this ) );
-	this->server->on( "/debug", std::bind( &WebServerClass::handleDebug, this ) );
+	this->server->on( "/info", std::bind( &WebServer::handleInfo, this ) );
+	this->server->on( "/saveconfig", std::bind( &WebServer::handleSaveConfig, this ) );
+	this->server->on( "/loadconfig", std::bind( &WebServer::handleLoadConfig, this ) );
+	this->server->on( "/config", std::bind( &WebServer::handleGetConfig, this ) );
+	this->server->on( "/d", std::bind( &WebServer::handleD, this ) );
+	this->server->on( "/h", std::bind( &WebServer::handleH, this ) );
+	this->server->on( "/m", std::bind( &WebServer::handleM, this ) );
+	this->server->on( "/r", std::bind( &WebServer::handleR, this ) );
+	this->server->on( "/g", std::bind( &WebServer::handleG, this ) );
+	this->server->on( "/b", std::bind( &WebServer::handleB, this ) );
+	this->server->on( "/getadc", std::bind( &WebServer::handleGetADC, this ) );
+	this->server->on( "/setvar", std::bind( &WebServer::handleSetVar, this ) );
+	this->server->on( "/debug", std::bind( &WebServer::handleDebug, this ) );
 
-	this->server->onNotFound( std::bind( &WebServerClass::handleNotFound, this ) );
+	this->server->onNotFound( std::bind( &WebServer::handleNotFound, this ) );
 	this->server->begin();
 }
 
@@ -94,7 +96,7 @@ void WebServerClass::begin() {
 // ->
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::process() { this->server->handleClient(); }
+void WebServer::process() { this->server->handleClient(); }
 
 //---------------------------------------------------------------------------------------
 // serveFile
@@ -105,8 +107,8 @@ void WebServerClass::process() { this->server->handleClient(); }
 // <- true: file was found and served to client
 //	false: file not found
 //---------------------------------------------------------------------------------------
-bool WebServerClass::serveFile( String path ) {
-	Serial.println( "WebServerClass::serveFile(): " + path );
+bool WebServer::serveFile( String path ) {
+	Serial.println( "WebServer::serveFile(): " + path );
 	if( path.endsWith( "/" ) )
 		path += "index.html";
 	if( SPIFFS.exists( path ) ) {
@@ -126,7 +128,7 @@ bool WebServerClass::serveFile( String path ) {
 // -> filename: name of the file
 // <- HTML content type matching file extension
 //---------------------------------------------------------------------------------------
-String WebServerClass::contentType( String filename ) {
+String WebServer::contentType( String filename ) {
 	if( this->server->hasArg( "download" ) )
 		return "application/octet-stream";
 	else if( filename.endsWith( ".htm" ) )
@@ -153,7 +155,7 @@ String WebServerClass::contentType( String filename ) {
 		return "application/x-zip";
 	else if( filename.endsWith( ".gz" ) )
 		return "application/x-gzip";
-	return "text/plain";
+	return textPlain;
 }
 
 //---------------------------------------------------------------------------------------
@@ -166,14 +168,14 @@ String WebServerClass::contentType( String filename ) {
 //---------------------------------------------------------------------------------------
 extern int h, m, day, month, year;
 
-void WebServerClass::handleM() {
+void WebServer::handleM() {
 	if( ++m > 59 )
 		m = 0;
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 // debug handler to also test date increments (moon phase)
-void WebServerClass::handleD() {
+void WebServer::handleD() {
 	day += 1;
 	switch( month ) {
 	case 1:
@@ -205,7 +207,7 @@ void WebServerClass::handleD() {
 		month = 1;
 		year++;
 	}
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 //---------------------------------------------------------------------------------------
@@ -216,10 +218,10 @@ void WebServerClass::handleD() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleH() {
+void WebServer::handleH() {
 	if( ++h > 23 )
 		h = 0;
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 //---------------------------------------------------------------------------------------
@@ -230,9 +232,9 @@ void WebServerClass::handleH() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleR() {
+void WebServer::handleR() {
 	LED.setMode( DisplayMode::red );
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 //---------------------------------------------------------------------------------------
@@ -243,9 +245,9 @@ void WebServerClass::handleR() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleG() {
+void WebServer::handleG() {
 	LED.setMode( DisplayMode::green );
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 //---------------------------------------------------------------------------------------
@@ -256,12 +258,12 @@ void WebServerClass::handleG() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleB() {
+void WebServer::handleB() {
 	LED.setMode( DisplayMode::blue );
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
-void WebServerClass::handleDebug() {
+void WebServer::handleDebug() {
 	if( this->server->hasArg( "led" ) && this->server->hasArg( "r" ) && this->server->hasArg( "g" ) &&
 	    this->server->hasArg( "b" ) ) {
 		int led = this->server->arg( "led" ).toInt();
@@ -301,19 +303,19 @@ void WebServerClass::handleDebug() {
 	if( this->server->hasArg( "end" ) ) {
 		Config.debugMode = 0;
 	}
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
-void WebServerClass::handleGetADC() {
+void WebServer::handleGetADC() {
 	int __attribute__( ( unused ) ) temp = Brightness.value(); // to trigger A/D conversion
-	this->server->send( 200, "text/plain", String( Brightness.avg ) );
+	this->server->send( 200, textPlain, String( Brightness.avg ) );
 }
 
-void WebServerClass::handleSetVar() {
+void WebServer::handleSetVar() {
 	bool mustSave = false;
 	char* err = NULL;
 	if( this->server->hasArg( "value" ) && this->server->hasArg( "name" ) ) {
-		Serial.println( "WebServerClass::handleSetVar(): " + this->server->arg( "name" ) + " = " +
+		Serial.println( "WebServer::handleSetVar(): " + this->server->arg( "name" ) + " = " +
 		                this->server->arg( "value" ) );
 		if( this->server->arg( "name" ) == "itIs" ) {
 			if( this->server->arg( "value" ) == "0" || this->server->arg( "value" ) == "false" )
@@ -337,7 +339,7 @@ void WebServerClass::handleSetVar() {
 				Config.autoOnMin = m;
 				mustSave = true;
 			} else {
-				err = "text/plain", "ERR: bad time format, must be HH:MM";
+				err = "ERR: bad time format, must be HH:MM";
 			}
 		} else if( this->server->arg( "name" ) == "autoOff" ) {
 			uint8_t h, m;
@@ -445,9 +447,9 @@ void WebServerClass::handleSetVar() {
 	}
 	if( mustSave ) {
 		Config.save();
-		this->server->send( 200, "text/plain", "OK" );
+		this->server->send( 200, textPlain, "OK" );
 	} else {
-		this->server->send( 400, "text/plain", err ? err : "unknown error" );
+		this->server->send( 400, textPlain, err ? err : "unknown error" );
 	}
 }
 
@@ -460,7 +462,7 @@ void WebServerClass::handleSetVar() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleNotFound() {
+void WebServer::handleNotFound() {
 	// first, try to serve the requested file from flash
 	if( !serveFile( this->server->uri() ) ) {
 		// create 404 message if no file was found for this URI
@@ -475,11 +477,12 @@ void WebServerClass::handleNotFound() {
 		for( uint8_t i = 0; i < this->server->args(); i++ ) {
 			message += " " + this->server->argName( i ) + ": " + this->server->arg( i ) + "\n";
 		}
-		this->server->send( 404, "text/plain", message );
+		this->server->send( 404, textPlain, message );
 	}
 }
 
-void WebServerClass::handleGetConfig() {
+// responde complete config at once as json object
+void WebServer::handleGetConfig() {
 	StaticJsonBuffer<1024> jsonBuffer;
 	char buf[1024];
 	JsonObject& json = jsonBuffer.createObject();
@@ -522,7 +525,7 @@ void WebServerClass::handleGetConfig() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleInfo() {
+void WebServer::handleInfo() {
 	StaticJsonBuffer<512> jsonBuffer;
 	char buf[512];
 	JsonObject& json = jsonBuffer.createObject();
@@ -539,41 +542,6 @@ void WebServerClass::handleInfo() {
 	json["flashsize"] = ESP.getFlashChipRealSize();
 	json["resetreason"] = ESP.getResetReason();
 	json["resetinfo"] = ESP.getResetInfo();
-	//	switch(LED.getMode())
-	//	{
-	//	case DisplayMode::plain:
-	//		json["mode"] = "plain"; break;
-	//	case DisplayMode::fade:
-	//		json["mode"] = "fade"; break;
-	//	case DisplayMode::flyingLettersVertical:
-	//		json["mode"] = "flyingLettersVertical"; break;
-	//	case DisplayMode::matrix:
-	//		json["mode"] = "matrix"; break;
-	//	case DisplayMode::heart:
-	//		json["mode"] = "heart"; break;
-	//	case DisplayMode::stars:
-	//		json["mode"] = "stars"; break;
-	//	case DisplayMode::red:
-	//		json["mode"] = "red"; break;
-	//	case DisplayMode::green:
-	//		json["mode"] = "green"; break;
-	//	case DisplayMode::blue:
-	//		json["mode"] = "blue"; break;
-	//	case DisplayMode::yellowHourglass:
-	//		json["mode"] = "yellowHourglass"; break;
-	//	case DisplayMode::greenHourglass:
-	//		json["mode"] = "greenHourglass"; break;
-	//	case DisplayMode::update:
-	//		json["mode"] = "update"; break;
-	//	case DisplayMode::updateComplete:
-	//		json["mode"] = "updateComplete"; break;
-	//	case DisplayMode::updateError:
-	//		json["mode"] = "updateError"; break;
-	//	case DisplayMode::wifiManager:
-	//		json["mode"] = "wifiManager"; break;
-	//	default:
-	//		json["mode"] = "unknown"; break;
-	//	}
 
 	json.printTo( buf, sizeof( buf ) );
 	this->server->send( 200, "application/json", buf );
@@ -587,7 +555,7 @@ void WebServerClass::handleInfo() {
 //	result: Pointer to palette_entry struct to receive result
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::extractColor( String argName, palette_entry& result ) {
+void WebServer::extractColor( String argName, palette_entry& result ) {
 	char c[3];
 
 	if( this->server->hasArg( argName ) && this->server->arg( argName ).length() == 6 ) {
@@ -609,9 +577,9 @@ void WebServerClass::extractColor( String argName, palette_entry& result ) {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleSaveConfig() {
+void WebServer::handleSaveConfig() {
 	Config.save();
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 //---------------------------------------------------------------------------------------
@@ -622,9 +590,9 @@ void WebServerClass::handleSaveConfig() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleLoadConfig() {
+void WebServer::handleLoadConfig() {
 	Config.load();
-	this->server->send( 200, "text/plain", "OK" );
+	this->server->send( 200, textPlain, "OK" );
 }
 
 //---------------------------------------------------------------------------------------
@@ -636,9 +604,9 @@ void WebServerClass::handleLoadConfig() {
 // -> --
 // <- --
 //---------------------------------------------------------------------------------------
-void WebServerClass::handleGetColors() {
+void WebServer::handleGetColors() {
 	String message = String( Config.bg.r ) + "," + String( Config.bg.g ) + "," + String( Config.bg.b ) + "," +
 	                 String( Config.fg.r ) + "," + String( Config.fg.g ) + "," + String( Config.fg.b ) + "," +
 	                 String( Config.s.r ) + "," + String( Config.s.g ) + "," + String( Config.s.b );
-	this->server->send( 200, "text/plain", message );
+	this->server->send( 200, textPlain, message );
 }

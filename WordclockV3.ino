@@ -270,7 +270,7 @@ void setup() { // ESP8266 LED
 
 	// web server
 	Serial.println( "Starting HTTP server" );
-	WebServer.begin();
+	HttpServer.begin();
 
 	telnetServer.begin();
 	telnetServer.setNoDelay( true );
@@ -327,7 +327,7 @@ void loop() {
 		LED.setMode( Config.defaultMode );
 
 	// do web server stuff
-	WebServer.process();
+	HttpServer.process();
 
 	// save configuration to EEPROM if necessary
 	if( Config.delayedWriteFlag ) {

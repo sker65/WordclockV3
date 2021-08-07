@@ -24,15 +24,16 @@
 
 #include "config.h"
 
-class WebServerClass {
+class WebServer {
 public:
-	WebServerClass();
-	virtual ~WebServerClass();
+	WebServer();
+	virtual ~WebServer();
 	void begin();
 	void process();
 
 private:
 	ESP8266WebServer* server = NULL;
+	static const char* textPlain;
 
 	String contentType( String filename );
 	bool serveFile( String path );
@@ -65,6 +66,6 @@ private:
 	void extractColor( String argName, palette_entry& result );
 };
 
-extern WebServerClass WebServer;
+extern WebServer HttpServer;
 
 #endif
