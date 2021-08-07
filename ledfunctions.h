@@ -56,6 +56,7 @@ public:
 	void begin(int pin);
 	void process();
 	void setTime(int h, int m, int s, int ms);
+	void setDate(int y, int m, int d) { this->year = y; this->month = m; this->day = d;}
 	void setBrightness(int brightness);
 	void setMode(DisplayMode newMode);
 	void show();
@@ -73,6 +74,7 @@ private:
 	static const palette_entry plasmaPalette[];
 	static const palette_entry black;
 	static const DisplayMode randomModes[];
+	static const uint32_t moonphases[8][10];
 
 	DisplayMode mode = DisplayMode::plain;
 	DisplayMode randomMode = DisplayMode::plain;
@@ -97,6 +99,9 @@ private:
 	int h = 0;
 	int m = 0;
 	int s = 0;
+	int year = 0;
+	int month = 0;
+	int day = 0;
 	int ms = 0;
 	int lastM = -1;
 	int lastH = -1;
@@ -115,7 +120,7 @@ private:
 
 	bool fillInvers;
 
-
+	int  getMoonphase(int y, int m, int d);
 	bool activeParticles();
 	void fillBackground(int seconds, int milliseconds, uint8_t *buf);
 	void renderCorner(uint8_t *target, int m);
@@ -127,6 +132,7 @@ private:
 	void renderFire();
 	void renderPlasma();
 	void renderStars();
+	void renderMoon();
 	void renderUpdate();
 	void renderUpdateComplete();
 	void renderUpdateError();

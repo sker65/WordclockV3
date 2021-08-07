@@ -208,7 +208,7 @@ const std::vector<leds_template_t> LEDMatrix::hoursTemplate[3] =
 
 // this mapping table maps the linear memory buffer structure used throughout the
 // project to the physical layout of the LEDs
-const uint32_t PROGMEM LEDMatrix::mapping[NUM_PIXELS] __attribute__ ((aligned (4))) = {
+const uint32_t PROGMEM __attribute__ ((aligned (4))) LEDMatrix::mapping[NUM_PIXELS]  = {
 	0  , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  ,
 	21  , 20  , 19  , 18  , 17  , 16  , 15  , 14  , 13  , 12  , 11  ,
 	22  , 23  , 24  , 25  , 26  , 27  , 28  , 29  , 30  , 31  , 32  ,
@@ -223,7 +223,7 @@ const uint32_t PROGMEM LEDMatrix::mapping[NUM_PIXELS] __attribute__ ((aligned (4
 };
 
 
-const uint32_t PROGMEM LEDMatrix::brightnessCurveSelect[NUM_PIXELS] __attribute__ ((aligned (4))) = {
+const uint32_t PROGMEM  __attribute__ ((aligned (4))) LEDMatrix::brightnessCurveSelect[NUM_PIXELS]  = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -506,7 +506,8 @@ void LEDMatrix::process()
 		Serial.printf("rainbow=%i, r=%i, g=%i b=%i\r\n", this->rainbowIndex, col.R, col.G, col.B);
 	}
 
-	uint8_t buf[NUM_PIXELS] __attribute__ ((aligned (4)));
+	uint32_t buf[NUM_PIXELS>>2+1]; // use u32 just to ensure it is aligned
+
 	//Serial.printf("mode=%i\r\n", this->mode);
 	switch (this->mode)
 	{
@@ -553,6 +554,9 @@ void LEDMatrix::process()
 	case DisplayMode::snake:
 		this->renderSnake(displayTimeChanged, lh, lm);
 		break;
+	case DisplayMode::moon:
+		this->renderMoon();
+		break;
 	case DisplayMode::matrix:
 		this->renderMatrix();
 		break;
@@ -563,16 +567,16 @@ void LEDMatrix::process()
 		this->renderStars();
 		break;
 	case DisplayMode::fade:
-		this->renderTime(buf, this->h, this->m, this->s, this->ms);
-		this->set(buf, palette, false);
+		this->renderTime((uint8_t*)buf, this->h, this->m, this->s, this->ms);
+		this->set((uint8_t*)buf, palette, false);
 		this->fade();
 		break;
 
 	case DisplayMode::random:
 	case DisplayMode::plain:
 	default:
-		this->renderTime(buf, this->h, this->m, this->s, this->ms);
-		this->set(buf, palette, true);
+		this->renderTime((uint8_t*)buf, this->h, this->m, this->s, this->ms);
+		this->set((uint8_t*)buf, palette, true);
 		break;
 	}
 
@@ -701,7 +705,8 @@ void LEDMatrix::set(const uint8_t *buf, palette_entry palette[],
 void LEDMatrix::setBuffer(uint8_t *target, const uint8_t *source,
 	palette_entry palette[])
 {
-	uint32_t mapping, palette_index, curveOffset;
+	uint32_t mappedPos, curveOffset;
+	uint8_t palette_index;
 
 	// cast source to 32 bit pointer to ensure 32 bit aligned access
 	uint32_t *buf = (uint32_t*)source;
@@ -711,21 +716,34 @@ void LEDMatrix::setBuffer(uint8_t *target, const uint8_t *source,
 	uint8_t *currentBytes = (uint8_t*)&currentDWord;
 	// this counts bytes from 0...3
 	uint32_t byteCounter = 0;
-	for (int i = 0; i < NUM_PIXELS; i++)
-	{
-		// get next 4 bytes
-		if (byteCounter == 0) currentDWord = buf[i >> 2];
+	if( ((uint32_t)source & 3) == 0 ) { // 4 byte aligned
+		for (int i = 0; i < NUM_PIXELS; i++) {
+			// get next 4 bytes
+			if (byteCounter == 0) currentDWord = buf[i >> 2];
 
-		palette_index = currentBytes[byteCounter];
-		mapping = LEDMatrix::mapping[i] * 3;
-		curveOffset = LEDMatrix::brightnessCurveSelect[i] << 8;
+			palette_index = currentBytes[byteCounter];
+			//palette_index = source[i];
+			mappedPos = LEDMatrix::mapping[i] * 3;
+			curveOffset = LEDMatrix::brightnessCurveSelect[i] << 8;
 
-		// select color value using palette and brightness correction curves
-		target[mapping + 0] = brightnessCurvesR[curveOffset + palette[palette_index].r];
-		target[mapping + 1] = brightnessCurvesG[curveOffset + palette[palette_index].g];
-		target[mapping + 2] = brightnessCurvesB[curveOffset + palette[palette_index].b];
+			// select color value using palette and brightness correction curves
+			target[mappedPos + 0] = brightnessCurvesR[curveOffset + palette[palette_index].r];
+			target[mappedPos + 1] = brightnessCurvesG[curveOffset + palette[palette_index].g];
+			target[mappedPos + 2] = brightnessCurvesB[curveOffset + palette[palette_index].b];
 
-		byteCounter = (byteCounter + 1) & 0x03;
+			byteCounter = (byteCounter + 1) & 0x03;
+		}
+	} else {
+		for (int i = 0; i < NUM_PIXELS; i++) {
+			palette_index = source[i];
+			mappedPos = LEDMatrix::mapping[i] * 3;
+			curveOffset = LEDMatrix::brightnessCurveSelect[i] << 8;
+
+			// select color value using palette and brightness correction curves
+			target[mappedPos + 0] = brightnessCurvesR[curveOffset + palette[palette_index].r];
+			target[mappedPos + 1] = brightnessCurvesG[curveOffset + palette[palette_index].g];
+			target[mappedPos + 2] = brightnessCurvesB[curveOffset + palette[palette_index].b];
+		}
 	}
 }
 
@@ -964,6 +982,150 @@ void LEDMatrix::renderMatrix()
 
 	// iterate over all matrix objects, move and render them
 	for (MatrixObject &m : this->matrix) m.render(this->currentValues);
+}
+
+const uint32_t LEDMatrix::moonphases[8][10] = {
+	  {
+				  0b0000111000000000,
+				  0b0011000110000000,
+				  0b0100000001000000,
+				  0b0100000001000000,
+				  0b1000000000100000,
+				  0b1000000000100000,
+				  0b0100000001000000,
+				  0b0100000001000000,
+				  0b0011000110000000,
+				  0b0000111000000000
+	  },
+		{
+				  0b0000111000000000,
+				  0b0000001110000000,
+				  0b0000000111000000,
+				  0b0000000111000000,
+				  0b0000000111100000,
+				  0b0000000111100000,
+				  0b0000000111000000,
+				  0b0000000111000000,
+				  0b0000001110000000,
+				  0b0000111000000000
+	  },
+		{
+				  0b0000011000000000,
+				  0b0000011110000000,
+				  0b0000011111000000,
+				  0b0000011111000000,
+				  0b0000011111100000,
+				  0b0000011111100000,
+				  0b0000011111000000,
+				  0b0000011111000000,
+				  0b0000011110000000,
+				  0b0000011000000000
+	  },
+		{
+				  0b0000111000000000,
+				  0b0001111110000000,
+				  0b0001111111000000,
+				  0b0001111111000000,
+				  0b0001111111100000,
+				  0b0001111111100000,
+				  0b0001111111000000,
+				  0b0001111111000000,
+				  0b0001111110000000,
+				  0b0000111000000000
+	  },
+		{
+				  0b0000111000000000,
+				  0b0011111110000000,
+				  0b0111111111000000,
+				  0b0111111111000000,
+				  0b1111111111100000,
+				  0b1111111111100000,
+				  0b0111111111000000,
+				  0b0111111111000000,
+				  0b0011111110000000,
+				  0b0000111000000000
+	  },
+		{
+				  0b0000111000000000,
+				  0b0011111100000000,
+				  0b0111111100000000,
+				  0b0111111100000000,
+				  0b1111111100000000,
+				  0b1111111100000000,
+				  0b0111111100000000,
+				  0b0111111100000000,
+				  0b0011111100000000,
+				  0b0000111000000000
+	  },
+		{
+				  0b0000110000000000,
+				  0b0011110000000000,
+				  0b0111110000000000,
+				  0b0111110000000000,
+				  0b1111110000000000,
+				  0b1111110000000000,
+				  0b0111110000000000,
+				  0b0111110000000000,
+				  0b0011110000000000,
+				  0b0000110000000000
+	  },
+		{
+				  0b0000111000000000,
+				  0b0011100000000000,
+				  0b0111000000000000,
+				  0b0111000000000000,
+				  0b1111000000000000,
+				  0b1111000000000000,
+				  0b0111000000000000,
+				  0b0111000000000000,
+				  0b0011100000000000,
+				  0b0000111000000000
+				
+		}
+};
+
+int LEDMatrix::getMoonphase(int y, int m, int d)
+{
+	int b, c, e;
+	double jd;
+	if (m < 3)
+	{
+		y--;
+		m += 12;
+	}
+	++m;
+	c = 365.25 * y;
+	e = 30.6 * m;
+	jd = c + e + d - 694039.09; // jd is total days elapsed
+	jd /= 29.53;                // divide by the moon cycle (29.53 days)
+	b = jd;                     // int(jd) -> b, take integer part of jd
+	jd -= b;                    // subtract integer part to leave fractional part of original jd
+	b = jd * 8 + 0.5;           // scale fraction from 0-8 and round by adding 0.5
+	b = b & 7;                  // 0 and 8 are the same so turn 8 into 0
+	return b;
+}
+
+void LEDMatrix::renderMoon() {
+	palette_entry palette[3];
+	this->preparePalette(palette);
+	palette[1] = { 255, 255, 255};
+	int phase = getMoonphase( year, month, day);
+	//Serial.printf("render moon: %i, %i, %i -> phase=%i\r\n", year, month, day, phase);
+	this->fillBackground(this->s, this->ms, animationBuf);
+	
+	for(int i = 0; i < height; i++) {
+		uint32_t pattern = moonphases[phase][i];
+		for(int j = 0; j<width; j++) {
+				if( pattern & (1<<(15-j)) ) animationBuf[i*width+j] = 1;
+		}
+		/*if( this->m != this->lastM ) {
+			Serial.printf("moon: %i %i %i %i %i %i %i %i %i %i %i \r\n", 
+			animationBuf[i*width+0],animationBuf[i*width+1],animationBuf[i*width+2],animationBuf[i*width+3],animationBuf[i*width+4],animationBuf[i*width+5],animationBuf[i*width+6],
+			animationBuf[i*width+7],animationBuf[i*width+8],animationBuf[i*width+9],animationBuf[i*width+10] );
+		}*/
+	}
+	//Serial.printf("buf = %08x\r\n", animationBuf);
+	this->set(animationBuf, palette, true);	
 }
 
 const palette_entry LEDMatrix::black = {0,0,0}; 
