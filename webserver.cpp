@@ -19,7 +19,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <FS.h>
 #include <stdio.h>
 
@@ -483,39 +482,38 @@ void WebServer::handleNotFound() {
 	}
 }
 
+#define RESPONSE_BUF_SIZE 1024
+
 // responde complete config at once as json object
 void WebServer::handleGetConfig() {
-	StaticJsonBuffer<1024> jsonBuffer;
-	char buf[1024];
-	JsonObject& json = jsonBuffer.createObject();
-	json["ntpserver"] = Config.ntpserver.toString();
-	json["heartbeat"] = Config.heartbeat;
-	json["itIs"] = Config.showItIs;
-	json["rainbow"] = Config.fgRainbow;
-	json["minuteType"] = Config.minuteType;
-	json["rainbowSpeed"] = Config.rainbowSpeed;
-	json["autoOnOff"] = Config.autoOnOff;
-	json["timezone"] = Config.timeZone;
-	json["brightness"] = Brightness.brightnessOverride;
-	char autoOn[9];
-	sprintf( autoOn, "%02d:%02d", Config.autoOnHour, Config.autoOnMin );
-	json["autoOn"] = autoOn;
-	char autoOff[9];
-	sprintf( autoOff, "%02d:%02d", Config.autoOffHour, Config.autoOffMin );
-	json["autoOff"] = autoOff;
-	json["tmpl"] = Config.tmpl;
-	json["displaymode"] = (int)Config.defaultMode;
-	json["fillMode"] = Config.fillMode;
-	char fg[9];
-	sprintf( fg, "#%02x%02x%02x", Config.fg.r, Config.fg.g, Config.fg.b );
-	json["fg"] = fg;
-	char bg[9];
-	sprintf( bg, "#%02x%02x%02x", Config.bg.r, Config.bg.g, Config.bg.b );
-	json["bg"] = bg;
-	char s[9];
-	sprintf( s, "#%02x%02x%02x", Config.s.r, Config.s.g, Config.s.b );
-	json["s"] = s;
-	json.printTo( buf, sizeof( buf ) );
+	char buf[RESPONSE_BUF_SIZE];
+	snprintf( buf, RESPONSE_BUF_SIZE,
+	          "{ "
+	          "\"ntpserver\": \"%s\", "
+	          "\"heartbeat\": %s, "
+	          "\"itIs\": %s, "
+	          "\"rainbow\": %s, "
+	          "\"autoOnOff\": %s, "
+	          "\"minuteType\": %i, "
+	          "\"rainbowSpeed\": %i, "
+	          "\"timezone\": %i, "
+	          "\"brightness\": %i, "
+	          "\"autoOn\": \"%02d:%02d\", "
+	          "\"autoOff\": \"%02d:%02d\", "
+	          "\"tmpl\": %i, "
+	          "\"displaymode\": %i, "
+	          "\"fillMode\": %i, "
+	          "\"fg\": \"#%02x%02x%02x\", "
+	          "\"bg\": \"#%02x%02x%02x\", "
+	          "\"s\": \"#%02x%02x%02x\" "
+	          "}",
+	          Config.ntpserver.toString().c_str(), Config.heartbeat ? "true" : "false",
+	          Config.showItIs ? "true" : "false", Config.fgRainbow ? "true" : "false",
+	          Config.autoOnOff ? "true" : "false", Config.minuteType, Config.rainbowSpeed, Config.timeZone,
+	          Brightness.brightnessOverride, Config.autoOnHour, Config.autoOnMin, Config.autoOffHour, Config.autoOffMin,
+	          Config.tmpl, (int)Config.defaultMode, Config.fillMode, Config.fg.r, Config.fg.g, Config.fg.b, Config.bg.r,
+	          Config.bg.g, Config.bg.b, Config.s.r, Config.s.g, Config.s.b );
+	Serial.printf( "WebServer::handleConfig %s\r\n", buf );
 	this->server->send( 200, applicationJson, buf );
 }
 
@@ -528,24 +526,27 @@ void WebServer::handleGetConfig() {
 // <- --
 //---------------------------------------------------------------------------------------
 void WebServer::handleInfo() {
-	StaticJsonBuffer<512> jsonBuffer;
-	char buf[512];
-	JsonObject& json = jsonBuffer.createObject();
-	json["heap"] = ESP.getFreeHeap();
-	json["sketchsize"] = ESP.getSketchSize();
-	json["sketchspace"] = ESP.getFreeSketchSpace();
-	json["cpufrequency"] = ESP.getCpuFreqMHz();
-	json["chipid"] = ESP.getChipId();
-	json["sdkversion"] = ESP.getSdkVersion();
-	json["bootversion"] = ESP.getBootVersion();
-	json["bootmode"] = ESP.getBootMode();
-	json["flashid"] = ESP.getFlashChipId();
-	json["flashspeed"] = ESP.getFlashChipSpeed();
-	json["flashsize"] = ESP.getFlashChipRealSize();
-	json["resetreason"] = ESP.getResetReason();
-	json["resetinfo"] = ESP.getResetInfo();
-
-	json.printTo( buf, sizeof( buf ) );
+	char buf[RESPONSE_BUF_SIZE];
+	snprintf( buf, RESPONSE_BUF_SIZE,
+	          "{"
+	          "\"heap\": %i, "
+	          "\"sketchsize\": %i, "
+	          "\"sketchspace\": %i, "
+	          "\"cpufrequency\": %i, "
+	          "\"chipid\": %i, "
+	          "\"sdkversion\": \"%s\", "
+	          "\"bootversion\": %i, "
+	          "\"bootmode\": %i, "
+	          "\"flashid\": %i, "
+	          "\"flashspeed\": %i, "
+	          "\"flashsize\": %i, "
+	          "\"resetreason\": \"%s\", "
+	          "\"resetinfo\": \"%s\" "
+	          "}",
+	          ESP.getFreeHeap(), ESP.getSketchSize(), ESP.getFreeSketchSpace(), ESP.getCpuFreqMHz(), ESP.getChipId(),
+	          ESP.getSdkVersion(), ESP.getBootVersion(), ESP.getBootMode(), ESP.getFlashChipId(), ESP.getFlashChipSpeed(),
+	          ESP.getFlashChipRealSize(), ESP.getResetReason().c_str(), ESP.getResetInfo().c_str() );
+	Serial.printf( "WebServer::handleInfo %s\r\n", buf );
 	this->server->send( 200, applicationJson, buf );
 }
 
