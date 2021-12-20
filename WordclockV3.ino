@@ -23,7 +23,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ArduinoOTA.h>
-#include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -279,6 +278,9 @@ void setup() { // ESP8266 LED
 	startup = false;
 }
 
+int specialModeTicker = 0;
+DisplayMode mmode = DisplayMode::plain;
+
 //-----------------------------------------------------------------------------------
 // loop
 //-----------------------------------------------------------------------------------
@@ -317,21 +319,36 @@ void loop() {
 		return;
 	}
 
-	// set mode depending on current time
-	if( h == 22 && m == 00 )
+	// set special mode depending on current time
+	if( h == 22 && m == 00 ) {
+		specialModeTicker = 600;
 		LED.setMode( DisplayMode::heart );
-	else if( h == 13 && m == 37 )
+	} else if( h == 13 && m == 37 ) {
+		specialModeTicker = 600;
 		LED.setMode( DisplayMode::matrix );
-	else if( h == 23 && m == 00 )
+	} else if( h == 23 && m == 00 ) {
+		specialModeTicker = 600;
 		LED.setMode( DisplayMode::stars );
-	else
-		LED.setMode( Config.defaultMode );
+	}
+	if( specialModeTicker-- > 0 ) {
+		if( specialModeTicker == 0 ) {
+			// still not clear why this leads to access exceptions?
+			// fetching it in a local var first works!!
+			int mx = (int)LED.mode;
+			int dm = (int)Config.defaultMode;
+			if( mx != dm ) {
+				LED.setMode( (DisplayMode)dm );
+			}
+		}
+	}
 
 	// do web server stuff
 	HttpServer.process();
 
 	// save configuration to EEPROM if necessary
-	if( Config.delayedWriteFlag ) {
+	// see above: cheating with "unaligned" access
+	int delayed = (int)Config.delayedWriteFlag;
+	if( delayed ) {
 		DEBUG( "Config timer expired, writing configuration.\r\n" );
 		Config.delayedWriteFlag = false;
 		Config.save();
@@ -342,6 +359,15 @@ void loop() {
 		lastSecond = s;
 		DEBUG( "%02i:%02i:%02i, ADC=%i, heap=%i, brightness=%i\r\n", h, m, s, Brightness.avg, ESP.getFreeHeap(),
 		       Brightness.value() );
+#if 0
+		Serial.printf( "mmu_is_iram/dram &LED.mode: %08x : %i %i size=%i\r\n", &( LED.mode ), mmu_is_iram( &( LED.mode ) ),
+		               mmu_is_dram( &( LED.mode ) ), sizeof( LED.mode ) );
+		Serial.printf( "mmu_is_iram/dram &Config.delayedWriteFlag: %08x : %i %i size=%i\r\n", &( Config.delayedWriteFlag ),
+		               mmu_is_iram( &( Config.delayedWriteFlag ) ), mmu_is_dram( &( Config.delayedWriteFlag ) ),
+		               sizeof( Config.delayedWriteFlag ) );
+
+		Serial.printf( "mode = %i \r\n", mx );
+#endif
 	}
 
 	/* Will not work with neo pixel bus
