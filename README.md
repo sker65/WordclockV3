@@ -19,6 +19,20 @@ https://www.mikrocontroller.net/articles/WordClock_mit_WS2812#Frontplatten  - al
 - cleanup weg ui / JS
 - added fill modes for background filling to not just reset the background (big brightness change)
 - added moon phase rendering
+
+## compile with arduino ide
+to compile with arduino ide install board type "wemos d1 mini" or compatible and install some libraries:
+- ArduinoOTA
+- ESP8266WiFi
+- DNSServer
+- ESP8266WebServer
+- ESP8266mDNS
+- Ticker
+- WiFiManager
+- NeoPixelBus_by_Makuna
+- SPI (maybe alredy core)
+- EEPROM (maybe already core)
+- ArduinoJson (to be removed, only needed for output redering)
 # esp8266wordclock
 Wordclock with WS2812B RGB LED modules driven by an ESP8266 module
 
